@@ -1,0 +1,22 @@
+PODS:
+  - FlutterMacOS (1.0.0)
+  - ykpiv_desktop (0.0.1):
+    - FlutterMacOS
+
+DEPENDENCIES:
+  - FlutterMacOS (from `Flutter/ephemeral`)
+  - ykpiv_desktop (from `Flutter/ephemeral/.symlinks/plugins/ykpiv_desktop/macos`)
+
+EXTERNAL SOURCES:
+  FlutterMacOS:
+    :path: Flutter/ephemeral
+  ykpiv_desktop:
+    :path: Flutter/ephemeral/.symlinks/plugins/ykpiv_desktop/macos
+
+SPEC CHECKSUMS:
+  FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
+  ykpiv_desktop: 512e6d79c6edb099f7251005bedaa72b96d40802
+
+PODFILE CHECKSUM: 236401fc2c932af29a9fcf0e97baeeb2d750d367
+
+COCOAPODS: 1.15.2
