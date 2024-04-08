@@ -20,7 +20,11 @@ A new Flutter FFI plugin project.
   s.source           = { :path => '.' }
   s.source_files     = 'Classes/**/*'
   s.dependency 'FlutterMacOS'
-
+  s.prepare_command = <<-CMD
+                        cd ../yubico-piv-tool 
+                        cmake . -DOPENSSL_STATIC_LINK=ON -DCMAKE_INSTALL_PREFIX=./target/ 
+                        make install
+                   CMD
   s.platform = :osx, '10.11'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   s.swift_version = '5.0'

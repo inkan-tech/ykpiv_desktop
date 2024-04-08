@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-
+import 'dart:ffi';
+import 'package:ffi/ffi.dart';
 import 'package:ykpiv_desktop/ykpiv_desktop.dart' as ykpiv_desktop;
+import 'package:ykpiv_desktop/ykpiv_desktop_bindings_generated.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,7 +23,9 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    sumResult = ykpiv_desktop.sum(1, 2);
+    final realstate = calloc<ykpiv_state>();
+    Pointer<ykpiv_state> state = Pointer.fromAddress(realstate.address);
+    sumResult = ykpiv_desktop.init(Pointer.fromAddress(state.address));
     sumAsyncResult = ykpiv_desktop.sumAsync(3, 4);
   }
 

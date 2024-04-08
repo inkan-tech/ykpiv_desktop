@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
@@ -11,7 +10,10 @@ import 'ykpiv_desktop_bindings_generated.dart';
 /// For very short-lived functions, it is fine to call them on the main isolate.
 /// They will block the Dart execution while running the native function, so
 /// only do this for native functions which are guaranteed to be short-lived.
-int sum(int a, int b) => _bindings.sum(a, b);
+///
+
+int init(Pointer<ykpiv_state> state) =>
+    _bindings.ykpiv_init(Pointer.fromAddress(state.address), 1);
 
 /// A longer lived native function, which occupies the thread calling it.
 ///
@@ -33,12 +35,12 @@ Future<int> sumAsync(int a, int b) async {
   return completer.future;
 }
 
-const String _libName = 'ykpiv_desktop';
+const String _libName = 'libykpiv';
 
 /// The dynamic library in which the symbols for [YkpivDesktopBindings] can be found.
 final DynamicLibrary _dylib = () {
   if (Platform.isMacOS || Platform.isIOS) {
-    return DynamicLibrary.open('$_libName.framework/$_libName');
+    return DynamicLibrary.open('$_libName.framework/$_libName.dylib');
   }
   if (Platform.isAndroid || Platform.isLinux) {
     return DynamicLibrary.open('lib$_libName.so');
@@ -51,7 +53,6 @@ final DynamicLibrary _dylib = () {
 
 /// The bindings to the native functions in [_dylib].
 final YkpivDesktopBindings _bindings = YkpivDesktopBindings(_dylib);
-
 
 /// A request to compute `sum`.
 ///
@@ -113,10 +114,10 @@ Future<SendPort> _helperIsolateSendPort = () async {
       ..listen((dynamic data) {
         // On the helper isolate listen to requests and respond to them.
         if (data is _SumRequest) {
-          final int result = _bindings.sum_long_running(data.a, data.b);
-          final _SumResponse response = _SumResponse(data.id, result);
-          sendPort.send(response);
-          return;
+          // final int result = _bindings.sum_long_running(data.a, data.b);
+          // final _SumResponse response = _SumResponse(data.id, result);
+          // sendPort.send(response);
+          // return;
         }
         throw UnsupportedError('Unsupported message type: ${data.runtimeType}');
       });

@@ -8,7 +8,7 @@
 // ignore_for_file: type=lint
 import 'dart:ffi' as ffi;
 
-/// Bindings for `src/ykpiv_desktop.h`.
+/// Bindings for `yubico-piv-tool/lib/ykpiv.h`.
 ///
 /// Regenerate bindings with `flutter pub run ffigen --config ffigen.yaml`.
 ///
@@ -27,44 +27,3033 @@ class YkpivDesktopBindings {
           lookup)
       : _lookup = lookup;
 
-  /// A very short-lived native function.
-  ///
-  /// For very short-lived functions, it is fine to call them on the main isolate.
-  /// They will block the Dart execution while running the native function, so
-  /// only do this for native functions which are guaranteed to be short-lived.
-  int sum(
-    int a,
-    int b,
+  ffi.Pointer<ffi.Char> ykpiv_check_version(
+    ffi.Pointer<ffi.Char> req_version,
   ) {
-    return _sum(
-      a,
-      b,
+    return _ykpiv_check_version(
+      req_version,
     );
   }
 
-  late final _sumPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
-          'sum');
-  late final _sum = _sumPtr.asFunction<int Function(int, int)>();
+  late final _ykpiv_check_versionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Pointer<ffi.Char>)>>('ykpiv_check_version');
+  late final _ykpiv_check_version = _ykpiv_check_versionPtr
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>)>();
 
-  /// A longer lived native function, which occupies the thread calling it.
-  ///
-  /// Do not call these kind of native functions in the main isolate. They will
-  /// block Dart execution. This will cause dropped frames in Flutter applications.
-  /// Instead, call these native functions on a separate isolate.
-  int sum_long_running(
-    int a,
-    int b,
+  ffi.Pointer<ffi.Char> ykpiv_strerror(
+    int err,
   ) {
-    return _sum_long_running(
-      a,
-      b,
+    return _ykpiv_strerror(
+      err,
     );
   }
 
-  late final _sum_long_runningPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
-          'sum_long_running');
-  late final _sum_long_running =
-      _sum_long_runningPtr.asFunction<int Function(int, int)>();
+  late final _ykpiv_strerrorPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Int32)>>(
+          'ykpiv_strerror');
+  late final _ykpiv_strerror =
+      _ykpiv_strerrorPtr.asFunction<ffi.Pointer<ffi.Char> Function(int)>();
+
+  ffi.Pointer<ffi.Char> ykpiv_strerror_name(
+    int err,
+  ) {
+    return _ykpiv_strerror_name(
+      err,
+    );
+  }
+
+  late final _ykpiv_strerror_namePtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Int32)>>(
+          'ykpiv_strerror_name');
+  late final _ykpiv_strerror_name =
+      _ykpiv_strerror_namePtr.asFunction<ffi.Pointer<ffi.Char> Function(int)>();
+
+  int ykpiv_init(
+    ffi.Pointer<ffi.Pointer<ykpiv_state>> state,
+    int verbose,
+  ) {
+    return _ykpiv_init(
+      state,
+      verbose,
+    );
+  }
+
+  late final _ykpiv_initPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ffi.Pointer<ykpiv_state>>, ffi.Int)>>('ykpiv_init');
+  late final _ykpiv_init = _ykpiv_initPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Pointer<ykpiv_state>>, int)>();
+
+  int ykpiv_init_with_allocator(
+    ffi.Pointer<ffi.Pointer<ykpiv_state>> state,
+    int verbose,
+    ffi.Pointer<ykpiv_allocator> allocator,
+  ) {
+    return _ykpiv_init_with_allocator(
+      state,
+      verbose,
+      allocator,
+    );
+  }
+
+  late final _ykpiv_init_with_allocatorPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<ykpiv_state>>, ffi.Int,
+              ffi.Pointer<ykpiv_allocator>)>>('ykpiv_init_with_allocator');
+  late final _ykpiv_init_with_allocator =
+      _ykpiv_init_with_allocatorPtr.asFunction<
+          int Function(ffi.Pointer<ffi.Pointer<ykpiv_state>>, int,
+              ffi.Pointer<ykpiv_allocator>)>();
+
+  int ykpiv_done(
+    ffi.Pointer<ykpiv_state> state,
+  ) {
+    return _ykpiv_done(
+      state,
+    );
+  }
+
+  late final _ykpiv_donePtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ykpiv_state>)>>(
+          'ykpiv_done');
+  late final _ykpiv_done =
+      _ykpiv_donePtr.asFunction<int Function(ffi.Pointer<ykpiv_state>)>();
+
+  int ykpiv_validate(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.Char> wanted,
+  ) {
+    return _ykpiv_validate(
+      state,
+      wanted,
+    );
+  }
+
+  late final _ykpiv_validatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.Char>)>>('ykpiv_validate');
+  late final _ykpiv_validate = _ykpiv_validatePtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Char>)>();
+
+  int ykpiv_connect(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.Char> wanted,
+  ) {
+    return _ykpiv_connect(
+      state,
+      wanted,
+    );
+  }
+
+  late final _ykpiv_connectPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.Char>)>>('ykpiv_connect');
+  late final _ykpiv_connect = _ykpiv_connectPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Char>)>();
+
+  int ykpiv_list_readers(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.Char> readers,
+    ffi.Pointer<ffi.Size> len,
+  ) {
+    return _ykpiv_list_readers(
+      state,
+      readers,
+      len,
+    );
+  }
+
+  late final _ykpiv_list_readersPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Size>)>>('ykpiv_list_readers');
+  late final _ykpiv_list_readers = _ykpiv_list_readersPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Size>)>();
+
+  int ykpiv_disconnect(
+    ffi.Pointer<ykpiv_state> state,
+  ) {
+    return _ykpiv_disconnect(
+      state,
+    );
+  }
+
+  late final _ykpiv_disconnectPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ykpiv_state>)>>(
+          'ykpiv_disconnect');
+  late final _ykpiv_disconnect =
+      _ykpiv_disconnectPtr.asFunction<int Function(ffi.Pointer<ykpiv_state>)>();
+
+  int ykpiv_translate_sw(
+    int sw,
+  ) {
+    return _ykpiv_translate_sw(
+      sw,
+    );
+  }
+
+  late final _ykpiv_translate_swPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Int)>>(
+          'ykpiv_translate_sw');
+  late final _ykpiv_translate_sw =
+      _ykpiv_translate_swPtr.asFunction<int Function(int)>();
+
+  int ykpiv_transfer_data(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.UnsignedChar> templ,
+    ffi.Pointer<ffi.UnsignedChar> in_data,
+    int in_len,
+    ffi.Pointer<ffi.UnsignedChar> out_data,
+    ffi.Pointer<ffi.UnsignedLong> out_len,
+    ffi.Pointer<ffi.Int> sw,
+  ) {
+    return _ykpiv_transfer_data1(
+      state,
+      templ,
+      in_data,
+      in_len,
+      out_data,
+      out_len,
+      sw,
+    );
+  }
+
+  late final _ykpiv_transfer_dataPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Long,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Pointer<ffi.UnsignedLong>,
+              ffi.Pointer<ffi.Int>)>>('ykpiv_transfer_data');
+  late final _ykpiv_transfer_data1 = _ykpiv_transfer_dataPtr.asFunction<
+      int Function(
+          ffi.Pointer<ykpiv_state>,
+          ffi.Pointer<ffi.UnsignedChar>,
+          ffi.Pointer<ffi.UnsignedChar>,
+          int,
+          ffi.Pointer<ffi.UnsignedChar>,
+          ffi.Pointer<ffi.UnsignedLong>,
+          ffi.Pointer<ffi.Int>)>();
+
+  int ykpiv_authenticate(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.UnsignedChar> key,
+  ) {
+    return _ykpiv_authenticate(
+      state,
+      key,
+    );
+  }
+
+  late final _ykpiv_authenticatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.UnsignedChar>)>>('ykpiv_authenticate');
+  late final _ykpiv_authenticate = _ykpiv_authenticatePtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.UnsignedChar>)>();
+
+  int ykpiv_set_mgmkey(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.UnsignedChar> new_key,
+  ) {
+    return _ykpiv_set_mgmkey(
+      state,
+      new_key,
+    );
+  }
+
+  late final _ykpiv_set_mgmkeyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.UnsignedChar>)>>('ykpiv_set_mgmkey');
+  late final _ykpiv_set_mgmkey = _ykpiv_set_mgmkeyPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.UnsignedChar>)>();
+
+  int ykpiv_hex_decode(
+    ffi.Pointer<ffi.Char> hex_in,
+    int in_len,
+    ffi.Pointer<ffi.UnsignedChar> hex_out,
+    ffi.Pointer<ffi.Size> out_len,
+  ) {
+    return _ykpiv_hex_decode(
+      hex_in,
+      in_len,
+      hex_out,
+      out_len,
+    );
+  }
+
+  late final _ykpiv_hex_decodePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ffi.Char>,
+              ffi.Size,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Pointer<ffi.Size>)>>('ykpiv_hex_decode');
+  late final _ykpiv_hex_decode = _ykpiv_hex_decodePtr.asFunction<
+      int Function(ffi.Pointer<ffi.Char>, int, ffi.Pointer<ffi.UnsignedChar>,
+          ffi.Pointer<ffi.Size>)>();
+
+  int ykpiv_sign_data(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.UnsignedChar> sign_in,
+    int in_len,
+    ffi.Pointer<ffi.UnsignedChar> sign_out,
+    ffi.Pointer<ffi.Size> out_len,
+    int algorithm,
+    int key,
+  ) {
+    return _ykpiv_sign_data(
+      state,
+      sign_in,
+      in_len,
+      sign_out,
+      out_len,
+      algorithm,
+      key,
+    );
+  }
+
+  late final _ykpiv_sign_dataPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Size,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Pointer<ffi.Size>,
+              ffi.UnsignedChar,
+              ffi.UnsignedChar)>>('ykpiv_sign_data');
+  late final _ykpiv_sign_data = _ykpiv_sign_dataPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.UnsignedChar>, int,
+          ffi.Pointer<ffi.UnsignedChar>, ffi.Pointer<ffi.Size>, int, int)>();
+
+  int ykpiv_decipher_data(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.UnsignedChar> enc_in,
+    int in_len,
+    ffi.Pointer<ffi.UnsignedChar> enc_out,
+    ffi.Pointer<ffi.Size> out_len,
+    int algorithm,
+    int key,
+  ) {
+    return _ykpiv_decipher_data(
+      state,
+      enc_in,
+      in_len,
+      enc_out,
+      out_len,
+      algorithm,
+      key,
+    );
+  }
+
+  late final _ykpiv_decipher_dataPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Size,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Pointer<ffi.Size>,
+              ffi.UnsignedChar,
+              ffi.UnsignedChar)>>('ykpiv_decipher_data');
+  late final _ykpiv_decipher_data = _ykpiv_decipher_dataPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.UnsignedChar>, int,
+          ffi.Pointer<ffi.UnsignedChar>, ffi.Pointer<ffi.Size>, int, int)>();
+
+  int ykpiv_get_version(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.Char> version,
+    int len,
+  ) {
+    return _ykpiv_get_version(
+      state,
+      version,
+      len,
+    );
+  }
+
+  late final _ykpiv_get_versionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Char>,
+              ffi.Size)>>('ykpiv_get_version');
+  late final _ykpiv_get_version = _ykpiv_get_versionPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Char>, int)>();
+
+  int ykpiv_verify(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.Char> pin,
+    ffi.Pointer<ffi.Int> tries,
+  ) {
+    return _ykpiv_verify(
+      state,
+      pin,
+      tries,
+    );
+  }
+
+  late final _ykpiv_verifyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Int>)>>('ykpiv_verify');
+  late final _ykpiv_verify = _ykpiv_verifyPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Int>)>();
+
+  int ykpiv_change_pin(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.Char> current_pin,
+    int current_pin_len,
+    ffi.Pointer<ffi.Char> new_pin,
+    int new_pin_len,
+    ffi.Pointer<ffi.Int> tries,
+  ) {
+    return _ykpiv_change_pin(
+      state,
+      current_pin,
+      current_pin_len,
+      new_pin,
+      new_pin_len,
+      tries,
+    );
+  }
+
+  late final _ykpiv_change_pinPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Size,
+              ffi.Pointer<ffi.Char>,
+              ffi.Size,
+              ffi.Pointer<ffi.Int>)>>('ykpiv_change_pin');
+  late final _ykpiv_change_pin = _ykpiv_change_pinPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Char>, int,
+          ffi.Pointer<ffi.Char>, int, ffi.Pointer<ffi.Int>)>();
+
+  int ykpiv_change_puk(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.Char> current_puk,
+    int current_puk_len,
+    ffi.Pointer<ffi.Char> new_puk,
+    int new_puk_len,
+    ffi.Pointer<ffi.Int> tries,
+  ) {
+    return _ykpiv_change_puk(
+      state,
+      current_puk,
+      current_puk_len,
+      new_puk,
+      new_puk_len,
+      tries,
+    );
+  }
+
+  late final _ykpiv_change_pukPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Size,
+              ffi.Pointer<ffi.Char>,
+              ffi.Size,
+              ffi.Pointer<ffi.Int>)>>('ykpiv_change_puk');
+  late final _ykpiv_change_puk = _ykpiv_change_pukPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Char>, int,
+          ffi.Pointer<ffi.Char>, int, ffi.Pointer<ffi.Int>)>();
+
+  int ykpiv_unblock_pin(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.Char> puk,
+    int puk_len,
+    ffi.Pointer<ffi.Char> new_pin,
+    int new_pin_len,
+    ffi.Pointer<ffi.Int> tries,
+  ) {
+    return _ykpiv_unblock_pin(
+      state,
+      puk,
+      puk_len,
+      new_pin,
+      new_pin_len,
+      tries,
+    );
+  }
+
+  late final _ykpiv_unblock_pinPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Size,
+              ffi.Pointer<ffi.Char>,
+              ffi.Size,
+              ffi.Pointer<ffi.Int>)>>('ykpiv_unblock_pin');
+  late final _ykpiv_unblock_pin = _ykpiv_unblock_pinPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Char>, int,
+          ffi.Pointer<ffi.Char>, int, ffi.Pointer<ffi.Int>)>();
+
+  int ykpiv_fetch_object(
+    ffi.Pointer<ykpiv_state> state,
+    int object_id,
+    ffi.Pointer<ffi.UnsignedChar> data,
+    ffi.Pointer<ffi.UnsignedLong> len,
+  ) {
+    return _ykpiv_fetch_object1(
+      state,
+      object_id,
+      data,
+      len,
+    );
+  }
+
+  late final _ykpiv_fetch_objectPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Int,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Pointer<ffi.UnsignedLong>)>>('ykpiv_fetch_object');
+  late final _ykpiv_fetch_object1 = _ykpiv_fetch_objectPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, int, ffi.Pointer<ffi.UnsignedChar>,
+          ffi.Pointer<ffi.UnsignedLong>)>();
+
+  int ykpiv_authenticate2(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.UnsignedChar> key,
+    int len,
+  ) {
+    return _ykpiv_authenticate2(
+      state,
+      key,
+      len,
+    );
+  }
+
+  late final _ykpiv_authenticate2Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.UnsignedChar>, ffi.Size)>>('ykpiv_authenticate2');
+  late final _ykpiv_authenticate2 = _ykpiv_authenticate2Ptr.asFunction<
+      int Function(
+          ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.UnsignedChar>, int)>();
+
+  int ykpiv_set_mgmkey2(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.UnsignedChar> new_key,
+    int touch,
+  ) {
+    return _ykpiv_set_mgmkey2(
+      state,
+      new_key,
+      touch,
+    );
+  }
+
+  late final _ykpiv_set_mgmkey2Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.UnsignedChar)>>('ykpiv_set_mgmkey2');
+  late final _ykpiv_set_mgmkey2 = _ykpiv_set_mgmkey2Ptr.asFunction<
+      int Function(
+          ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.UnsignedChar>, int)>();
+
+  int ykpiv_set_mgmkey3(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.UnsignedChar> new_key,
+    int len,
+    int algorithm,
+    int touch,
+  ) {
+    return _ykpiv_set_mgmkey3(
+      state,
+      new_key,
+      len,
+      algorithm,
+      touch,
+    );
+  }
+
+  late final _ykpiv_set_mgmkey3Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Size,
+              ffi.UnsignedChar,
+              ffi.UnsignedChar)>>('ykpiv_set_mgmkey3');
+  late final _ykpiv_set_mgmkey3 = _ykpiv_set_mgmkey3Ptr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.UnsignedChar>, int,
+          int, int)>();
+
+  int ykpiv_save_object(
+    ffi.Pointer<ykpiv_state> state,
+    int object_id,
+    ffi.Pointer<ffi.UnsignedChar> indata,
+    int len,
+  ) {
+    return _ykpiv_save_object1(
+      state,
+      object_id,
+      indata,
+      len,
+    );
+  }
+
+  late final _ykpiv_save_objectPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>, ffi.Int,
+              ffi.Pointer<ffi.UnsignedChar>, ffi.Size)>>('ykpiv_save_object');
+  late final _ykpiv_save_object1 = _ykpiv_save_objectPtr.asFunction<
+      int Function(
+          ffi.Pointer<ykpiv_state>, int, ffi.Pointer<ffi.UnsignedChar>, int)>();
+
+  int ykpiv_import_private_key(
+    ffi.Pointer<ykpiv_state> state,
+    int key,
+    int algorithm,
+    ffi.Pointer<ffi.UnsignedChar> p,
+    int p_len,
+    ffi.Pointer<ffi.UnsignedChar> q,
+    int q_len,
+    ffi.Pointer<ffi.UnsignedChar> dp,
+    int dp_len,
+    ffi.Pointer<ffi.UnsignedChar> dq,
+    int dq_len,
+    ffi.Pointer<ffi.UnsignedChar> qinv,
+    int qinv_len,
+    ffi.Pointer<ffi.UnsignedChar> ec_data,
+    int ec_data_len,
+    int pin_policy,
+    int touch_policy,
+  ) {
+    return _ykpiv_import_private_key(
+      state,
+      key,
+      algorithm,
+      p,
+      p_len,
+      q,
+      q_len,
+      dp,
+      dp_len,
+      dq,
+      dq_len,
+      qinv,
+      qinv_len,
+      ec_data,
+      ec_data_len,
+      pin_policy,
+      touch_policy,
+    );
+  }
+
+  late final _ykpiv_import_private_keyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.UnsignedChar,
+              ffi.UnsignedChar,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Size,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Size,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Size,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Size,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Size,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.UnsignedChar,
+              ffi.UnsignedChar,
+              ffi.UnsignedChar)>>('ykpiv_import_private_key');
+  late final _ykpiv_import_private_key =
+      _ykpiv_import_private_keyPtr.asFunction<
+          int Function(
+              ffi.Pointer<ykpiv_state>,
+              int,
+              int,
+              ffi.Pointer<ffi.UnsignedChar>,
+              int,
+              ffi.Pointer<ffi.UnsignedChar>,
+              int,
+              ffi.Pointer<ffi.UnsignedChar>,
+              int,
+              ffi.Pointer<ffi.UnsignedChar>,
+              int,
+              ffi.Pointer<ffi.UnsignedChar>,
+              int,
+              ffi.Pointer<ffi.UnsignedChar>,
+              int,
+              int,
+              int)>();
+
+  int ykpiv_attest(
+    ffi.Pointer<ykpiv_state> state,
+    int key,
+    ffi.Pointer<ffi.UnsignedChar> data,
+    ffi.Pointer<ffi.Size> data_len,
+  ) {
+    return _ykpiv_attest(
+      state,
+      key,
+      data,
+      data_len,
+    );
+  }
+
+  late final _ykpiv_attestPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.UnsignedChar,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Pointer<ffi.Size>)>>('ykpiv_attest');
+  late final _ykpiv_attest = _ykpiv_attestPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, int, ffi.Pointer<ffi.UnsignedChar>,
+          ffi.Pointer<ffi.Size>)>();
+
+  int ykpiv_get_metadata(
+    ffi.Pointer<ykpiv_state> state,
+    int key,
+    ffi.Pointer<ffi.UnsignedChar> data,
+    ffi.Pointer<ffi.Size> data_len,
+  ) {
+    return _ykpiv_get_metadata(
+      state,
+      key,
+      data,
+      data_len,
+    );
+  }
+
+  late final _ykpiv_get_metadataPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.UnsignedChar,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Pointer<ffi.Size>)>>('ykpiv_get_metadata');
+  late final _ykpiv_get_metadata = _ykpiv_get_metadataPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, int, ffi.Pointer<ffi.UnsignedChar>,
+          ffi.Pointer<ffi.Size>)>();
+
+  bool is_version_compatible(
+    ffi.Pointer<ykpiv_state> state,
+    int major,
+    int minor,
+    int patch,
+  ) {
+    return _is_version_compatible(
+      state,
+      major,
+      minor,
+      patch,
+    );
+  }
+
+  late final _is_version_compatiblePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Bool Function(ffi.Pointer<ykpiv_state>, ffi.Uint8, ffi.Uint8,
+              ffi.Uint8)>>('is_version_compatible');
+  late final _is_version_compatible = _is_version_compatiblePtr
+      .asFunction<bool Function(ffi.Pointer<ykpiv_state>, int, int, int)>();
+
+  int ykpiv_move_key(
+    ffi.Pointer<ykpiv_state> state,
+    int from_slot,
+    int to_slot,
+  ) {
+    return _ykpiv_move_key(
+      state,
+      from_slot,
+      to_slot,
+    );
+  }
+
+  late final _ykpiv_move_keyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>, ffi.UnsignedChar,
+              ffi.UnsignedChar)>>('ykpiv_move_key');
+  late final _ykpiv_move_key = _ykpiv_move_keyPtr
+      .asFunction<int Function(ffi.Pointer<ykpiv_state>, int, int)>();
+
+  /// Return the number of PIN attempts remaining before PIN is locked.
+  ///
+  /// **NOTE:** If PIN is already verified, calling ykpiv_get_pin_retries() will unverify the PIN.
+  ///
+  /// @param state State handle from ykpiv_init()
+  /// @param tries [out] Number of attempts remaining
+  ///
+  /// @return Error code
+  int ykpiv_get_pin_retries(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.Int> tries,
+  ) {
+    return _ykpiv_get_pin_retries(
+      state,
+      tries,
+    );
+  }
+
+  late final _ykpiv_get_pin_retriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.Int>)>>('ykpiv_get_pin_retries');
+  late final _ykpiv_get_pin_retries = _ykpiv_get_pin_retriesPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Int>)>();
+
+  /// Set number of attempts before locking for PIN and PUK codes.
+  ///
+  /// **NOTE:** If either \p pin_tries or \p puk_tries is 0, ykpiv_set_pin_retries() immediately returns YKPIV_OK.
+  ///
+  /// @param state State handle from ykpiv_init()
+  /// @param pin_tries Number of attempts to permit for PIN code
+  /// @param puk_tries Number of attempts to permit for PUK code
+  ///
+  /// @return Error code
+  int ykpiv_set_pin_retries(
+    ffi.Pointer<ykpiv_state> state,
+    int pin_tries,
+    int puk_tries,
+  ) {
+    return _ykpiv_set_pin_retries(
+      state,
+      pin_tries,
+      puk_tries,
+    );
+  }
+
+  late final _ykpiv_set_pin_retriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>, ffi.Int,
+              ffi.Int)>>('ykpiv_set_pin_retries');
+  late final _ykpiv_set_pin_retries = _ykpiv_set_pin_retriesPtr
+      .asFunction<int Function(ffi.Pointer<ykpiv_state>, int, int)>();
+
+  /// Variant of ykpiv_connect() that accepts a card context obtained externally.
+  ///
+  /// Not for generic use.  Use ykpiv_connect() instead.
+  ///
+  /// @param state State handle
+  /// @param context Card context returned from SCardConnect() or equivalent.
+  /// @param card Card ID returned from SCardConnect() or equivalent.
+  ///
+  /// @return Error code
+  int ykpiv_connect_with_external_card(
+    ffi.Pointer<ykpiv_state> state,
+    int context,
+    int card,
+  ) {
+    return _ykpiv_connect_with_external_card(
+      state,
+      context,
+      card,
+    );
+  }
+
+  late final _ykpiv_connect_with_external_cardPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>, ffi.UintPtr,
+              ffi.UintPtr)>>('ykpiv_connect_with_external_card');
+  late final _ykpiv_connect_with_external_card =
+      _ykpiv_connect_with_external_cardPtr
+          .asFunction<int Function(ffi.Pointer<ykpiv_state>, int, int)>();
+
+  /// Variant of ykpiv_done() for external cards connected with ykpiv_connect_with_external_card()
+  ///
+  /// Card is not disconnected, unlike with normal calls to ykpiv_done().
+  ///
+  /// @param state State handle
+  ///
+  /// @return Error code
+  int ykpiv_done_with_external_card(
+    ffi.Pointer<ykpiv_state> state,
+  ) {
+    return _ykpiv_done_with_external_card(
+      state,
+    );
+  }
+
+  late final _ykpiv_done_with_external_cardPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ykpiv_state>)>>(
+          'ykpiv_done_with_external_card');
+  late final _ykpiv_done_with_external_card = _ykpiv_done_with_external_cardPtr
+      .asFunction<int Function(ffi.Pointer<ykpiv_state>)>();
+
+  /// Variant of ykpiv_verify() that optionally selects the PIV applet first.
+  ///
+  /// @param state State handle
+  /// @param pin PIN code to verify with
+  /// @param pin_len Length of \p pin
+  /// @param tries [out] Number of attempts remaining (if non-NULL)
+  /// @param force_select Whether to select the PIV applet before verifying.
+  ///
+  /// @return Error code
+  int ykpiv_verify_select(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.Char> pin,
+    int pin_len,
+    ffi.Pointer<ffi.Int> tries,
+    bool force_select,
+  ) {
+    return _ykpiv_verify_select(
+      state,
+      pin,
+      pin_len,
+      tries,
+      force_select,
+    );
+  }
+
+  late final _ykpiv_verify_selectPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Size,
+              ffi.Pointer<ffi.Int>,
+              ffi.Bool)>>('ykpiv_verify_select');
+  late final _ykpiv_verify_select = _ykpiv_verify_selectPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Char>, int,
+          ffi.Pointer<ffi.Int>, bool)>();
+
+  /// Get serial number
+  ///
+  /// The card must be connected to call this function.
+  ///
+  /// @param state [in] State handle
+  /// @param p_serial [out] uint32 to store retrieved serial number
+  ///
+  /// @return ykpiv_rc error code
+  int ykpiv_get_serial(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.Uint32> p_serial,
+  ) {
+    return _ykpiv_get_serial(
+      state,
+      p_serial,
+    );
+  }
+
+  late final _ykpiv_get_serialPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.Uint32>)>>('ykpiv_get_serial');
+  late final _ykpiv_get_serial = _ykpiv_get_serialPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Uint32>)>();
+
+  /// Free allocated data
+  ///
+  /// Frees a buffer previously allocated by one of the other \p ykpiv_util functions.
+  ///
+  /// @param state State handle
+  /// @param data Buffer previously allocated by a \p ykpiv_util function
+  ///
+  /// @return ypiv_rc error code
+  int ykpiv_util_free(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    return _ykpiv_util_free(
+      state,
+      data,
+    );
+  }
+
+  late final _ykpiv_util_freePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.Void>)>>('ykpiv_util_free');
+  late final _ykpiv_util_free = _ykpiv_util_freePtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Void>)>();
+
+  /// Returns a list of all saved certificates.
+  ///
+  /// \p data should be freed with \p ykpiv_util_free() after use.
+  ///
+  /// @param state State handle
+  /// @param key_count [out] Number of certificates returned
+  /// @param data      [out] Set to a dynamically allocated list of certificates.
+  /// @param data_len  [out] Set to size of \p data in bytes
+  ///
+  /// @return Error code
+  int ykpiv_util_list_keys(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.Uint8> key_count,
+    ffi.Pointer<ffi.Pointer<ykpiv_key>> data,
+    ffi.Pointer<ffi.Size> data_len,
+  ) {
+    return _ykpiv_util_list_keys(
+      state,
+      key_count,
+      data,
+      data_len,
+    );
+  }
+
+  late final _ykpiv_util_list_keysPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Pointer<ffi.Pointer<ykpiv_key>>,
+              ffi.Pointer<ffi.Size>)>>('ykpiv_util_list_keys');
+  late final _ykpiv_util_list_keys = _ykpiv_util_list_keysPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Uint8>,
+          ffi.Pointer<ffi.Pointer<ykpiv_key>>, ffi.Pointer<ffi.Size>)>();
+
+  /// Read a certificate stored in the given slot
+  ///
+  /// \p data should be freed with \p ykpiv_util_free() after use.
+  ///
+  /// @param state State handle
+  /// @param slot Slot to read from
+  /// @param data Pointer to buffer to store the read data
+  /// @param data_len Pointer to size of input buffer, in bytes.  Update to length of read data after call.
+  ///
+  /// @return Error code
+  int ykpiv_util_read_cert(
+    ffi.Pointer<ykpiv_state> state,
+    int slot,
+    ffi.Pointer<ffi.Pointer<ffi.Uint8>> data,
+    ffi.Pointer<ffi.Size> data_len,
+  ) {
+    return _ykpiv_util_read_cert(
+      state,
+      slot,
+      data,
+      data_len,
+    );
+  }
+
+  late final _ykpiv_util_read_certPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Uint8,
+              ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+              ffi.Pointer<ffi.Size>)>>('ykpiv_util_read_cert');
+  late final _ykpiv_util_read_cert = _ykpiv_util_read_certPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, int,
+          ffi.Pointer<ffi.Pointer<ffi.Uint8>>, ffi.Pointer<ffi.Size>)>();
+
+  /// Decompresses a certificate if it was compressed
+  ///
+  /// @param buf Fetched certificate data
+  /// @param buf_len Length of fetched certificate data
+  /// @param certdata Raw certificate bytes
+  /// @param certdata_len Length of raw certificate bytes
+  ///
+  /// @return Error code
+  int ykpiv_util_get_certdata(
+    ffi.Pointer<ffi.Uint8> buf,
+    int buf_len,
+    ffi.Pointer<ffi.Uint8> certdata,
+    ffi.Pointer<ffi.Size> certdata_len,
+  ) {
+    return _ykpiv_util_get_certdata(
+      buf,
+      buf_len,
+      certdata,
+      certdata_len,
+    );
+  }
+
+  late final _ykpiv_util_get_certdataPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Size,
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Pointer<ffi.Size>)>>('ykpiv_util_get_certdata');
+  late final _ykpiv_util_get_certdata = _ykpiv_util_get_certdataPtr.asFunction<
+      int Function(ffi.Pointer<ffi.Uint8>, int, ffi.Pointer<ffi.Uint8>,
+          ffi.Pointer<ffi.Size>)>();
+
+  /// Construct cert data to store
+  ///
+  /// @param data Raw certificate data
+  /// @param data_len Length of raw certificate data
+  /// @param compress_info Certificate compression state
+  /// @param certdata Constructed certificate data
+  /// @param certdata_len Length of constructed certificate data
+  ///
+  /// @return Error code
+  int ykpiv_util_write_certdata(
+    ffi.Pointer<ffi.Uint8> data,
+    int data_len,
+    int compress_info,
+    ffi.Pointer<ffi.Uint8> certdata,
+    ffi.Pointer<ffi.Size> certdata_len,
+  ) {
+    return _ykpiv_util_write_certdata(
+      data,
+      data_len,
+      compress_info,
+      certdata,
+      certdata_len,
+    );
+  }
+
+  late final _ykpiv_util_write_certdataPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Size,
+              ffi.Uint8,
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Pointer<ffi.Size>)>>('ykpiv_util_write_certdata');
+  late final _ykpiv_util_write_certdata =
+      _ykpiv_util_write_certdataPtr.asFunction<
+          int Function(ffi.Pointer<ffi.Uint8>, int, int, ffi.Pointer<ffi.Uint8>,
+              ffi.Pointer<ffi.Size>)>();
+
+  /// Write a certificate to a given slot
+  ///
+  /// \p certinfo should be \p YKPIV_CERTINFO_UNCOMPRESSED for uncompressed certificates, which is the most
+  /// common case, or \p YKPIV_CERTINFO_GZIP if the certificate in \p data is already compressed with gzip.
+  ///
+  /// @param state State handle
+  /// @param slot Slot to write to
+  /// @param data Buffer of data to write
+  /// @param data_len Number of bytes to write
+  /// @param certinfo Hint about type of certificate.  Use the \p YKPIV_CERTINFO* defines.
+  ///
+  /// @return Error code
+  int ykpiv_util_write_cert(
+    ffi.Pointer<ykpiv_state> state,
+    int slot,
+    ffi.Pointer<ffi.Uint8> data,
+    int data_len,
+    int certinfo,
+  ) {
+    return _ykpiv_util_write_cert(
+      state,
+      slot,
+      data,
+      data_len,
+      certinfo,
+    );
+  }
+
+  late final _ykpiv_util_write_certPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Uint8,
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Size,
+              ffi.Uint8)>>('ykpiv_util_write_cert');
+  late final _ykpiv_util_write_cert = _ykpiv_util_write_certPtr.asFunction<
+      int Function(
+          ffi.Pointer<ykpiv_state>, int, ffi.Pointer<ffi.Uint8>, int, int)>();
+
+  /// Delete the certificate stored in the given slot
+  ///
+  /// @param state State handle
+  /// @param slot Slot to delete certificate from
+  ///
+  /// @return Error code
+  int ykpiv_util_delete_cert(
+    ffi.Pointer<ykpiv_state> state,
+    int slot,
+  ) {
+    return _ykpiv_util_delete_cert(
+      state,
+      slot,
+    );
+  }
+
+  late final _ykpiv_util_delete_certPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>, ffi.Uint8)>>('ykpiv_util_delete_cert');
+  late final _ykpiv_util_delete_cert = _ykpiv_util_delete_certPtr
+      .asFunction<int Function(ffi.Pointer<ykpiv_state>, int)>();
+
+  /// Generate key in given slot with specified parameters
+  ///
+  /// \p modulus, \p exp, and \p point should be freed with \p ykpiv_util_free() after use.
+  ///
+  /// If algorithm is RSA1024 or RSA2048, the modulus, modulus_len, exp, and exp_len output parameters must be supplied.  They are filled with with public modulus (big-endian), its size, the public exponent (big-endian), and its size respectively.
+  ///
+  /// If algorithm is ECCP256 or ECCP384, the point and point_len output parameters must be supplied.  They are filled with the public point (uncompressed octet-string encoded per SEC1 section 2.3.4)
+  ///
+  /// If algorithm is ECCP256, the curve is always ANSI X9.62 Prime 256v1
+  ///
+  /// If algorithm is ECCP384, the curve is always secp384r1
+  ///
+  /// @param state        State handle
+  /// @param slot         Slot to generate key in
+  /// @param algorithm    Key algorithm, specified as one of the \p YKPIV_ALGO_* options
+  /// @param pin_policy   Per-slot PIN policy, specified as one of the \p YKPIV_PINPOLICY_* options
+  /// @param touch_policy Per-slot touch policy, specified as one of the \p YKPIV_TOUCHPOLICY_* options.
+  /// @param modulus      [out] RSA public modulus (RSA-only)
+  /// @param modulus_len  [out] Size of \p modulus (RSA-only)
+  /// @param exp          [out] RSA public exponent (RSA-only)
+  /// @param exp_len      [out] Size of \p exp (RSA-only)
+  /// @param point        [out] Public curve point (ECC-only)
+  /// @param point_len    [out] Size of \p point (ECC-only)
+  ///
+  /// @return ykpiv_rc error code
+  int ykpiv_util_generate_key(
+    ffi.Pointer<ykpiv_state> state,
+    int slot,
+    int algorithm,
+    int pin_policy,
+    int touch_policy,
+    ffi.Pointer<ffi.Pointer<ffi.Uint8>> modulus,
+    ffi.Pointer<ffi.Size> modulus_len,
+    ffi.Pointer<ffi.Pointer<ffi.Uint8>> exp,
+    ffi.Pointer<ffi.Size> exp_len,
+    ffi.Pointer<ffi.Pointer<ffi.Uint8>> point,
+    ffi.Pointer<ffi.Size> point_len,
+  ) {
+    return _ykpiv_util_generate_key(
+      state,
+      slot,
+      algorithm,
+      pin_policy,
+      touch_policy,
+      modulus,
+      modulus_len,
+      exp,
+      exp_len,
+      point,
+      point_len,
+    );
+  }
+
+  late final _ykpiv_util_generate_keyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Uint8,
+              ffi.Uint8,
+              ffi.Uint8,
+              ffi.Uint8,
+              ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+              ffi.Pointer<ffi.Size>)>>('ykpiv_util_generate_key');
+  late final _ykpiv_util_generate_key = _ykpiv_util_generate_keyPtr.asFunction<
+      int Function(
+          ffi.Pointer<ykpiv_state>,
+          int,
+          int,
+          int,
+          int,
+          ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+          ffi.Pointer<ffi.Size>,
+          ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+          ffi.Pointer<ffi.Size>,
+          ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+          ffi.Pointer<ffi.Size>)>();
+
+  /// Get current PIV applet administration configuration state
+  ///
+  /// @param state  State handle
+  /// @param config [out] ykpiv_config struct filled with current applet data
+  ///
+  /// @return ykpiv_rc error code
+  int ykpiv_util_get_config(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ykpiv_config> config,
+  ) {
+    return _ykpiv_util_get_config(
+      state,
+      config,
+    );
+  }
+
+  late final _ykpiv_util_get_configPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ykpiv_config>)>>('ykpiv_util_get_config');
+  late final _ykpiv_util_get_config = _ykpiv_util_get_configPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ykpiv_config>)>();
+
+  /// Set last pin changed time to current time
+  ///
+  /// The applet must be authenticated to call this function
+  ///
+  /// @param state State handle
+  ///
+  /// @return ykpiv_rc error code
+  int ykpiv_util_set_pin_last_changed(
+    ffi.Pointer<ykpiv_state> state,
+  ) {
+    return _ykpiv_util_set_pin_last_changed(
+      state,
+    );
+  }
+
+  late final _ykpiv_util_set_pin_last_changedPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ykpiv_state>)>>(
+          'ykpiv_util_set_pin_last_changed');
+  late final _ykpiv_util_set_pin_last_changed =
+      _ykpiv_util_set_pin_last_changedPtr
+          .asFunction<int Function(ffi.Pointer<ykpiv_state>)>();
+
+  /// Get Derived MGM key
+  ///
+  /// @param state   State handle
+  /// @param pin     PIN used to derive mgm key
+  /// @param pin_len Length of pin in bytes
+  /// @param mgm     [out] Protected MGM key
+  ///
+  /// @return ykpiv_rc error code
+  int ykpiv_util_get_derived_mgm(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.Uint8> pin,
+    int pin_len,
+    ffi.Pointer<ykpiv_mgm> mgm,
+  ) {
+    return _ykpiv_util_get_derived_mgm(
+      state,
+      pin,
+      pin_len,
+      mgm,
+    );
+  }
+
+  late final _ykpiv_util_get_derived_mgmPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Uint8>,
+              ffi.Size, ffi.Pointer<ykpiv_mgm>)>>('ykpiv_util_get_derived_mgm');
+  late final _ykpiv_util_get_derived_mgm =
+      _ykpiv_util_get_derived_mgmPtr.asFunction<
+          int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Uint8>, int,
+              ffi.Pointer<ykpiv_mgm>)>();
+
+  /// Get Protected MGM key
+  ///
+  /// The user pin must be verified to call this function
+  ///
+  /// @param state State handle
+  /// @param mgm   [out] Protected MGM key
+  ///
+  /// @return ykpiv_rc error code
+  int ykpiv_util_get_protected_mgm(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ykpiv_mgm> mgm,
+  ) {
+    return _ykpiv_util_get_protected_mgm(
+      state,
+      mgm,
+    );
+  }
+
+  late final _ykpiv_util_get_protected_mgmPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ykpiv_mgm>)>>('ykpiv_util_get_protected_mgm');
+  late final _ykpiv_util_get_protected_mgm =
+      _ykpiv_util_get_protected_mgmPtr.asFunction<
+          int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ykpiv_mgm>)>();
+
+  /// Update Protected MGM key. Should only be used when mgm_type is YKPIV_CONFIG_MGM_PROTECTED.
+  ///
+  /// The user pin must be verified to call this function
+  ///
+  /// @param state State handle
+  /// @param mgm   [in] Protected MGM key
+  ///
+  /// @return ykpiv_rc error code
+  int ykpiv_util_update_protected_mgm(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ykpiv_mgm> mgm,
+  ) {
+    return _ykpiv_util_update_protected_mgm(
+      state,
+      mgm,
+    );
+  }
+
+  late final _ykpiv_util_update_protected_mgmPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ykpiv_mgm>)>>('ykpiv_util_update_protected_mgm');
+  late final _ykpiv_util_update_protected_mgm =
+      _ykpiv_util_update_protected_mgmPtr.asFunction<
+          int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ykpiv_mgm>)>();
+
+  /// Set Protected MGM key
+  ///
+  /// The applet must be authenticated and the user pin verified to call this function
+  ///
+  /// If \p mgm is NULL or \p mgm.data is all zeroes, generate MGM, otherwise set specified key.
+  ///
+  /// @param state State handle
+  /// @param mgm   [in, out] Input: NULL or new MGM key.  Output: Generated MGM key
+  ///
+  /// @return ykpiv_rc error code
+  int ykpiv_util_set_protected_mgm(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ykpiv_mgm> mgm,
+  ) {
+    return _ykpiv_util_set_protected_mgm(
+      state,
+      mgm,
+    );
+  }
+
+  late final _ykpiv_util_set_protected_mgmPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ykpiv_mgm>)>>('ykpiv_util_set_protected_mgm');
+  late final _ykpiv_util_set_protected_mgm =
+      _ykpiv_util_set_protected_mgmPtr.asFunction<
+          int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ykpiv_mgm>)>();
+
+  /// Reset PIV applet
+  ///
+  /// The user PIN and PUK must be blocked to call this function.
+  ///
+  /// @param state State handle
+  ///
+  /// @return ykpiv_rc error code
+  int ykpiv_util_reset(
+    ffi.Pointer<ykpiv_state> state,
+  ) {
+    return _ykpiv_util_reset(
+      state,
+    );
+  }
+
+  late final _ykpiv_util_resetPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ykpiv_state>)>>(
+          'ykpiv_util_reset');
+  late final _ykpiv_util_reset =
+      _ykpiv_util_resetPtr.asFunction<int Function(ffi.Pointer<ykpiv_state>)>();
+
+  /// Get card identifier
+  ///
+  /// Gets the card identifier from the Cardholder Unique Identifier (CHUID).
+  ///
+  /// ID can be set with \p ykpiv_util_set_cardid().
+  ///
+  /// @param state State handle
+  /// @param cardid [out] Unique Card ID stored in the CHUID
+  ///
+  /// @return ykpiv_rc error code
+  int ykpiv_util_get_cardid(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ykpiv_cardid> cardid,
+  ) {
+    return _ykpiv_util_get_cardid(
+      state,
+      cardid,
+    );
+  }
+
+  late final _ykpiv_util_get_cardidPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ykpiv_cardid>)>>('ykpiv_util_get_cardid');
+  late final _ykpiv_util_get_cardid = _ykpiv_util_get_cardidPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ykpiv_cardid>)>();
+
+  /// Set card identifier
+  ///
+  /// Set the card identifier in the Cardholder Unique Identifier (CHUID).
+  ///
+  /// The card must be authenticated to call this function.
+  ///
+  /// See also: \p ykpiv_util_set_cccid()
+  ///
+  /// @param state State handle
+  /// @param cardid Unique Card ID to set. If NULL, randomly generate.
+  ///
+  /// @return ypiv_rc error code
+  int ykpiv_util_set_cardid(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ykpiv_cardid> cardid,
+  ) {
+    return _ykpiv_util_set_cardid(
+      state,
+      cardid,
+    );
+  }
+
+  late final _ykpiv_util_set_cardidPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ykpiv_cardid>)>>('ykpiv_util_set_cardid');
+  late final _ykpiv_util_set_cardid = _ykpiv_util_set_cardidPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ykpiv_cardid>)>();
+
+  /// Get card capabilities identifier
+  ///
+  /// Gets the card identifier from the Card Capability Container (CCC).
+  ///
+  /// ID can be set with \p ykpiv_util_set_cccid().
+  ///
+  /// @param state State handle
+  /// @param ccc [out] Unique Card ID stored in the CCC
+  ///
+  /// @return ykpiv_rc error code
+  int ykpiv_util_get_cccid(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ykpiv_cccid> ccc,
+  ) {
+    return _ykpiv_util_get_cccid(
+      state,
+      ccc,
+    );
+  }
+
+  late final _ykpiv_util_get_cccidPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ykpiv_cccid>)>>('ykpiv_util_get_cccid');
+  late final _ykpiv_util_get_cccid = _ykpiv_util_get_cccidPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ykpiv_cccid>)>();
+
+  /// Set card capabilities identifier
+  ///
+  /// Sets the card identifier in the Card Capability Container (CCC).
+  ///
+  /// The card must be authenticated to call this function.
+  ///
+  /// See also: \p ykpiv_util_set_cardid()
+  ///
+  /// @param state state
+  /// @param ccc Unique Card ID to set. If NULL, randomly generate.
+  ///
+  /// @return ykpiv_rc error code
+  int ykpiv_util_set_cccid(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ykpiv_cccid> ccc,
+  ) {
+    return _ykpiv_util_set_cccid(
+      state,
+      ccc,
+    );
+  }
+
+  late final _ykpiv_util_set_cccidPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ykpiv_cccid>)>>('ykpiv_util_set_cccid');
+  late final _ykpiv_util_set_cccid = _ykpiv_util_set_cccidPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ykpiv_cccid>)>();
+
+  /// Get device model
+  ///
+  /// The card must be connected to call this function.
+  ///
+  /// @param state State handle
+  ///
+  /// @return Device model
+  int ykpiv_util_devicemodel(
+    ffi.Pointer<ykpiv_state> state,
+  ) {
+    return _ykpiv_util_devicemodel(
+      state,
+    );
+  }
+
+  late final _ykpiv_util_devicemodelPtr = _lookup<
+          ffi
+          .NativeFunction<ykpiv_devmodel Function(ffi.Pointer<ykpiv_state>)>>(
+      'ykpiv_util_devicemodel');
+  late final _ykpiv_util_devicemodel = _ykpiv_util_devicemodelPtr
+      .asFunction<int Function(ffi.Pointer<ykpiv_state>)>();
+
+  /// Block PUK
+  ///
+  /// Utility function to block the PUK.
+  ///
+  /// To set the PUK blocked flag in the admin data, the applet must be authenticated.
+  ///
+  /// @param state State handle
+  ///
+  /// @return Error code
+  int ykpiv_util_block_puk(
+    ffi.Pointer<ykpiv_state> state,
+  ) {
+    return _ykpiv_util_block_puk(
+      state,
+    );
+  }
+
+  late final _ykpiv_util_block_pukPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ykpiv_state>)>>(
+          'ykpiv_util_block_puk');
+  late final _ykpiv_util_block_puk = _ykpiv_util_block_pukPtr
+      .asFunction<int Function(ffi.Pointer<ykpiv_state>)>();
+
+  /// Object ID of given slot.
+  ///
+  /// @param slot Key slot
+  int ykpiv_util_slot_object(
+    int slot,
+  ) {
+    return _ykpiv_util_slot_object(
+      slot,
+    );
+  }
+
+  late final _ykpiv_util_slot_objectPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.Uint8)>>(
+          'ykpiv_util_slot_object');
+  late final _ykpiv_util_slot_object =
+      _ykpiv_util_slot_objectPtr.asFunction<int Function(int)>();
+
+  int ykpiv_util_read_mscmap(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.Pointer<ykpiv_container>> containers,
+    ffi.Pointer<ffi.Size> n_containers,
+  ) {
+    return _ykpiv_util_read_mscmap(
+      state,
+      containers,
+      n_containers,
+    );
+  }
+
+  late final _ykpiv_util_read_mscmapPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.Pointer<ykpiv_container>>,
+              ffi.Pointer<ffi.Size>)>>('ykpiv_util_read_mscmap');
+  late final _ykpiv_util_read_mscmap = _ykpiv_util_read_mscmapPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>,
+          ffi.Pointer<ffi.Pointer<ykpiv_container>>, ffi.Pointer<ffi.Size>)>();
+
+  int ykpiv_util_write_mscmap(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ykpiv_container> containers,
+    int n_containers,
+  ) {
+    return _ykpiv_util_write_mscmap(
+      state,
+      containers,
+      n_containers,
+    );
+  }
+
+  late final _ykpiv_util_write_mscmapPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ykpiv_container>,
+              ffi.Size)>>('ykpiv_util_write_mscmap');
+  late final _ykpiv_util_write_mscmap = _ykpiv_util_write_mscmapPtr.asFunction<
+      int Function(
+          ffi.Pointer<ykpiv_state>, ffi.Pointer<ykpiv_container>, int)>();
+
+  int ykpiv_util_read_msroots(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.Pointer<ffi.Uint8>> data,
+    ffi.Pointer<ffi.Size> data_len,
+  ) {
+    return _ykpiv_util_read_msroots(
+      state,
+      data,
+      data_len,
+    );
+  }
+
+  late final _ykpiv_util_read_msrootsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+              ffi.Pointer<ffi.Size>)>>('ykpiv_util_read_msroots');
+  late final _ykpiv_util_read_msroots = _ykpiv_util_read_msrootsPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>,
+          ffi.Pointer<ffi.Pointer<ffi.Uint8>>, ffi.Pointer<ffi.Size>)>();
+
+  int ykpiv_util_write_msroots(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.Uint8> data,
+    int data_len,
+  ) {
+    return _ykpiv_util_write_msroots(
+      state,
+      data,
+      data_len,
+    );
+  }
+
+  late final _ykpiv_util_write_msrootsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Uint8>,
+              ffi.Size)>>('ykpiv_util_write_msroots');
+  late final _ykpiv_util_write_msroots =
+      _ykpiv_util_write_msrootsPtr.asFunction<
+          int Function(
+              ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Uint8>, int)>();
+
+  int ykpiv_util_parse_metadata(
+    ffi.Pointer<ffi.Uint8> data,
+    int data_len,
+    ffi.Pointer<ykpiv_metadata> metadata,
+  ) {
+    return _ykpiv_util_parse_metadata(
+      data,
+      data_len,
+      metadata,
+    );
+  }
+
+  late final _ykpiv_util_parse_metadataPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ffi.Uint8>, ffi.Size,
+              ffi.Pointer<ykpiv_metadata>)>>('ykpiv_util_parse_metadata');
+  late final _ykpiv_util_parse_metadata =
+      _ykpiv_util_parse_metadataPtr.asFunction<
+          int Function(
+              ffi.Pointer<ffi.Uint8>, int, ffi.Pointer<ykpiv_metadata>)>();
+
+  int cipher_import_key(
+    int algo,
+    ffi.Pointer<ffi.UnsignedChar> keyraw,
+    int keyrawlen,
+    ffi.Pointer<cipher_key> key,
+  ) {
+    return _cipher_import_key(
+      algo,
+      keyraw,
+      keyrawlen,
+      key,
+    );
+  }
+
+  late final _cipher_import_keyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.UnsignedChar, ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Uint32, ffi.Pointer<cipher_key>)>>('cipher_import_key');
+  late final _cipher_import_key = _cipher_import_keyPtr.asFunction<
+      int Function(
+          int, ffi.Pointer<ffi.UnsignedChar>, int, ffi.Pointer<cipher_key>)>();
+
+  int cipher_destroy_key(
+    cipher_key key,
+  ) {
+    return _cipher_destroy_key(
+      key,
+    );
+  }
+
+  late final _cipher_destroy_keyPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(cipher_key)>>(
+          'cipher_destroy_key');
+  late final _cipher_destroy_key =
+      _cipher_destroy_keyPtr.asFunction<int Function(cipher_key)>();
+
+  int cipher_encrypt(
+    cipher_key key,
+    ffi.Pointer<ffi.UnsignedChar> in1,
+    int inlen,
+    ffi.Pointer<ffi.UnsignedChar> out,
+    ffi.Pointer<ffi.Uint32> outlen,
+  ) {
+    return _cipher_encrypt(
+      key,
+      in1,
+      inlen,
+      out,
+      outlen,
+    );
+  }
+
+  late final _cipher_encryptPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              cipher_key,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Uint32,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Pointer<ffi.Uint32>)>>('cipher_encrypt');
+  late final _cipher_encrypt = _cipher_encryptPtr.asFunction<
+      int Function(cipher_key, ffi.Pointer<ffi.UnsignedChar>, int,
+          ffi.Pointer<ffi.UnsignedChar>, ffi.Pointer<ffi.Uint32>)>();
+
+  int cipher_decrypt(
+    cipher_key key,
+    ffi.Pointer<ffi.UnsignedChar> in1,
+    int inlen,
+    ffi.Pointer<ffi.UnsignedChar> out,
+    ffi.Pointer<ffi.Uint32> outlen,
+  ) {
+    return _cipher_decrypt(
+      key,
+      in1,
+      inlen,
+      out,
+      outlen,
+    );
+  }
+
+  late final _cipher_decryptPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              cipher_key,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Uint32,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Pointer<ffi.Uint32>)>>('cipher_decrypt');
+  late final _cipher_decrypt = _cipher_decryptPtr.asFunction<
+      int Function(cipher_key, ffi.Pointer<ffi.UnsignedChar>, int,
+          ffi.Pointer<ffi.UnsignedChar>, ffi.Pointer<ffi.Uint32>)>();
+
+  int cipher_blocksize(
+    cipher_key key,
+  ) {
+    return _cipher_blocksize(
+      key,
+    );
+  }
+
+  late final _cipher_blocksizePtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(cipher_key)>>(
+          'cipher_blocksize');
+  late final _cipher_blocksize =
+      _cipher_blocksizePtr.asFunction<int Function(cipher_key)>();
+
+  int pkcs5_pbkdf2_sha1(
+    ffi.Pointer<ffi.Uint8> password,
+    int cb_password,
+    ffi.Pointer<ffi.Uint8> salt,
+    int cb_salt,
+    int iterations,
+    ffi.Pointer<ffi.Uint8> key,
+    int cb_key,
+  ) {
+    return _pkcs5_pbkdf2_sha1(
+      password,
+      cb_password,
+      salt,
+      cb_salt,
+      iterations,
+      key,
+      cb_key,
+    );
+  }
+
+  late final _pkcs5_pbkdf2_sha1Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Size,
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Size,
+              ffi.Uint64,
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Size)>>('pkcs5_pbkdf2_sha1');
+  late final _pkcs5_pbkdf2_sha1 = _pkcs5_pbkdf2_sha1Ptr.asFunction<
+      int Function(ffi.Pointer<ffi.Uint8>, int, ffi.Pointer<ffi.Uint8>, int,
+          int, ffi.Pointer<ffi.Uint8>, int)>();
+
+  bool yk_des_is_weak_key(
+    ffi.Pointer<ffi.UnsignedChar> key,
+    int cb_key,
+  ) {
+    return _yk_des_is_weak_key(
+      key,
+      cb_key,
+    );
+  }
+
+  late final _yk_des_is_weak_keyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Bool Function(
+              ffi.Pointer<ffi.UnsignedChar>, ffi.Size)>>('yk_des_is_weak_key');
+  late final _yk_des_is_weak_key = _yk_des_is_weak_keyPtr
+      .asFunction<bool Function(ffi.Pointer<ffi.UnsignedChar>, int)>();
+
+  int _ykpiv_prng_generate(
+    ffi.Pointer<ffi.UnsignedChar> buffer,
+    int cb_req,
+  ) {
+    return __ykpiv_prng_generate(
+      buffer,
+      cb_req,
+    );
+  }
+
+  late final __ykpiv_prng_generatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Size)>>('_ykpiv_prng_generate');
+  late final __ykpiv_prng_generate = __ykpiv_prng_generatePtr
+      .asFunction<int Function(ffi.Pointer<ffi.UnsignedChar>, int)>();
+
+  int _ykpiv_begin_transaction(
+    ffi.Pointer<ykpiv_state> state,
+  ) {
+    return __ykpiv_begin_transaction(
+      state,
+    );
+  }
+
+  late final __ykpiv_begin_transactionPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ykpiv_state>)>>(
+          '_ykpiv_begin_transaction');
+  late final __ykpiv_begin_transaction = __ykpiv_begin_transactionPtr
+      .asFunction<int Function(ffi.Pointer<ykpiv_state>)>();
+
+  int _ykpiv_end_transaction(
+    ffi.Pointer<ykpiv_state> state,
+  ) {
+    return __ykpiv_end_transaction(
+      state,
+    );
+  }
+
+  late final __ykpiv_end_transactionPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ykpiv_state>)>>(
+          '_ykpiv_end_transaction');
+  late final __ykpiv_end_transaction = __ykpiv_end_transactionPtr
+      .asFunction<int Function(ffi.Pointer<ykpiv_state>)>();
+
+  int _ykpiv_ensure_application_selected(
+    ffi.Pointer<ykpiv_state> state,
+  ) {
+    return __ykpiv_ensure_application_selected(
+      state,
+    );
+  }
+
+  late final __ykpiv_ensure_application_selectedPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ykpiv_state>)>>(
+          '_ykpiv_ensure_application_selected');
+  late final __ykpiv_ensure_application_selected =
+      __ykpiv_ensure_application_selectedPtr
+          .asFunction<int Function(ffi.Pointer<ykpiv_state>)>();
+
+  int _ykpiv_select_application(
+    ffi.Pointer<ykpiv_state> state,
+  ) {
+    return __ykpiv_select_application(
+      state,
+    );
+  }
+
+  late final __ykpiv_select_applicationPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ykpiv_state>)>>(
+          '_ykpiv_select_application');
+  late final __ykpiv_select_application = __ykpiv_select_applicationPtr
+      .asFunction<int Function(ffi.Pointer<ykpiv_state>)>();
+
+  int _ykpiv_get_length_size(
+    int length,
+  ) {
+    return __ykpiv_get_length_size(
+      length,
+    );
+  }
+
+  late final __ykpiv_get_length_sizePtr =
+      _lookup<ffi.NativeFunction<ffi.Size Function(ffi.Size)>>(
+          '_ykpiv_get_length_size');
+  late final __ykpiv_get_length_size =
+      __ykpiv_get_length_sizePtr.asFunction<int Function(int)>();
+
+  int _ykpiv_set_length(
+    ffi.Pointer<ffi.UnsignedChar> buffer,
+    int length,
+  ) {
+    return __ykpiv_set_length(
+      buffer,
+      length,
+    );
+  }
+
+  late final __ykpiv_set_lengthPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Size Function(
+              ffi.Pointer<ffi.UnsignedChar>, ffi.Size)>>('_ykpiv_set_length');
+  late final __ykpiv_set_length = __ykpiv_set_lengthPtr
+      .asFunction<int Function(ffi.Pointer<ffi.UnsignedChar>, int)>();
+
+  int _ykpiv_get_length(
+    ffi.Pointer<ffi.UnsignedChar> buffer,
+    ffi.Pointer<ffi.UnsignedChar> end,
+    ffi.Pointer<ffi.Size> len,
+  ) {
+    return __ykpiv_get_length(
+      buffer,
+      end,
+      len,
+    );
+  }
+
+  late final __ykpiv_get_lengthPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Size Function(
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Pointer<ffi.Size>)>>('_ykpiv_get_length');
+  late final __ykpiv_get_length = __ykpiv_get_lengthPtr.asFunction<
+      int Function(ffi.Pointer<ffi.UnsignedChar>, ffi.Pointer<ffi.UnsignedChar>,
+          ffi.Pointer<ffi.Size>)>();
+
+  ffi.Pointer<ffi.Void> _ykpiv_alloc(
+    ffi.Pointer<ykpiv_state> state,
+    int size,
+  ) {
+    return __ykpiv_alloc(
+      state,
+      size,
+    );
+  }
+
+  late final __ykpiv_allocPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ykpiv_state>, ffi.Size)>>('_ykpiv_alloc');
+  late final __ykpiv_alloc = __ykpiv_allocPtr.asFunction<
+      ffi.Pointer<ffi.Void> Function(ffi.Pointer<ykpiv_state>, int)>();
+
+  ffi.Pointer<ffi.Void> _ykpiv_realloc(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.Void> address,
+    int size,
+  ) {
+    return __ykpiv_realloc(
+      state,
+      address,
+      size,
+    );
+  }
+
+  late final __ykpiv_reallocPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Void> Function(ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.Void>, ffi.Size)>>('_ykpiv_realloc');
+  late final __ykpiv_realloc = __ykpiv_reallocPtr.asFunction<
+      ffi.Pointer<ffi.Void> Function(
+          ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Void>, int)>();
+
+  void _ykpiv_free(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    return __ykpiv_free(
+      state,
+      data,
+    );
+  }
+
+  late final __ykpiv_freePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Void>)>>('_ykpiv_free');
+  late final __ykpiv_free = __ykpiv_freePtr.asFunction<
+      void Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ffi.Void>)>();
+
+  int _ykpiv_save_object(
+    ffi.Pointer<ykpiv_state> state,
+    int object_id,
+    ffi.Pointer<ffi.UnsignedChar> indata,
+    int len,
+  ) {
+    return __ykpiv_save_object(
+      state,
+      object_id,
+      indata,
+      len,
+    );
+  }
+
+  late final __ykpiv_save_objectPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ykpiv_state>, ffi.Int,
+              ffi.Pointer<ffi.UnsignedChar>, ffi.Size)>>('_ykpiv_save_object');
+  late final __ykpiv_save_object = __ykpiv_save_objectPtr.asFunction<
+      int Function(
+          ffi.Pointer<ykpiv_state>, int, ffi.Pointer<ffi.UnsignedChar>, int)>();
+
+  int _ykpiv_fetch_object(
+    ffi.Pointer<ykpiv_state> state,
+    int object_id,
+    ffi.Pointer<ffi.UnsignedChar> data,
+    ffi.Pointer<ffi.UnsignedLong> len,
+  ) {
+    return __ykpiv_fetch_object(
+      state,
+      object_id,
+      data,
+      len,
+    );
+  }
+
+  late final __ykpiv_fetch_objectPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Int,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Pointer<ffi.UnsignedLong>)>>('_ykpiv_fetch_object');
+  late final __ykpiv_fetch_object = __ykpiv_fetch_objectPtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, int, ffi.Pointer<ffi.UnsignedChar>,
+          ffi.Pointer<ffi.UnsignedLong>)>();
+
+  int _ykpiv_send_apdu(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<APDU> apdu,
+    ffi.Pointer<ffi.UnsignedChar> data,
+    ffi.Pointer<ffi.UnsignedLong> recv_len,
+    ffi.Pointer<ffi.Int> sw,
+  ) {
+    return __ykpiv_send_apdu(
+      state,
+      apdu,
+      data,
+      recv_len,
+      sw,
+    );
+  }
+
+  late final __ykpiv_send_apduPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<APDU>,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Pointer<ffi.UnsignedLong>,
+              ffi.Pointer<ffi.Int>)>>('_ykpiv_send_apdu');
+  late final __ykpiv_send_apdu = __ykpiv_send_apduPtr.asFunction<
+      int Function(
+          ffi.Pointer<ykpiv_state>,
+          ffi.Pointer<APDU>,
+          ffi.Pointer<ffi.UnsignedChar>,
+          ffi.Pointer<ffi.UnsignedLong>,
+          ffi.Pointer<ffi.Int>)>();
+
+  int _ykpiv_transfer_data(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ffi.UnsignedChar> templ,
+    ffi.Pointer<ffi.UnsignedChar> in_data,
+    int in_len,
+    ffi.Pointer<ffi.UnsignedChar> out_data,
+    ffi.Pointer<ffi.UnsignedLong> out_len,
+    ffi.Pointer<ffi.Int> sw,
+  ) {
+    return __ykpiv_transfer_data(
+      state,
+      templ,
+      in_data,
+      in_len,
+      out_data,
+      out_len,
+      sw,
+    );
+  }
+
+  late final __ykpiv_transfer_dataPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.UnsignedLong,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Pointer<ffi.UnsignedLong>,
+              ffi.Pointer<ffi.Int>)>>('_ykpiv_transfer_data');
+  late final __ykpiv_transfer_data = __ykpiv_transfer_dataPtr.asFunction<
+      int Function(
+          ffi.Pointer<ykpiv_state>,
+          ffi.Pointer<ffi.UnsignedChar>,
+          ffi.Pointer<ffi.UnsignedChar>,
+          int,
+          ffi.Pointer<ffi.UnsignedChar>,
+          ffi.Pointer<ffi.UnsignedLong>,
+          ffi.Pointer<ffi.Int>)>();
+
+  /// authentication functions not ready for public api
+  int ykpiv_auth_getchallenge(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ykpiv_metadata> metadata,
+    ffi.Pointer<ffi.Uint8> challenge,
+    ffi.Pointer<ffi.UnsignedLong> challenge_len,
+  ) {
+    return _ykpiv_auth_getchallenge(
+      state,
+      metadata,
+      challenge,
+      challenge_len,
+    );
+  }
+
+  late final _ykpiv_auth_getchallengePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ykpiv_metadata>,
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Pointer<ffi.UnsignedLong>)>>('ykpiv_auth_getchallenge');
+  late final _ykpiv_auth_getchallenge = _ykpiv_auth_getchallengePtr.asFunction<
+      int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ykpiv_metadata>,
+          ffi.Pointer<ffi.Uint8>, ffi.Pointer<ffi.UnsignedLong>)>();
+
+  int ykpiv_auth_verifyresponse(
+    ffi.Pointer<ykpiv_state> state,
+    ffi.Pointer<ykpiv_metadata> metadata,
+    ffi.Pointer<ffi.Uint8> response,
+    int response_len,
+  ) {
+    return _ykpiv_auth_verifyresponse(
+      state,
+      metadata,
+      response,
+      response_len,
+    );
+  }
+
+  late final _ykpiv_auth_verifyresponsePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ykpiv_state>,
+              ffi.Pointer<ykpiv_metadata>,
+              ffi.Pointer<ffi.Uint8>,
+              ffi.UnsignedLong)>>('ykpiv_auth_verifyresponse');
+  late final _ykpiv_auth_verifyresponse =
+      _ykpiv_auth_verifyresponsePtr.asFunction<
+          int Function(ffi.Pointer<ykpiv_state>, ffi.Pointer<ykpiv_metadata>,
+              ffi.Pointer<ffi.Uint8>, int)>();
+
+  int ykpiv_auth_deauthenticate(
+    ffi.Pointer<ykpiv_state> state,
+  ) {
+    return _ykpiv_auth_deauthenticate(
+      state,
+    );
+  }
+
+  late final _ykpiv_auth_deauthenticatePtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ykpiv_state>)>>(
+          'ykpiv_auth_deauthenticate');
+  late final _ykpiv_auth_deauthenticate = _ykpiv_auth_deauthenticatePtr
+      .asFunction<int Function(ffi.Pointer<ykpiv_state>)>();
+
+  setting_bool_t setting_get_bool(
+    ffi.Pointer<ffi.Char> sz_setting,
+    bool f_default,
+  ) {
+    return _setting_get_bool(
+      sz_setting,
+      f_default,
+    );
+  }
+
+  late final _setting_get_boolPtr = _lookup<
+      ffi.NativeFunction<
+          setting_bool_t Function(
+              ffi.Pointer<ffi.Char>, ffi.Bool)>>('setting_get_bool');
+  late final _setting_get_bool = _setting_get_boolPtr
+      .asFunction<setting_bool_t Function(ffi.Pointer<ffi.Char>, bool)>();
+
+  void yc_log_event(
+    ffi.Pointer<ffi.Char> sz_source,
+    int id,
+    int level,
+    ffi.Pointer<ffi.Char> sz_format,
+  ) {
+    return _yc_log_event(
+      sz_source,
+      id,
+      level,
+      sz_format,
+    );
+  }
+
+  late final _yc_log_eventPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Uint32, ffi.Int32,
+              ffi.Pointer<ffi.Char>)>>('yc_log_event');
+  late final _yc_log_event = _yc_log_eventPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, int, int, ffi.Pointer<ffi.Char>)>();
+
+  void _ykpiv_set_debug(
+    ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>
+        dbg,
+  ) {
+    return __ykpiv_set_debug(
+      dbg,
+    );
+  }
+
+  late final __ykpiv_set_debugPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<
+                  ffi.NativeFunction<
+                      ffi.Void Function(
+                          ffi.Pointer<ffi.Char>)>>)>>('_ykpiv_set_debug');
+  late final __ykpiv_set_debug = __ykpiv_set_debugPtr.asFunction<
+      void Function(
+          ffi.Pointer<
+              ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>)>();
+
+  void _ykpiv_debug(
+    ffi.Pointer<ffi.Char> file,
+    int line,
+    ffi.Pointer<ffi.Char> func,
+    int lvl,
+    ffi.Pointer<ffi.Char> fmt,
+  ) {
+    return __ykpiv_debug(
+      file,
+      line,
+      func,
+      lvl,
+      fmt,
+    );
+  }
+
+  late final __ykpiv_debugPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>,
+              ffi.Int,
+              ffi.Pointer<ffi.Char>,
+              ffi.Int,
+              ffi.Pointer<ffi.Char>)>>('_ykpiv_debug');
+  late final __ykpiv_debug = __ykpiv_debugPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, int, ffi.Pointer<ffi.Char>, int,
+          ffi.Pointer<ffi.Char>)>();
 }
+
+final class ykpiv_state extends ffi.Struct {
+  @SCARDCONTEXT()
+  external int context;
+
+  @SCARDHANDLE()
+  external int card;
+
+  @pcsc_word()
+  external int protocol;
+
+  @ffi.Array.multi([2048])
+  external ffi.Array<ffi.Char> reader;
+
+  @ffi.Int()
+  external int tries;
+
+  external ffi.Pointer<ffi.Char> pin;
+
+  external ffi.Pointer<ffi.Uint8> mgm_key;
+
+  @ffi.Uint32()
+  external int mgm_len;
+
+  external ykpiv_allocator allocator;
+
+  @ffi.Uint32()
+  external int model;
+
+  external ykpiv_version_t ver;
+
+  @ffi.Uint32()
+  external int serial;
+}
+
+typedef SCARDCONTEXT = ffi.Int32;
+typedef DartSCARDCONTEXT = int;
+typedef SCARDHANDLE = ffi.Int32;
+typedef DartSCARDHANDLE = int;
+
+/// Typedef DWORD (defined by pcsc lib) to pcsc_word to make it clear that this
+/// is not the Windows meaning of DWORD, but the PCSC library's meaning.  This
+/// differs: Windows defines a DWORD as 32-bits, but pcsclite defines it as
+/// 'unsigned long' on x86_64 Linux, which is often 64-bits.
+typedef pcsc_word = DWORD;
+typedef DWORD = ffi.Uint32;
+typedef DartDWORD = int;
+
+final class ykpiv_allocator extends ffi.Struct {
+  external ykpiv_pfn_alloc pfn_alloc;
+
+  external ykpiv_pfn_realloc pfn_realloc;
+
+  external ykpiv_pfn_free pfn_free;
+
+  external ffi.Pointer<ffi.Void> alloc_data;
+}
+
+typedef ykpiv_pfn_alloc
+    = ffi.Pointer<ffi.NativeFunction<ykpiv_pfn_allocFunction>>;
+typedef ykpiv_pfn_allocFunction = ffi.Pointer<ffi.Void> Function(
+    ffi.Pointer<ffi.Void> alloc_data, ffi.Size size);
+typedef Dartykpiv_pfn_allocFunction = ffi.Pointer<ffi.Void> Function(
+    ffi.Pointer<ffi.Void> alloc_data, int size);
+typedef ykpiv_pfn_realloc
+    = ffi.Pointer<ffi.NativeFunction<ykpiv_pfn_reallocFunction>>;
+typedef ykpiv_pfn_reallocFunction = ffi.Pointer<ffi.Void> Function(
+    ffi.Pointer<ffi.Void> alloc_data,
+    ffi.Pointer<ffi.Void> address,
+    ffi.Size size);
+typedef Dartykpiv_pfn_reallocFunction = ffi.Pointer<ffi.Void> Function(
+    ffi.Pointer<ffi.Void> alloc_data, ffi.Pointer<ffi.Void> address, int size);
+typedef ykpiv_pfn_free
+    = ffi.Pointer<ffi.NativeFunction<ykpiv_pfn_freeFunction>>;
+typedef ykpiv_pfn_freeFunction = ffi.Void Function(
+    ffi.Pointer<ffi.Void> alloc_data, ffi.Pointer<ffi.Void> address);
+typedef Dartykpiv_pfn_freeFunction = void Function(
+    ffi.Pointer<ffi.Void> alloc_data, ffi.Pointer<ffi.Void> address);
+typedef ykpiv_version_t = _ykpiv_version_t;
+
+final class _ykpiv_version_t extends ffi.Struct {
+  @ffi.Uint8()
+  external int major;
+
+  @ffi.Uint8()
+  external int minor;
+
+  @ffi.Uint8()
+  external int patch;
+}
+
+abstract class ykpiv_rc {
+  static const int YKPIV_OK = 0;
+  static const int YKPIV_MEMORY_ERROR = -1;
+  static const int YKPIV_PCSC_ERROR = -2;
+  static const int YKPIV_SIZE_ERROR = -3;
+  static const int YKPIV_APPLET_ERROR = -4;
+  static const int YKPIV_AUTHENTICATION_ERROR = -5;
+  static const int YKPIV_RANDOMNESS_ERROR = -6;
+  static const int YKPIV_GENERIC_ERROR = -7;
+  static const int YKPIV_KEY_ERROR = -8;
+  static const int YKPIV_PARSE_ERROR = -9;
+  static const int YKPIV_WRONG_PIN = -10;
+  static const int YKPIV_INVALID_OBJECT = -11;
+  static const int YKPIV_ALGORITHM_ERROR = -12;
+  static const int YKPIV_PIN_LOCKED = -13;
+
+  /// i.e. invalid input argument
+  static const int YKPIV_ARGUMENT_ERROR = -14;
+
+  /// i.e. value range error
+  static const int YKPIV_RANGE_ERROR = -15;
+  static const int YKPIV_NOT_SUPPORTED = -16;
+  static const int YKPIV_PCSC_SERVICE_ERROR = -17;
+}
+
+final class ykpiv_cardid extends ffi.Struct {
+  @ffi.Array.multi([16])
+  external ffi.Array<ffi.Uint8> data;
+}
+
+final class ykpiv_cccid extends ffi.Struct {
+  @ffi.Array.multi([14])
+  external ffi.Array<ffi.Uint8> data;
+}
+
+@ffi.Packed(1)
+final class _ykpiv_key extends ffi.Struct {
+  @ffi.Uint8()
+  external int slot;
+
+  @ffi.Uint16()
+  external int cert_len;
+
+  @ffi.Array.multi([1])
+  external ffi.Array<ffi.Uint8> cert;
+}
+
+@ffi.Packed(1)
+final class _ykpiv_container extends ffi.Struct {
+  @ffi.Array.multi([40])
+  external ffi.Array<ffi.WChar> name;
+
+  @ffi.Uint8()
+  external int slot;
+
+  @ffi.Uint8()
+  external int key_spec;
+
+  @ffi.Uint16()
+  external int key_size_bits;
+
+  @ffi.Uint8()
+  external int flags;
+
+  @ffi.Uint8()
+  external int pin_id;
+
+  @ffi.Uint8()
+  external int associated_echd_container;
+
+  @ffi.Array.multi([20])
+  external ffi.Array<ffi.Uint8> cert_fingerprint;
+}
+
+abstract class ykpiv_config_mgm_type {
+  static const int YKPIV_CONFIG_MGM_INVALID = -1;
+  static const int YKPIV_CONFIG_MGM_MANUAL = 0;
+  static const int YKPIV_CONFIG_MGM_DERIVED = 1;
+  static const int YKPIV_CONFIG_MGM_PROTECTED = 2;
+}
+
+@ffi.Packed(1)
+final class _ykpiv_config extends ffi.Struct {
+  @ffi.Uint8()
+  external int puk_blocked;
+
+  @ffi.Uint8()
+  external int puk_noblock_on_upgrade;
+
+  @ffi.Uint32()
+  external int pin_last_changed;
+
+  @ffi.Int32()
+  external int mgm_type;
+
+  @ffi.Size()
+  external int mgm_len;
+
+  @ffi.Array.multi([32])
+  external ffi.Array<ffi.Uint8> mgm_key;
+}
+
+@ffi.Packed(1)
+final class _ykpiv_mgm extends ffi.Struct {
+  @ffi.Size()
+  external int len;
+
+  @ffi.Array.multi([32])
+  external ffi.Array<ffi.Uint8> data;
+}
+
+final class _ykpiv_metadata extends ffi.Struct {
+  @ffi.Uint8()
+  external int algorithm;
+
+  @ffi.Uint8()
+  external int pin_policy;
+
+  @ffi.Uint8()
+  external int touch_policy;
+
+  @ffi.Uint8()
+  external int origin;
+
+  @ffi.Size()
+  external int pubkey_len;
+
+  @ffi.Array.multi([512])
+  external ffi.Array<ffi.Uint8> pubkey;
+}
+
+typedef ykpiv_key = _ykpiv_key;
+typedef ykpiv_config = _ykpiv_config;
+typedef ykpiv_mgm = _ykpiv_mgm;
+
+/// /////////////////////////////////////////////////////////////////////////////
+/// /////////////////////////////////////////////////////////////////////////////
+/// /////////////////////////////////////////////////////////////////////////////
+/// /
+/// /
+/// / High-level Util API
+/// /
+/// /
+/// / Util api always allocates data on your behalf, if data = 0, *data != 0,
+/// / or data_len = 0 an invalid parameter will be returned; to free data, call
+/// / ykpiv_util_free().
+/// /
+/// /////////////////////////////////////////////////////////////////////////////
+/// /////////////////////////////////////////////////////////////////////////////
+/// /////////////////////////////////////////////////////////////////////////////
+typedef ykpiv_devmodel = ffi.Uint32;
+typedef Dartykpiv_devmodel = int;
+typedef ykpiv_container = _ykpiv_container;
+typedef ykpiv_metadata = _ykpiv_metadata;
+
+abstract class cipher_rc {
+  static const int CIPHER_OK = 0;
+  static const int CIPHER_INVALID_PARAMETER = -1;
+  static const int CIPHER_BUFFER_TOO_SMALL = -2;
+  static const int CIPHER_MEMORY_ERROR = -3;
+  static const int CIPHER_GENERAL_ERROR = -4;
+}
+
+abstract class pkcs5_rc {
+  static const int PKCS5_OK = 0;
+  static const int PKCS5_GENERAL_ERROR = -1;
+}
+
+abstract class prng_rc {
+  static const int PRNG_OK = 0;
+  static const int PRNG_GENERAL_ERROR = -1;
+}
+
+final class u_APDU extends ffi.Union {
+  external UnnamedStruct1 st;
+
+  @ffi.Array.multi([261])
+  external ffi.Array<ffi.UnsignedChar> raw;
+}
+
+final class UnnamedStruct1 extends ffi.Struct {
+  @ffi.UnsignedChar()
+  external int cla;
+
+  @ffi.UnsignedChar()
+  external int ins;
+
+  @ffi.UnsignedChar()
+  external int p1;
+
+  @ffi.UnsignedChar()
+  external int p2;
+
+  @ffi.UnsignedChar()
+  external int lc;
+
+  /// Max 255 bytes + Le
+  @ffi.Array.multi([256])
+  external ffi.Array<ffi.UnsignedChar> data;
+}
+
+final class _cipher_key extends ffi.Opaque {}
+
+typedef cipher_key = ffi.Pointer<_cipher_key>;
+typedef APDU = u_APDU;
+
+abstract class _setting_source_t {
+  static const int SETTING_SOURCE_USER = 0;
+  static const int SETTING_SOURCE_ADMIN = 1;
+  static const int SETTING_SOURCE_DEFAULT = 2;
+}
+
+final class _setting_bool_t extends ffi.Struct {
+  @ffi.Bool()
+  external bool value;
+
+  @ffi.Int32()
+  external int source;
+}
+
+typedef setting_bool_t = _setting_bool_t;
+
+abstract class _yc_log_level_t {
+  static const int YC_LOG_LEVEL_ERROR = 0;
+  static const int YC_LOG_LEVEL_WARN = 1;
+  static const int YC_LOG_LEVEL_INFO = 2;
+  static const int YC_LOG_LEVEL_VERBOSE = 3;
+  static const int YC_LOG_LEVEL_DEBUG = 4;
+}
+
+const String YKPIV_VERSION_STRING = '2.5.1';
+
+const int YKPIV_CARDID_SIZE = 16;
+
+const int YKPIV_CCCID_SIZE = 14;
+
+const int YKPIV_ALGO_TAG = 128;
+
+const int YKPIV_ALGO_3DES = 3;
+
+const int YKPIV_ALGO_AES128 = 8;
+
+const int YKPIV_ALGO_AES192 = 10;
+
+const int YKPIV_ALGO_AES256 = 12;
+
+const int YKPIV_ALGO_RSA1024 = 6;
+
+const int YKPIV_ALGO_RSA2048 = 7;
+
+const int YKPIV_ALGO_RSA3072 = 5;
+
+const int YKPIV_ALGO_RSA4096 = 22;
+
+const int YKPIV_ALGO_ECCP256 = 17;
+
+const int YKPIV_ALGO_ECCP384 = 20;
+
+const int YKPIV_ALGO_ED25519 = 224;
+
+const int YKPIV_ALGO_X25519 = 225;
+
+const int YKPIV_ALGO_AUTO = 255;
+
+const int YKPIV_KEY_AUTHENTICATION = 154;
+
+const int YKPIV_KEY_CARDMGM = 155;
+
+const int YKPIV_KEY_SIGNATURE = 156;
+
+const int YKPIV_KEY_KEYMGM = 157;
+
+const int YKPIV_KEY_CARDAUTH = 158;
+
+const int YKPIV_KEY_RETIRED1 = 130;
+
+const int YKPIV_KEY_RETIRED2 = 131;
+
+const int YKPIV_KEY_RETIRED3 = 132;
+
+const int YKPIV_KEY_RETIRED4 = 133;
+
+const int YKPIV_KEY_RETIRED5 = 134;
+
+const int YKPIV_KEY_RETIRED6 = 135;
+
+const int YKPIV_KEY_RETIRED7 = 136;
+
+const int YKPIV_KEY_RETIRED8 = 137;
+
+const int YKPIV_KEY_RETIRED9 = 138;
+
+const int YKPIV_KEY_RETIRED10 = 139;
+
+const int YKPIV_KEY_RETIRED11 = 140;
+
+const int YKPIV_KEY_RETIRED12 = 141;
+
+const int YKPIV_KEY_RETIRED13 = 142;
+
+const int YKPIV_KEY_RETIRED14 = 143;
+
+const int YKPIV_KEY_RETIRED15 = 144;
+
+const int YKPIV_KEY_RETIRED16 = 145;
+
+const int YKPIV_KEY_RETIRED17 = 146;
+
+const int YKPIV_KEY_RETIRED18 = 147;
+
+const int YKPIV_KEY_RETIRED19 = 148;
+
+const int YKPIV_KEY_RETIRED20 = 149;
+
+const int YKPIV_KEY_ATTESTATION = 249;
+
+const int YKPIV_OBJ_CAPABILITY = 6275335;
+
+const int YKPIV_OBJ_CHUID = 6275330;
+
+const int YKPIV_OBJ_AUTHENTICATION = 6275333;
+
+const int YKPIV_OBJ_FINGERPRINTS = 6275331;
+
+const int YKPIV_OBJ_SECURITY = 6275334;
+
+const int YKPIV_OBJ_FACIAL = 6275336;
+
+const int YKPIV_OBJ_PRINTED = 6275337;
+
+const int YKPIV_OBJ_SIGNATURE = 6275338;
+
+const int YKPIV_OBJ_KEY_MANAGEMENT = 6275339;
+
+const int YKPIV_OBJ_CARD_AUTH = 6275329;
+
+const int YKPIV_OBJ_DISCOVERY = 126;
+
+const int YKPIV_OBJ_KEY_HISTORY = 6275340;
+
+const int YKPIV_OBJ_IRIS = 6275361;
+
+const int YKPIV_OBJ_BITGT = 32609;
+
+const int YKPIV_OBJ_SM_SIGNER = 6275362;
+
+const int YKPIV_OBJ_PC_REF_DATA = 6275363;
+
+const int YKPIV_OBJ_RETIRED1 = 6275341;
+
+const int YKPIV_OBJ_RETIRED2 = 6275342;
+
+const int YKPIV_OBJ_RETIRED3 = 6275343;
+
+const int YKPIV_OBJ_RETIRED4 = 6275344;
+
+const int YKPIV_OBJ_RETIRED5 = 6275345;
+
+const int YKPIV_OBJ_RETIRED6 = 6275346;
+
+const int YKPIV_OBJ_RETIRED7 = 6275347;
+
+const int YKPIV_OBJ_RETIRED8 = 6275348;
+
+const int YKPIV_OBJ_RETIRED9 = 6275349;
+
+const int YKPIV_OBJ_RETIRED10 = 6275350;
+
+const int YKPIV_OBJ_RETIRED11 = 6275351;
+
+const int YKPIV_OBJ_RETIRED12 = 6275352;
+
+const int YKPIV_OBJ_RETIRED13 = 6275353;
+
+const int YKPIV_OBJ_RETIRED14 = 6275354;
+
+const int YKPIV_OBJ_RETIRED15 = 6275355;
+
+const int YKPIV_OBJ_RETIRED16 = 6275356;
+
+const int YKPIV_OBJ_RETIRED17 = 6275357;
+
+const int YKPIV_OBJ_RETIRED18 = 6275358;
+
+const int YKPIV_OBJ_RETIRED19 = 6275359;
+
+const int YKPIV_OBJ_RETIRED20 = 6275360;
+
+const int YKPIV_OBJ_ATTESTATION = 6291201;
+
+const int TAG_CERT = 112;
+
+const int TAG_CERT_COMPRESS = 113;
+
+const int TAG_CERT_LRC = 254;
+
+const int YKPIV_OBJ_MAX_SIZE = 3072;
+
+const int YKPIV_INS_VERIFY = 32;
+
+const int YKPIV_INS_CHANGE_REFERENCE = 36;
+
+const int YKPIV_INS_RESET_RETRY = 44;
+
+const int YKPIV_INS_GENERATE_ASYMMETRIC = 71;
+
+const int YKPIV_INS_AUTHENTICATE = 135;
+
+const int YKPIV_INS_GET_DATA = 203;
+
+const int YKPIV_INS_PUT_DATA = 219;
+
+const int YKPIV_INS_MOVE_KEY = 246;
+
+const int YKPIV_INS_SELECT_APPLICATION = 164;
+
+const int YKPIV_INS_GET_RESPONSE_APDU = 192;
+
+const int SW_SUCCESS = 36864;
+
+const int SW_ERR_SECURITY_STATUS = 27010;
+
+const int SW_ERR_AUTH_BLOCKED = 27011;
+
+const int SW_ERR_CONDITIONS_OF_USE = 27013;
+
+const int SW_ERR_INCORRECT_PARAM = 27264;
+
+const int SW_ERR_FILE_NOT_FOUND = 27266;
+
+const int SW_ERR_REFERENCE_NOT_FOUND = 27272;
+
+const int SW_ERR_INCORRECT_SLOT = 27392;
+
+const int SW_ERR_NOT_SUPPORTED = 27904;
+
+const int YKPIV_INS_SET_MGMKEY = 255;
+
+const int YKPIV_INS_IMPORT_KEY = 254;
+
+const int YKPIV_INS_GET_VERSION = 253;
+
+const int YKPIV_INS_RESET = 251;
+
+const int YKPIV_INS_SET_PIN_RETRIES = 250;
+
+const int YKPIV_INS_ATTEST = 249;
+
+const int YKPIV_INS_GET_SERIAL = 248;
+
+const int YKPIV_INS_GET_METADATA = 247;
+
+const int YKPIV_PINPOLICY_TAG = 170;
+
+const int YKPIV_PINPOLICY_DEFAULT = 0;
+
+const int YKPIV_PINPOLICY_NEVER = 1;
+
+const int YKPIV_PINPOLICY_ONCE = 2;
+
+const int YKPIV_PINPOLICY_ALWAYS = 3;
+
+const int YKPIV_TOUCHPOLICY_TAG = 171;
+
+const int YKPIV_TOUCHPOLICY_DEFAULT = 0;
+
+const int YKPIV_TOUCHPOLICY_NEVER = 1;
+
+const int YKPIV_TOUCHPOLICY_ALWAYS = 2;
+
+const int YKPIV_TOUCHPOLICY_CACHED = 3;
+
+const int YKPIV_TOUCHPOLICY_AUTO = 255;
+
+const int YKPIV_METADATA_ALGORITHM_TAG = 1;
+
+const int YKPIV_METADATA_POLICY_TAG = 2;
+
+const int YKPIV_METADATA_ORIGIN_TAG = 3;
+
+const int YKPIV_METADATA_ORIGIN_GENERATED = 1;
+
+const int YKPIV_METADATA_ORIGIN_IMPORTED = 2;
+
+const int YKPIV_METADATA_PUBKEY_TAG = 4;
+
+const int YKPIV_MIN_PIN_LEN = 6;
+
+const int YKPIV_MAX_PIN_LEN = 8;
+
+const int YKPIV_MIN_MGM_KEY_LEN = 32;
+
+const int YKPIV_MAX_MGM_KEY_LEN = 64;
+
+const int YKPIV_RETRIES_DEFAULT = 3;
+
+const int YKPIV_RETRIES_MAX = 255;
+
+const int YKPIV_CERTINFO_UNCOMPRESSED = 0;
+
+const int YKPIV_CERTINFO_GZIP = 1;
+
+const String YKPIV_OID_FIRMWARE_VERSION = '1.3.6.1.4.1.41482.3.3';
+
+const String YKPIV_OID_SERIAL_NUMBER = '1.3.6.1.4.1.41482.3.7';
+
+const String YKPIV_OID_USAGE_POLICY = '1.3.6.1.4.1.41482.3.8';
+
+const String YKPIV_OID_FORM_FACTOR = '1.3.6.1.4.1.41482.3.9';
+
+const String YKPIV_ATR_NEO_R3 = '\x3B\xFC\x13';
+
+const String YKPIV_ATR_NEO_R3_NFC =
+    '\x3B\x8C\x80\x01\x59\x75\x62\x69\x6B\x65\x79\x4E\x45\x4F\x72\x33\x58';
+
+const String YKPIV_ATR_YK4 = '\x3B\xF8\x13';
+
+const String YKPIV_ATR_YK5_P1 = '\x3B\xF8\x13';
+
+const String YKPIV_ATR_YK5 = '\x3B\xFD\x13';
+
+const String YKPIV_ATR_YK5_NFC =
+    '\x3B\x8D\x80\x01\x80\x73\xC0\x21\xC0\x57\x59\x75\x62\x69\x4B\x65\x79\xF9';
+
+const int DEVTYPE_UNKNOWN = 0;
+
+const int DEVTYPE_NEO = 1313144832;
+
+const int DEVTYPE_YK = 1498087424;
+
+const int DEVTYPE_NEOr3 = 1313174067;
+
+const int DEVTYPE_YK4 = 1498087476;
+
+const int DEVTYPE_YK5 = 1498087477;
+
+const int DEVYTPE_YK5 = 1498087477;
+
+const int DES_LEN_DES = 8;
+
+const int DES_LEN_3DES = 24;
+
+const int READER_LEN = 32;
+
+const int MAX_READERS = 16;
+
+const int CB_OBJ_MAX_NEO = 2039;
+
+const int CB_OBJ_MAX_YK4 = 3063;
+
+const int CB_OBJ_MAX = 3063;
+
+const int CB_BUF_MAX_NEO = 2048;
+
+const int CB_BUF_MAX_YK4 = 3072;
+
+const int CB_BUF_MAX = 3072;
+
+const int CB_ATR_MAX = 33;
+
+const int CHREF_ACT_CHANGE_PIN = 0;
+
+const int CHREF_ACT_UNBLOCK_PIN = 1;
+
+const int CHREF_ACT_CHANGE_PUK = 2;
+
+const int TAG_ADMIN = 128;
+
+const int TAG_ADMIN_FLAGS_1 = 129;
+
+const int TAG_ADMIN_SALT = 130;
+
+const int TAG_ADMIN_TIMESTAMP = 131;
+
+const int TAG_PROTECTED = 136;
+
+const int TAG_PROTECTED_FLAGS_1 = 129;
+
+const int TAG_PROTECTED_MGM = 137;
+
+const int TAG_MSCMAP = 129;
+
+const int TAG_MSROOTS_END = 130;
+
+const int TAG_MSROOTS_MID = 131;
+
+const int TAG_RSA_MODULUS = 129;
+
+const int TAG_RSA_EXP = 130;
+
+const int TAG_ECC_POINT = 134;
+
+const int CB_ECC_POINTP256 = 65;
+
+const int CB_ECC_POINTP384 = 97;
+
+const int CB_ECC_POINT25519 = 32;
+
+const int YKPIV_OBJ_ADMIN_DATA = 6291200;
+
+const int YKPIV_OBJ_MSCMAP = 6291216;
+
+const int YKPIV_OBJ_MSROOTS1 = 6291217;
+
+const int YKPIV_OBJ_MSROOTS2 = 6291218;
+
+const int YKPIV_OBJ_MSROOTS3 = 6291219;
+
+const int YKPIV_OBJ_MSROOTS4 = 6291220;
+
+const int YKPIV_OBJ_MSROOTS5 = 6291221;
+
+const int ADMIN_FLAGS_1_PUK_BLOCKED = 1;
+
+const int ADMIN_FLAGS_1_PROTECTED_MGM = 2;
+
+const int CB_ADMIN_SALT = 16;
+
+const int CB_ADMIN_TIMESTAMP = 4;
+
+const int ITER_MGM_PBKDF2 = 10000;
+
+const int PROTECTED_FLAGS_1_PUK_NOBLOCK = 1;
+
+const int CB_OBJ_TAG_MIN = 2;
+
+const int CB_OBJ_TAG_MAX = 4;
+
+const int CB_PIN_MAX = 8;
+
+const int __STDC_WANT_LIB_EXT1__ = 1;
