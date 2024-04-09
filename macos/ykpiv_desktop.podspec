@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   To use yubikey with flutter apps.
                        DESC
   s.homepage         = 'http://example.com'
-  s.license          = { :file => '../yubico-piv-tool/COPYING' }
+  s.license          = {  :type => 'MIT', :file => '../yubico-piv-tool/COPYING' }
   s.author           = { 'Inkan.link' => 'contact@inkan.link' }
 
   # This will ensure the source files in Classes/ are included in the native
@@ -31,7 +31,7 @@ Pod::Spec.new do |s|
 
   #s.public_header_files = 'target/include/ykpiv/*.h'
   s.library = "ykpiv"
-  s.vendored_libraries = 'target/lib/libykpiv*.dylib'
+  s.vendored_libraries = 'target/lib/libykpiv.a' ,'target/lib/libykpiv.dylib' , 'target/lib/libykpiv.2.dylib', 'target/lib/libykpiv.2.5.1.dylib'
   s.resources = 'target/lib/libykpiv*.dylib'
   s.platform = :osx, '13.01'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }

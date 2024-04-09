@@ -13,8 +13,9 @@ Of course <https://docs.flutter.dev/platform-integration/macos/c-interop> but no
 
 Check this for macos: <https://stackoverflow.com/questions/29972626/how-to-change-the-library-path-in-cmake-mac-osx>
 
+Podspec reference: <https://guides.cocoapods.org/syntax/podspec.html#group_multi_platform_support>
 
-# Validate podspec
+## Validate podspec
 
 To validate podspec use ```pod lib lint```
 
