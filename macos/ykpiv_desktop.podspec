@@ -5,27 +5,35 @@
 Pod::Spec.new do |s|
   s.name             = 'ykpiv_desktop'
   s.version          = '0.0.1'
-  s.summary          = 'A new Flutter FFI plugin project.'
+  s.summary          = 'A Flutter FFI plugin for yubico-piv-tool .'
   s.description      = <<-DESC
-A new Flutter FFI plugin project.
+  A Flutter FFI plugin for yubico-piv-tool on desktop macos and windows only
+  To use yubikey with flutter apps.
                        DESC
   s.homepage         = 'http://example.com'
-  s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'email@example.com' }
+  s.license          = { :file => '../yubico-piv-tool/COPYING' }
+  s.author           = { 'Inkan.link' => 'contact@inkan.link' }
 
   # This will ensure the source files in Classes/ are included in the native
   # builds of apps using this FFI plugin. Podspec does not support relative
   # paths, so Classes contains a forwarder C file that relatively imports
   # `../src/*` so that the C sources can be shared among all target platforms.
-  s.source           = { :path => '.' }
-  s.source_files     = 'Classes/**/*'
+ 
+  s.source           = { :git => 'https://github.com/Yubico/yubico-piv-tool.git'}
+  #s.source_files  = 'Classes/lib/*.{c,h}' , 'Classes/common/*.{c,h}'
   s.dependency 'FlutterMacOS'
   s.prepare_command = <<-CMD
-                        cd ../yubico-piv-tool 
-                        cmake . -DOPENSSL_STATIC_LINK=ON -DCMAKE_INSTALL_PREFIX=./target/ 
+                        echo $PWD
+                        cd ../yubico-piv-tool/
+                        cmake  . -DOPENSSL_STATIC_LINK=ON -DCMAKE_INSTALL_PREFIX=../macos/target/ 
                         make install
                    CMD
-  s.platform = :osx, '10.11'
+
+  #s.public_header_files = 'target/include/ykpiv/*.h'
+  s.library = "ykpiv"
+  s.vendored_libraries = 'target/lib/libykpiv*.dylib'
+  s.resources = 'target/lib/libykpiv*.dylib'
+  s.platform = :osx, '13.01'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   s.swift_version = '5.0'
 end

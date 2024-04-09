@@ -35,12 +35,12 @@ Future<int> sumAsync(int a, int b) async {
   return completer.future;
 }
 
-const String _libName = 'libykpiv';
+const String _libName = 'libykpiv.2';
 
 /// The dynamic library in which the symbols for [YkpivDesktopBindings] can be found.
 final DynamicLibrary _dylib = () {
   if (Platform.isMacOS || Platform.isIOS) {
-    return DynamicLibrary.open('$_libName.framework/$_libName.dylib');
+    return DynamicLibrary.open('$_libName.dylib');
   }
   if (Platform.isAndroid || Platform.isLinux) {
     return DynamicLibrary.open('lib$_libName.so');

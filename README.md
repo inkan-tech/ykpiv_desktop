@@ -9,8 +9,14 @@ Flutter plugin to use the yubico-piv-tool library in windows/macos
 
 - samples <https://github.com/dart-lang/sdk/blob/a496692fa27c3035cfa1a56f2ef2870560df6cc3/samples/ffi/sample_ffi_structs.dart>
 
-Of course https://docs.flutter.dev/platform-integration/macos/c-interop but not very explanatory
+Of course <https://docs.flutter.dev/platform-integration/macos/c-interop> but not very explanatory
 
+Check this for macos: <https://stackoverflow.com/questions/29972626/how-to-change-the-library-path-in-cmake-mac-osx>
+
+
+# Validate podspec
+
+To validate podspec use ```pod lib lint```
 
 ## Compile locally yubico-piv-tool
 
@@ -19,7 +25,7 @@ make install
  ```
 
 Explanation to statically link:
-https://github.com/dart-lang/sdk/issues/44126
+<https://github.com/dart-lang/sdk/issues/44126>
 
 Or:
 how to statically link a c library in flutter plugin on macos

@@ -18,7 +18,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late int sumResult;
-  late Future<int> sumAsyncResult;
 
   @override
   void initState() {
@@ -26,7 +25,6 @@ class _MyAppState extends State<MyApp> {
     final realstate = calloc<ykpiv_state>();
     Pointer<ykpiv_state> state = Pointer.fromAddress(realstate.address);
     sumResult = ykpiv_desktop.init(Pointer.fromAddress(state.address));
-    sumAsyncResult = ykpiv_desktop.sumAsync(3, 4);
   }
 
   @override
@@ -56,18 +54,6 @@ class _MyAppState extends State<MyApp> {
                   textAlign: TextAlign.center,
                 ),
                 spacerSmall,
-                FutureBuilder<int>(
-                  future: sumAsyncResult,
-                  builder: (BuildContext context, AsyncSnapshot<int> value) {
-                    final displayValue =
-                        (value.hasData) ? value.data : 'loading';
-                    return Text(
-                      'await sumAsync(3, 4) = $displayValue',
-                      style: textStyle,
-                      textAlign: TextAlign.center,
-                    );
-                  },
-                ),
               ],
             ),
           ),

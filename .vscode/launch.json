@@ -8,7 +8,7 @@
         {
             "name": "ykpiv_desktop",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",  "args": [ "--verbose"]
         },
         {
             "name": "ykpiv_desktop (profile mode)",

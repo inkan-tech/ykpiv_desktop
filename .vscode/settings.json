@@ -1,1 +1,4 @@
-{}
+{
+    "CodeGPT.apiKey": "CodeGPT Plus Beta",
+    "asciidoc.antora.enableAntoraSupport": true
+}
