@@ -17,14 +17,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late int sumResult;
+
+  late String deviceList;
 
   @override
   void initState() {
     super.initState();
-    final realstate = calloc<ykpiv_state>();
-    Pointer<ykpiv_state> state = Pointer.fromAddress(realstate.address);
-    sumResult = ykpiv_desktop.init(Pointer.fromAddress(state.address));
+    deviceList = ykpiv_desktop.YkDestop().connect();
   }
 
   @override
@@ -47,9 +46,10 @@ class _MyAppState extends State<MyApp> {
                   style: textStyle,
                   textAlign: TextAlign.center,
                 ),
+          
                 spacerSmall,
                 Text(
-                  'sum(1, 2) = $sumResult',
+                  'DeviceList = $deviceList',
                   style: textStyle,
                   textAlign: TextAlign.center,
                 ),

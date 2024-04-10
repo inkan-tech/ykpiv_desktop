@@ -33,6 +33,7 @@ Pod::Spec.new do |s|
   s.library = "ykpiv"
   s.vendored_libraries = 'target/lib/libykpiv.a' ,'target/lib/libykpiv.dylib' , 'target/lib/libykpiv.2.dylib', 'target/lib/libykpiv.2.5.1.dylib'
   s.resources = 'target/lib/libykpiv*.dylib'
+  s.preserve_paths = 'target/lib/libykpiv*'
   s.platform = :osx, '13.01'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   s.swift_version = '5.0'
