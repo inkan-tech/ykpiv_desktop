@@ -11,9 +11,9 @@ headers:
     - 'yubico-piv-tool/lib/ykpiv.h.in'    
     - 'yubico-piv-tool/lib/internal.h'
     - 'yubico-piv-tool/lib/ykpiv-config.h'
-
   include-directives:
     - 'yubico-piv-tool/lib/*.h'
+    - 'yubico-piv-tool/common/*.h'
 preamble: |
   // ignore_for_file: always_specify_types
   // ignore_for_file: camel_case_types

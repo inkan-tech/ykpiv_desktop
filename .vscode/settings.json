@@ -1,5 +1,11 @@
 {
-    "CodeGPT.apiKey": "CodeGPT Plus Beta",
+    "CodeGPT.apiKey": "Anthropic",
     "asciidoc.antora.enableAntoraSupport": true,
-    "CodeGPT.Autocomplete.provider": "CodeGPT Plus - Plus"
+    "CodeGPT.Autocomplete.provider": "CodeGPT Plus - Plus",
+    "files.associations": {
+        "util.h": "c",
+        "ykpiv.h": "c",
+        "internal.h": "c",
+        "locale": "c"
+    }
 }

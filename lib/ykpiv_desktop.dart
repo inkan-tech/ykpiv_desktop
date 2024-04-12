@@ -24,15 +24,11 @@ final DynamicLibrary _dylib = () {
 /// The bindings to the native functions in [_dylib].
 final YkpivDesktopBindings _bindings = YkpivDesktopBindings(_dylib);
 
-//Init
-int init(Pointer<ykpiv_state> state) =>
-    _bindings.ykpiv_init(Pointer.fromAddress(state.address), 1);
-// TODO implement: ykpiv_list_readers
-
 class YkDestop {
   YkDesktop() {
     // initialize an hopefully populate state structure
-    int res = _bindings.ykpiv_init(Pointer.fromAddress(stateptr.address), 1);
+    int res = _bindings.ykpiv_init_with_allocator(
+        Pointer.fromAddress(stateptr.address), 2, myallocator);
     if (res != ykpiv_rc.YKPIV_OK) {
       throw Exception('Failed to initialize ykpiv');
     } else {
@@ -46,6 +42,9 @@ class YkDestop {
       throw Exception('Failed to initialize ykpiv');
     } else {
       print('Initialized ykpiv');
+      int deviceModel = _bindings.ykpiv_util_devicemodel(stateptr);
+
+      print(" util_devicemodel at init  ${deviceModel}");
     }
   }
 
@@ -60,8 +59,8 @@ class YkDestop {
 
     int res = _bindings.ykpiv_connect(stateptr, argUtf8.cast<Char>());
     if (res == ykpiv_rc.YKPIV_OK) {
-      print("State after: ${realstate.cast<ykpiv_state>()}");
-      print("pointer after: ${argUtf8.toDartString()}");
+      print("Protocol after: ${stateptr.ref.protocol}");
+
       ffi.malloc.free(argUtf8);
     } else {
       ffi.malloc.free(argUtf8);
@@ -73,45 +72,53 @@ class YkDestop {
     for (var i = 0; i < length; i++) {
       // Get the element at the current index
       final char = stateptr.ref.reader[i];
+      if (char == 0) {
+        break;
+      }
       reader = reader + String.fromCharCode(char);
     }
     print("Before list devices state reader is ${reader}");
+    int deviceModel = _bindings.ykpiv_util_devicemodel(stateptr);
 
+    print(" util_devicemodel  ${deviceModel}");
     ////////////////////////////////////////////
-    // Now list_readers as a return
+    // Now list_keys as a return BUT HAVE MEMORY ALLOCATION ISSUES
+    Pointer<Size> sizePointer = ffi.calloc<Size>();
+    Pointer<ykpiv_key> keysdata = ffi.malloc<ykpiv_key>(30);
+    Pointer<Pointer<ykpiv_key>> keysdataPtr =
+        Pointer.fromAddress(keysdata.address);
+    Pointer<Uint8> numOfKeysPtr = ffi.calloc<Uint8>();
 
-    final Pointer<Char> resultPtr = ffi.calloc<Char>(2048);
-    final sizePointer = ffi.calloc<Size>();
+    int resListKeys = _bindings.ykpiv_util_list_keys(
+        stateptr, numOfKeysPtr, keysdataPtr, sizePointer);
 
-    int resList = _bindings.ykpiv_list_readers(
-        stateptr, resultPtr.cast<Char>(), sizePointer);
-
-    if (resList == ykpiv_rc.YKPIV_OK) {
+    if (resListKeys == ykpiv_rc.YKPIV_OK) {
+      print("Num of keys is ${numOfKeysPtr.value}");
       var length = sizePointer.value;
-      String result = "";
-      
+      print("lentgh is $length");
+
       for (var i = 0; i < length; i++) {
         // Get the element at the current index
-        final char = Pointer<Char>.fromAddress(resultPtr.address)[i];
-        result = result + String.fromCharCode(char);
+        var char = keysdata[i];
+        result = result + " || " + char.cert.toString();
       }
 
       print("list result is: ${result}");
       print("list size is: ${length}");
-      ffi.malloc.free(resultPtr);
+      ffi.malloc.free(sizePointer);
     } else {
-      ffi.malloc.free(resultPtr);
+      ffi.malloc.free(sizePointer);
       // must do that way to free the buffer before exiting.
-      throw Exception('Failed to list devices');
+      throw Exception('Failed to list devices with result: $resListKeys');
     }
 
-    return result;
+    return reader;
   }
 
   void dispose() {
     stateptr = nullptr;
   }
 
-  final realstate = ffi.calloc<ykpiv_state>();
-  late Pointer<ykpiv_state> stateptr = Pointer.fromAddress(realstate.address);
+  late Pointer<ykpiv_state> stateptr = ffi.malloc<ykpiv_state>();
+  late Pointer<ykpiv_allocator> myallocator = ffi.malloc<ykpiv_allocator>();
 }
