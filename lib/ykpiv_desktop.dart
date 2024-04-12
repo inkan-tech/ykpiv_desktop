@@ -83,11 +83,11 @@ class YkDestop {
     print(" util_devicemodel  ${deviceModel}");
     ////////////////////////////////////////////
     // Now list_keys as a return BUT HAVE MEMORY ALLOCATION ISSUES
-    Pointer<Size> sizePointer = ffi.calloc<Size>();
+    Pointer<Size> sizePointer = ffi.malloc<Size>();
     Pointer<ykpiv_key> keysdata = ffi.malloc<ykpiv_key>(30);
     Pointer<Pointer<ykpiv_key>> keysdataPtr =
         Pointer.fromAddress(keysdata.address);
-    Pointer<Uint8> numOfKeysPtr = ffi.calloc<Uint8>();
+    Pointer<Uint8> numOfKeysPtr = ffi.malloc<Uint8>();
 
     int resListKeys = _bindings.ykpiv_util_list_keys(
         stateptr, numOfKeysPtr, keysdataPtr, sizePointer);
@@ -106,8 +106,12 @@ class YkDestop {
       print("list result is: ${result}");
       print("list size is: ${length}");
       ffi.malloc.free(sizePointer);
+      ffi.malloc.free(keysdataPtr);
+      ffi.malloc.free(numOfKeysPtr);
     } else {
       ffi.malloc.free(sizePointer);
+      ffi.malloc.free(keysdataPtr);
+      ffi.malloc.free(numOfKeysPtr);
       // must do that way to free the buffer before exiting.
       throw Exception('Failed to list devices with result: $resListKeys');
     }
