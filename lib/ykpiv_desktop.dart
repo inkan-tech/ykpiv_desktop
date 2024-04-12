@@ -1,5 +1,6 @@
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart' as ffi;
 
@@ -25,19 +26,8 @@ final DynamicLibrary _dylib = () {
 final YkpivDesktopBindings _bindings = YkpivDesktopBindings(_dylib);
 
 class YkDestop {
-  YkDesktop() {
-    // initialize an hopefully populate state structure
-    int res = _bindings.ykpiv_init_with_allocator(
-        Pointer.fromAddress(stateptr.address), 2, myallocator);
-    if (res != ykpiv_rc.YKPIV_OK) {
-      throw Exception('Failed to initialize ykpiv');
-    } else {
-      print('Initialized ykpiv');
-    }
-  }
-
   void init() {
-    int res = _bindings.ykpiv_init(Pointer.fromAddress(stateptr.address), 1);
+    int res = _bindings.ykpiv_init(Pointer.fromAddress(stateptr.address), 2);
     if (res != ykpiv_rc.YKPIV_OK) {
       throw Exception('Failed to initialize ykpiv');
     } else {
@@ -65,7 +55,7 @@ class YkDestop {
     } else {
       ffi.malloc.free(argUtf8);
       // must do that way to free the buffer before exiting.
-      throw Exception('Failed to list devices');
+      throw Exception('Failed to Connect');
     }
     int length = 2048;
     String reader = "";
@@ -78,42 +68,45 @@ class YkDestop {
       reader = reader + String.fromCharCode(char);
     }
     print("Before list devices state reader is ${reader}");
-    int deviceModel = _bindings.ykpiv_util_devicemodel(stateptr);
+    Pointer<Uint32> serialPtr = ffi.malloc<Uint32>();
 
-    print(" util_devicemodel  ${deviceModel}");
+    int resSerial = _bindings.ykpiv_get_serial(stateptr, serialPtr);
+
+    print(" Get serial  ${serialPtr.value}");
+
+    print(" State serial  ${stateptr.ref.serial}");
+
     ////////////////////////////////////////////
     // Now list_keys as a return BUT HAVE MEMORY ALLOCATION ISSUES
-    Pointer<Size> sizePointer = ffi.malloc<Size>();
-    Pointer<ykpiv_key> keysdata = ffi.malloc<ykpiv_key>(30);
-    Pointer<Pointer<ykpiv_key>> keysdataPtr =
-        Pointer.fromAddress(keysdata.address);
-    Pointer<Uint8> numOfKeysPtr = ffi.malloc<Uint8>();
+    var data = List<int>.filled(80, 0);
 
-    int resListKeys = _bindings.ykpiv_util_list_keys(
-        stateptr, numOfKeysPtr, keysdataPtr, sizePointer);
+    Pointer<UnsignedChar> dataPtr = ffi.malloc<UnsignedChar>();
+    dataPtr.value = data.elementAt(0);
 
-    if (resListKeys == ykpiv_rc.YKPIV_OK) {
-      print("Num of keys is ${numOfKeysPtr.value}");
-      var length = sizePointer.value;
-      print("lentgh is $length");
+    Pointer<UnsignedLong> sizePointer = ffi.calloc<UnsignedLong>();
+    sizePointer.value = 80;
+    int resFetch09c = _bindings.ykpiv_fetch_object(
+        stateptr, YKPIV_OBJ_DISCOVERY, dataPtr, sizePointer);
+
+    if (resFetch09c == ykpiv_rc.YKPIV_OK) {
+      String dataString = Uint8List.fromList(data).toString();
+      print("data is $dataString");
 
       for (var i = 0; i < length; i++) {
         // Get the element at the current index
-        var char = keysdata[i];
-        result = result + " || " + char.cert.toString();
+        var char = dataPtr[i];
+        result = result + char.toString();
       }
 
       print("list result is: ${result}");
       print("list size is: ${length}");
       ffi.malloc.free(sizePointer);
-      ffi.malloc.free(keysdataPtr);
-      ffi.malloc.free(numOfKeysPtr);
+      ffi.malloc.free(dataPtr);
     } else {
       ffi.malloc.free(sizePointer);
-      ffi.malloc.free(keysdataPtr);
-      ffi.malloc.free(numOfKeysPtr);
+      ffi.malloc.free(dataPtr);
       // must do that way to free the buffer before exiting.
-      throw Exception('Failed to list devices with result: $resListKeys');
+      throw Exception('Failed to list devices with result: $resFetch09c');
     }
 
     return reader;
@@ -123,6 +116,6 @@ class YkDestop {
     stateptr = nullptr;
   }
 
-  late Pointer<ykpiv_state> stateptr = ffi.malloc<ykpiv_state>();
-  late Pointer<ykpiv_allocator> myallocator = ffi.malloc<ykpiv_allocator>();
+  late Pointer<ykpiv_state> stateptr = ffi.calloc<ykpiv_state>();
+  late Pointer<ykpiv_allocator> myallocator = ffi.calloc<ykpiv_allocator>();
 }
