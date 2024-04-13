@@ -2334,6 +2334,372 @@ class YkpivDesktopBindings {
   late final __ykpiv_debug = __ykpiv_debugPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>, int, ffi.Pointer<ffi.Char>, int,
           ffi.Pointer<ffi.Char>)>();
+
+  int read_data(
+    ffi.Pointer<ffi.UnsignedChar> arg0,
+    int arg1,
+    ffi.Pointer<FILE> arg2,
+    int arg3,
+  ) {
+    return _read_data(
+      arg0,
+      arg1,
+      arg2,
+      arg3,
+    );
+  }
+
+  late final _read_dataPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Size Function(ffi.Pointer<ffi.UnsignedChar>, ffi.Size,
+              ffi.Pointer<FILE>, ffi.Int32)>>('read_data');
+  late final _read_data = _read_dataPtr.asFunction<
+      int Function(
+          ffi.Pointer<ffi.UnsignedChar>, int, ffi.Pointer<FILE>, int)>();
+
+  void dump_data(
+    ffi.Pointer<ffi.UnsignedChar> arg0,
+    int arg1,
+    ffi.Pointer<FILE> arg2,
+    bool arg3,
+    int arg4,
+  ) {
+    return _dump_data(
+      arg0,
+      arg1,
+      arg2,
+      arg3,
+      arg4,
+    );
+  }
+
+  late final _dump_dataPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.UnsignedChar>, ffi.UnsignedInt,
+              ffi.Pointer<FILE>, ffi.Bool, ffi.Int32)>>('dump_data');
+  late final _dump_data = _dump_dataPtr.asFunction<
+      void Function(
+          ffi.Pointer<ffi.UnsignedChar>, int, ffi.Pointer<FILE>, bool, int)>();
+
+  int get_length_size(
+    int arg0,
+  ) {
+    return _get_length_size(
+      arg0,
+    );
+  }
+
+  late final _get_length_sizePtr =
+      _lookup<ffi.NativeFunction<ffi.UnsignedLong Function(ffi.UnsignedLong)>>(
+          'get_length_size');
+  late final _get_length_size =
+      _get_length_sizePtr.asFunction<int Function(int)>();
+
+  int set_length(
+    ffi.Pointer<ffi.UnsignedChar> arg0,
+    int arg1,
+  ) {
+    return _set_length(
+      arg0,
+      arg1,
+    );
+  }
+
+  late final _set_lengthPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.UnsignedLong Function(
+              ffi.Pointer<ffi.UnsignedChar>, ffi.UnsignedLong)>>('set_length');
+  late final _set_length = _set_lengthPtr
+      .asFunction<int Function(ffi.Pointer<ffi.UnsignedChar>, int)>();
+
+  int get_length(
+    ffi.Pointer<ffi.UnsignedChar> arg0,
+    ffi.Pointer<ffi.UnsignedChar> arg1,
+    ffi.Pointer<ffi.UnsignedLong> arg2,
+  ) {
+    return _get_length(
+      arg0,
+      arg1,
+      arg2,
+    );
+  }
+
+  late final _get_lengthPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.UnsignedLong Function(
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Pointer<ffi.UnsignedLong>)>>('get_length');
+  late final _get_length = _get_lengthPtr.asFunction<
+      int Function(ffi.Pointer<ffi.UnsignedChar>, ffi.Pointer<ffi.UnsignedChar>,
+          ffi.Pointer<ffi.UnsignedLong>)>();
+
+  int get_curve_name(
+    int arg0,
+  ) {
+    return _get_curve_name(
+      arg0,
+    );
+  }
+
+  late final _get_curve_namePtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Int)>>('get_curve_name');
+  late final _get_curve_name =
+      _get_curve_namePtr.asFunction<int Function(int)>();
+
+  ffi.Pointer<X509_NAME> parse_name(
+    ffi.Pointer<ffi.Char> arg0,
+  ) {
+    return _parse_name(
+      arg0,
+    );
+  }
+
+  late final _parse_namePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<X509_NAME> Function(
+              ffi.Pointer<ffi.Char>)>>('parse_name');
+  late final _parse_name = _parse_namePtr
+      .asFunction<ffi.Pointer<X509_NAME> Function(ffi.Pointer<ffi.Char>)>();
+
+  int get_algorithm(
+    ffi.Pointer<EVP_PKEY> arg0,
+  ) {
+    return _get_algorithm(
+      arg0,
+    );
+  }
+
+  late final _get_algorithmPtr = _lookup<
+          ffi.NativeFunction<ffi.UnsignedChar Function(ffi.Pointer<EVP_PKEY>)>>(
+      'get_algorithm');
+  late final _get_algorithm =
+      _get_algorithmPtr.asFunction<int Function(ffi.Pointer<EVP_PKEY>)>();
+
+  ffi.Pointer<FILE> open_file(
+    ffi.Pointer<ffi.Char> file_name,
+    int mode,
+  ) {
+    return _open_file(
+      file_name,
+      mode,
+    );
+  }
+
+  late final _open_filePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<FILE> Function(
+              ffi.Pointer<ffi.Char>, ffi.Int32)>>('open_file');
+  late final _open_file = _open_filePtr
+      .asFunction<ffi.Pointer<FILE> Function(ffi.Pointer<ffi.Char>, int)>();
+
+  int get_slot_hex(
+    int slot_enum,
+  ) {
+    return _get_slot_hex(
+      slot_enum,
+    );
+  }
+
+  late final _get_slot_hexPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Int32)>>('get_slot_hex');
+  late final _get_slot_hex = _get_slot_hexPtr.asFunction<int Function(int)>();
+
+  bool set_component(
+    ffi.Pointer<ffi.UnsignedChar> in_ptr,
+    ffi.Pointer<BIGNUM> bn,
+    int element_len,
+  ) {
+    return _set_component(
+      in_ptr,
+      bn,
+      element_len,
+    );
+  }
+
+  late final _set_componentPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Bool Function(ffi.Pointer<ffi.UnsignedChar>, ffi.Pointer<BIGNUM>,
+              ffi.Int)>>('set_component');
+  late final _set_component = _set_componentPtr.asFunction<
+      bool Function(ffi.Pointer<ffi.UnsignedChar>, ffi.Pointer<BIGNUM>, int)>();
+
+  bool prepare_rsa_signature(
+    ffi.Pointer<ffi.UnsignedChar> arg0,
+    int arg1,
+    ffi.Pointer<ffi.UnsignedChar> arg2,
+    ffi.Pointer<ffi.UnsignedInt> arg3,
+    int arg4,
+  ) {
+    return _prepare_rsa_signature(
+      arg0,
+      arg1,
+      arg2,
+      arg3,
+      arg4,
+    );
+  }
+
+  late final _prepare_rsa_signaturePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Bool Function(
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.UnsignedInt,
+              ffi.Pointer<ffi.UnsignedChar>,
+              ffi.Pointer<ffi.UnsignedInt>,
+              ffi.Int)>>('prepare_rsa_signature');
+  late final _prepare_rsa_signature = _prepare_rsa_signaturePtr.asFunction<
+      bool Function(ffi.Pointer<ffi.UnsignedChar>, int,
+          ffi.Pointer<ffi.UnsignedChar>, ffi.Pointer<ffi.UnsignedInt>, int)>();
+
+  bool read_pw(
+    ffi.Pointer<ffi.Char> arg0,
+    ffi.Pointer<ffi.Char> arg1,
+    int arg2,
+    int arg3,
+    int arg4,
+  ) {
+    return _read_pw(
+      arg0,
+      arg1,
+      arg2,
+      arg3,
+      arg4,
+    );
+  }
+
+  late final _read_pwPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Bool Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Size, ffi.Int, ffi.Int)>>('read_pw');
+  late final _read_pw = _read_pwPtr.asFunction<
+      bool Function(
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int, int, int)>();
+
+  ffi.Pointer<EVP_MD> get_hash(
+    int arg0,
+    ffi.Pointer<ffi.Pointer<ffi.UnsignedChar>> arg1,
+    ffi.Pointer<ffi.Size> arg2,
+  ) {
+    return _get_hash(
+      arg0,
+      arg1,
+      arg2,
+    );
+  }
+
+  late final _get_hashPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<EVP_MD> Function(
+              ffi.Int32,
+              ffi.Pointer<ffi.Pointer<ffi.UnsignedChar>>,
+              ffi.Pointer<ffi.Size>)>>('get_hash');
+  late final _get_hash = _get_hashPtr.asFunction<
+      ffi.Pointer<EVP_MD> Function(int,
+          ffi.Pointer<ffi.Pointer<ffi.UnsignedChar>>, ffi.Pointer<ffi.Size>)>();
+
+  int get_hashnid(
+    int arg0,
+    int arg1,
+  ) {
+    return _get_hashnid(
+      arg0,
+      arg1,
+    );
+  }
+
+  late final _get_hashnidPtr = _lookup<
+          ffi.NativeFunction<ffi.Int Function(ffi.Int32, ffi.UnsignedChar)>>(
+      'get_hashnid');
+  late final _get_hashnid =
+      _get_hashnidPtr.asFunction<int Function(int, int)>();
+
+  int get_piv_algorithm(
+    int arg0,
+  ) {
+    return _get_piv_algorithm(
+      arg0,
+    );
+  }
+
+  late final _get_piv_algorithmPtr =
+      _lookup<ffi.NativeFunction<ffi.UnsignedChar Function(ffi.Int32)>>(
+          'get_piv_algorithm');
+  late final _get_piv_algorithm =
+      _get_piv_algorithmPtr.asFunction<int Function(int)>();
+
+  int get_pin_policy(
+    int arg0,
+  ) {
+    return _get_pin_policy(
+      arg0,
+    );
+  }
+
+  late final _get_pin_policyPtr =
+      _lookup<ffi.NativeFunction<ffi.UnsignedChar Function(ffi.Int32)>>(
+          'get_pin_policy');
+  late final _get_pin_policy =
+      _get_pin_policyPtr.asFunction<int Function(int)>();
+
+  int get_touch_policy(
+    int arg0,
+  ) {
+    return _get_touch_policy(
+      arg0,
+    );
+  }
+
+  late final _get_touch_policyPtr =
+      _lookup<ffi.NativeFunction<ffi.UnsignedChar Function(ffi.Int32)>>(
+          'get_touch_policy');
+  late final _get_touch_policy =
+      _get_touch_policyPtr.asFunction<int Function(int)>();
+
+  int SSH_write_X509(
+    ffi.Pointer<FILE> fp,
+    ffi.Pointer<X509> x,
+  ) {
+    return _SSH_write_X509(
+      fp,
+      x,
+    );
+  }
+
+  late final _SSH_write_X509Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int Function(
+              ffi.Pointer<FILE>, ffi.Pointer<X509>)>>('SSH_write_X509');
+  late final _SSH_write_X509 = _SSH_write_X509Ptr.asFunction<
+      int Function(ffi.Pointer<FILE>, ffi.Pointer<X509>)>();
+
+  bool is_rsa_key_algorithm(
+    int arg0,
+  ) {
+    return _is_rsa_key_algorithm(
+      arg0,
+    );
+  }
+
+  late final _is_rsa_key_algorithmPtr =
+      _lookup<ffi.NativeFunction<ffi.Bool Function(ffi.UnsignedChar)>>(
+          'is_rsa_key_algorithm');
+  late final _is_rsa_key_algorithm =
+      _is_rsa_key_algorithmPtr.asFunction<bool Function(int)>();
+
+  bool is_ec_key_algorithm(
+    int arg0,
+  ) {
+    return _is_ec_key_algorithm(
+      arg0,
+    );
+  }
+
+  late final _is_ec_key_algorithmPtr =
+      _lookup<ffi.NativeFunction<ffi.Bool Function(ffi.UnsignedChar)>>(
+          'is_ec_key_algorithm');
+  late final _is_ec_key_algorithm =
+      _is_ec_key_algorithmPtr.asFunction<bool Function(int)>();
 }
 
 final class ykpiv_state extends ffi.Struct {
@@ -2655,6 +3021,181 @@ abstract class _yc_log_level_t {
   static const int YC_LOG_LEVEL_VERBOSE = 3;
   static const int YC_LOG_LEVEL_DEBUG = 4;
 }
+
+abstract class file_mode {
+  static const int INPUT_TEXT = 0;
+  static const int OUTPUT_TEXT = 1;
+  static const int INPUT_BIN = 2;
+  static const int OUTPUT_BIN = 3;
+}
+
+typedef FILE = __sFILE;
+
+final class __sFILE extends ffi.Struct {
+  external ffi.Pointer<ffi.UnsignedChar> _p;
+
+  @ffi.Int()
+  external int _r;
+
+  @ffi.Int()
+  external int _w;
+
+  @ffi.Short()
+  external int _flags;
+
+  @ffi.Short()
+  external int _file;
+
+  external __sbuf _bf;
+
+  @ffi.Int()
+  external int _lbfsize;
+
+  external ffi.Pointer<ffi.Void> _cookie;
+
+  external ffi
+      .Pointer<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Void>)>>
+      _close;
+
+  external ffi.Pointer<
+      ffi.NativeFunction<
+          ffi.Int Function(
+              ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Char>, ffi.Int)>> _read;
+
+  external ffi.Pointer<
+      ffi.NativeFunction<
+          fpos_t Function(ffi.Pointer<ffi.Void>, fpos_t, ffi.Int)>> _seek;
+
+  external ffi.Pointer<
+      ffi.NativeFunction<
+          ffi.Int Function(
+              ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Char>, ffi.Int)>> _write;
+
+  external __sbuf _ub;
+
+  external ffi.Pointer<__sFILEX> _extra;
+
+  @ffi.Int()
+  external int _ur;
+
+  @ffi.Array.multi([3])
+  external ffi.Array<ffi.UnsignedChar> _ubuf;
+
+  @ffi.Array.multi([1])
+  external ffi.Array<ffi.UnsignedChar> _nbuf;
+
+  external __sbuf _lb;
+
+  @ffi.Int()
+  external int _blksize;
+
+  @fpos_t()
+  external int _offset;
+}
+
+final class __sbuf extends ffi.Struct {
+  external ffi.Pointer<ffi.UnsignedChar> _base;
+
+  @ffi.Int()
+  external int _size;
+}
+
+typedef fpos_t = __darwin_off_t;
+typedef __darwin_off_t = __int64_t;
+typedef __int64_t = ffi.LongLong;
+typedef Dart__int64_t = int;
+
+final class __sFILEX extends ffi.Opaque {}
+
+abstract class enum_format {
+  static const int format__NULL = -1;
+  static const int format_arg_hex = 0;
+  static const int format_arg_base64 = 1;
+  static const int format_arg_binary = 2;
+}
+
+typedef X509_NAME = X509_name_st;
+
+final class X509_name_st extends ffi.Opaque {}
+
+typedef EVP_PKEY = evp_pkey_st;
+
+final class evp_pkey_st extends ffi.Opaque {}
+
+abstract class enum_slot {
+  static const int slot__NULL = -1;
+  static const int slot_arg_9a = 0;
+  static const int slot_arg_9c = 1;
+  static const int slot_arg_9d = 2;
+  static const int slot_arg_9e = 3;
+  static const int slot_arg_82 = 4;
+  static const int slot_arg_83 = 5;
+  static const int slot_arg_84 = 6;
+  static const int slot_arg_85 = 7;
+  static const int slot_arg_86 = 8;
+  static const int slot_arg_87 = 9;
+  static const int slot_arg_88 = 10;
+  static const int slot_arg_89 = 11;
+  static const int slot_arg_8a = 12;
+  static const int slot_arg_8b = 13;
+  static const int slot_arg_8c = 14;
+  static const int slot_arg_8d = 15;
+  static const int slot_arg_8e = 16;
+  static const int slot_arg_8f = 17;
+  static const int slot_arg_90 = 18;
+  static const int slot_arg_91 = 19;
+  static const int slot_arg_92 = 20;
+  static const int slot_arg_93 = 21;
+  static const int slot_arg_94 = 22;
+  static const int slot_arg_95 = 23;
+  static const int slot_arg_f9 = 24;
+}
+
+typedef BIGNUM = bignum_st;
+
+final class bignum_st extends ffi.Opaque {}
+
+typedef EVP_MD = evp_md_st;
+
+final class evp_md_st extends ffi.Opaque {}
+
+abstract class enum_hash {
+  static const int hash__NULL = -1;
+  static const int hash_arg_SHA1 = 0;
+  static const int hash_arg_SHA256 = 1;
+  static const int hash_arg_SHA384 = 2;
+  static const int hash_arg_SHA512 = 3;
+}
+
+abstract class enum_algorithm {
+  static const int algorithm__NULL = -1;
+  static const int algorithm_arg_RSA1024 = 0;
+  static const int algorithm_arg_RSA2048 = 1;
+  static const int algorithm_arg_RSA3072 = 2;
+  static const int algorithm_arg_RSA4096 = 3;
+  static const int algorithm_arg_ECCP256 = 4;
+  static const int algorithm_arg_ECCP384 = 5;
+  static const int algorithm_arg_ED25519 = 6;
+  static const int algorithm_arg_X25519 = 7;
+}
+
+abstract class enum_pin_policy {
+  static const int pin_policy__NULL = -1;
+  static const int pin_policy_arg_never = 0;
+  static const int pin_policy_arg_once = 1;
+  static const int pin_policy_arg_always = 2;
+}
+
+abstract class enum_touch_policy {
+  static const int touch_policy__NULL = -1;
+  static const int touch_policy_arg_never = 0;
+  static const int touch_policy_arg_always = 1;
+  static const int touch_policy_arg_cached = 2;
+}
+
+typedef X509 = x509_st;
+
+final class x509_st extends ffi.Opaque {}
 
 const String YKPIV_VERSION_STRING = '2.5.1';
 
