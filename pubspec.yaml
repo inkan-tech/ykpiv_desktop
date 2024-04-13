@@ -1,5 +1,5 @@
 name: ykpiv_desktop
-description: "A new Flutter FFI plugin project."
+description: "A plugin for desktop to use Yubikeys PIV."
 version: 0.0.1
 homepage: https://github.com/inkan-tech/ykpiv_desktop
 
@@ -12,7 +12,7 @@ dependencies:
     sdk: flutter
   plugin_platform_interface: ^2.1.8
   ffi: ^2.1.2
-  ref: ^0.0.3
+
 dev_dependencies:
   ffigen: ^11.0.0
   flutter_test:

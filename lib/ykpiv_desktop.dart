@@ -78,20 +78,25 @@ class YkDestop {
 
     ////////////////////////////////////////////
     // Now list_keys as a return BUT HAVE MEMORY ALLOCATION ISSUES
-    var data = List<int>.filled(80, 0);
 
-    Pointer<UnsignedChar> dataPtr = ffi.malloc<UnsignedChar>();
-    dataPtr.value = data.elementAt(0);
+    int reqlength = 254;
+    Array<Uint8> data = Array<Uint8>.multi(List<int>.filled(reqlength, 0));
 
-    Pointer<UnsignedLong> sizePointer = ffi.calloc<UnsignedLong>();
-    sizePointer.value = 80;
-    int resFetch09c = _bindings.ykpiv_fetch_object(
-        stateptr, YKPIV_OBJ_DISCOVERY, dataPtr, sizePointer);
+    Pointer<ykpiv_key> dataPtr = ffi.malloc<ykpiv_key>();
+    dataPtr.ref.cert = data;
+    dataPtr.ref.cert_len = reqlength;
+    dataPtr.ref.slot = YKPIV_KEY_AUTHENTICATION;
+
+    Pointer<Size> sizePointer = ffi.calloc<Size>();
+    sizePointer.value = reqlength;
+
+    Pointer<Uint8> numOfKeysPtr = ffi.calloc<Uint8>();
+    numOfKeysPtr.value = 1;
+
+    int resFetch09c = _bindings.ykpiv_util_list_keys(stateptr, numOfKeysPtr,
+        Pointer.fromAddress(dataPtr.address), sizePointer);
 
     if (resFetch09c == ykpiv_rc.YKPIV_OK) {
-      String dataString = Uint8List.fromList(data).toString();
-      print("data is $dataString");
-
       for (var i = 0; i < length; i++) {
         // Get the element at the current index
         var char = dataPtr[i];
