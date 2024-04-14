@@ -93,10 +93,10 @@ class YkDestop {
 
     Pointer<ykpiv_key> dataPtr = ffi.calloc<ykpiv_key>();
 
-    int bufferOutSize = 2048;
+    int bufferOutSize = 512;
     Pointer<Size> sizePointer = ffi.malloc<Size>()..value = bufferOutSize;
 
-    String stringToSign = "x32su4vsTCstCDzMrr3CXkLuiMvJYyYjFZqSShYB6      7W";
+    String stringToSign = "Hello";
     var buffer_in = stringToSign.toNativeUtf8().cast<UnsignedChar>();
     // Allocate memory for the unsigned char buffer
 
@@ -118,26 +118,43 @@ class YkDestop {
       for (var i = 0; i < sizePointer.value; i++) {
         // Get the element at the current index
         var char = buffer_out[i];
-        result = result + char.toString();
+        result = result + String.fromCharCode(char);
       }
 
       print(" result is: ${result}");
-
-      print(" result is: ${buffer_out.toString()}");
-
-      ffi.malloc.free(dataPtr);
-      ffi.malloc.free(buffer_out);
-      ffi.malloc.free(buffer_in);
     } else {
       ffi.malloc.free(dataPtr);
-
-      ffi.malloc.free(buffer_out);
+      ffi.malloc.free(sizePointer);
       ffi.malloc.free(buffer_in);
       // must do that way to free the buffer before exiting.
       checkErrorCode(resultSignData);
+
       print('Failed to sign data num: $resultSignData');
     }
 
+    print('');
+    print('###    decipher  ####');
+    ////// Try to decipher now
+    var buffer_in2 = result.toNativeUtf8().cast<UnsignedChar>();
+    Pointer<UnsignedChar> buffer_out2 =
+        ffi.calloc<Uint8>(bufferOutSize) as Pointer<UnsignedChar>;
+    Pointer<Size> sizePointer2 = ffi.malloc<Size>()..value;
+
+    // Allocate memory for the unsigned char buffer
+    int resultDecipher = _bindings.ykpiv_decipher_data(
+        stateptr,
+        buffer_in2,
+        buffer_in2.value.bitLength,
+        buffer_out2,
+        sizePointer2,
+        YKPIV_ALGO_ECCP256,
+        0x9d);
+
+    checkErrorCode(resultDecipher);
+    ffi.malloc.free(dataPtr);
+    ffi.malloc.free(buffer_out);
+    ffi.malloc.free(buffer_in);
+    ffi.malloc.free(sizePointer);
     return reader;
   }
 
