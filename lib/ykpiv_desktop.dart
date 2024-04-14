@@ -27,7 +27,8 @@ final YkpivDesktopBindings _bindings = YkpivDesktopBindings(_dylib);
 
 class YkDestop {
   void init() {
-    int res = _bindings.ykpiv_init(Pointer.fromAddress(stateptr.address), 2);
+    int res = _bindings.ykpiv_init(Pointer.fromAddress(stateptr.address), 12);
+    checkErrorCode(res);
     if (res != ykpiv_rc.YKPIV_OK) {
       throw Exception('Failed to initialize ykpiv');
     } else {
@@ -48,9 +49,8 @@ class YkDestop {
     print(argUtf8.toDartString());
 
     int res = _bindings.ykpiv_connect(stateptr, argUtf8.cast<Char>());
-    if (res == ykpiv_rc.YKPIV_OK) {
-      print("Protocol after: ${stateptr.ref.protocol}");
 
+    if (res == ykpiv_rc.YKPIV_OK) {
       ffi.malloc.free(argUtf8);
     } else {
       ffi.malloc.free(argUtf8);
@@ -76,48 +76,88 @@ class YkDestop {
 
     print(" State serial  ${stateptr.ref.serial}");
 
-    ////////////////////////////////////////////
-    // Now list_keys as a return BUT HAVE MEMORY ALLOCATION ISSUES
-
-    int reqlength = 24;
-
-    Array<Uint8> data = const Array<Uint8>.multi([1]);
-
-    Pointer<ykpiv_key> dataPtr = ffi.malloc<ykpiv_key>();
-    dataPtr.ref.cert = data;
-    dataPtr.ref.cert_len = reqlength;
-    dataPtr.ref.slot = YKPIV_KEY_AUTHENTICATION;
-
-    Pointer<Size> sizePointer = ffi.calloc<Size>();
-    sizePointer.value = reqlength;
-
     Pointer<Int> numOfTriesPtr = ffi.calloc<Int>();
     numOfTriesPtr.value = 3;
-    String pin = "117334";
+
+    // set the pin
+    String pin = "123456";
     final Pointer<ffi.Utf8> pinUtf8 = pin.toNativeUtf8();
+    stateptr.ref.pin = pinUtf8.cast<Char>();
+    int statepin = stateptr.ref.pin.value;
+    print("pin after: $statepin");
+    int resultVerify =
+        _bindings.ykpiv_verify(stateptr, pinUtf8.cast(), numOfTriesPtr);
+    checkErrorCode(resultVerify);
+    ////////////////////////////////
+    ////////////////////////////////////////////
 
-    int resFetch09c =
-        _bindings.ykpiv_verify(stateptr, pinUtf8.cast<Char>(), numOfTriesPtr);
+    Pointer<ykpiv_key> dataPtr = ffi.calloc<ykpiv_key>();
 
-    if (resFetch09c == ykpiv_rc.YKPIV_OK) {
-      for (var i = 0; i < length; i++) {
+    int bufferOutSize = 2048;
+    Pointer<Size> sizePointer = ffi.malloc<Size>()..value = bufferOutSize;
+
+    String stringToSign = "x32su4vsTCstCDzMrr3CXkLuiMvJYyYjFZqSShYB6      7W";
+    var buffer_in = stringToSign.toNativeUtf8().cast<UnsignedChar>();
+    // Allocate memory for the unsigned char buffer
+
+    Pointer<UnsignedChar> buffer_out =
+        ffi.calloc<Uint8>(bufferOutSize) as Pointer<UnsignedChar>;
+
+    int resultSignData = _bindings.ykpiv_sign_data(
+        stateptr,
+        buffer_in,
+        buffer_in.value.bitLength,
+        buffer_out,
+        sizePointer,
+        YKPIV_ALGO_ECCP256,
+        0x9d);
+    print("return code string is : ${ykcodeToError(resultSignData)}");
+
+    if (resultSignData == ykpiv_rc.YKPIV_OK) {
+      result = "";
+      for (var i = 0; i < sizePointer.value; i++) {
         // Get the element at the current index
-        var char = dataPtr[i];
+        var char = buffer_out[i];
         result = result + char.toString();
       }
 
-      print("NumofTries result is: ${numOfTriesPtr.value}");
-      print("list size is: ${length}");
-      ffi.malloc.free(sizePointer);
+      print(" result is: ${result}");
+
+      print(" result is: ${buffer_out.toString()}");
+
       ffi.malloc.free(dataPtr);
+      ffi.malloc.free(buffer_out);
+      ffi.malloc.free(buffer_in);
     } else {
-      ffi.malloc.free(sizePointer);
       ffi.malloc.free(dataPtr);
+
+      ffi.malloc.free(buffer_out);
+      ffi.malloc.free(buffer_in);
       // must do that way to free the buffer before exiting.
-      throw Exception('Failed to list devices with result: $resFetch09c');
+      checkErrorCode(resultSignData);
+      print('Failed to sign data num: $resultSignData');
     }
 
     return reader;
+  }
+
+  void checkErrorCode(int ykpiv_rc) {
+    print("Ykpic fonction return code was: ${ykcodeToError(ykpiv_rc)}");
+  }
+
+  String ykcodeToError(int ykpiv_rc) {
+    Pointer<Char> resultPtr = _bindings.ykpiv_strerror(ykpiv_rc);
+    String result = "";
+    for (var i = 0; i < 2048; i++) {
+      // Get the element at the current index
+      final char = resultPtr[i];
+      if (char == 0) {
+        break;
+      }
+      result = result + String.fromCharCode(char);
+    }
+    //ffi.malloc.free(resultPtr);
+    return result;
   }
 
   void dispose() {
@@ -125,5 +165,4 @@ class YkDestop {
   }
 
   late Pointer<ykpiv_state> stateptr = ffi.calloc<ykpiv_state>();
-  late Pointer<ykpiv_allocator> myallocator = ffi.calloc<ykpiv_allocator>();
 }
