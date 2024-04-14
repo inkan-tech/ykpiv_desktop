@@ -10,7 +10,6 @@ headers:
     - 'yubico-piv-tool/lib/ykpiv.h'
     - 'yubico-piv-tool/lib/ykpiv.h.in'    
     - 'yubico-piv-tool/lib/internal.h'
-    - 'yubico-piv-tool/lib/ykpiv-config.h'
     - 'yubico-piv-tool/common/util.h'
   include-directives:
     - 'yubico-piv-tool/lib/*.h'

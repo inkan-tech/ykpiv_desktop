@@ -79,8 +79,9 @@ class YkDestop {
     ////////////////////////////////////////////
     // Now list_keys as a return BUT HAVE MEMORY ALLOCATION ISSUES
 
-    int reqlength = 254;
-    Array<Uint8> data = Array<Uint8>.multi(List<int>.filled(reqlength, 0));
+    int reqlength = 24;
+
+    Array<Uint8> data = const Array<Uint8>.multi([1]);
 
     Pointer<ykpiv_key> dataPtr = ffi.malloc<ykpiv_key>();
     dataPtr.ref.cert = data;
@@ -90,11 +91,13 @@ class YkDestop {
     Pointer<Size> sizePointer = ffi.calloc<Size>();
     sizePointer.value = reqlength;
 
-    Pointer<Uint8> numOfKeysPtr = ffi.calloc<Uint8>();
-    numOfKeysPtr.value = 1;
+    Pointer<Int> numOfTriesPtr = ffi.calloc<Int>();
+    numOfTriesPtr.value = 3;
+    String pin = "117334";
+    final Pointer<ffi.Utf8> pinUtf8 = pin.toNativeUtf8();
 
-    int resFetch09c = _bindings.ykpiv_util_list_keys(stateptr, numOfKeysPtr,
-        Pointer.fromAddress(dataPtr.address), sizePointer);
+    int resFetch09c =
+        _bindings.ykpiv_verify(stateptr, pinUtf8.cast<Char>(), numOfTriesPtr);
 
     if (resFetch09c == ykpiv_rc.YKPIV_OK) {
       for (var i = 0; i < length; i++) {
@@ -103,7 +106,7 @@ class YkDestop {
         result = result + char.toString();
       }
 
-      print("list result is: ${result}");
+      print("NumofTries result is: ${numOfTriesPtr.value}");
       print("list size is: ${length}");
       ffi.malloc.free(sizePointer);
       ffi.malloc.free(dataPtr);
