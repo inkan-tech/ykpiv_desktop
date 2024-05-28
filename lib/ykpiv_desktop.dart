@@ -1,6 +1,5 @@
 import 'dart:ffi';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart' as ffi;
 
@@ -17,7 +16,7 @@ final DynamicLibrary _dylib = () {
     return DynamicLibrary.open('lib$_libName.so');
   }
   if (Platform.isWindows) {
-    return DynamicLibrary.open('$_libName.dll');
+    return DynamicLibrary.open('libykpiv.dll');
   }
   throw UnsupportedError('Unknown platform: ${Platform.operatingSystem}');
 }();
@@ -35,7 +34,7 @@ class YkDestop {
       print('Initialized ykpiv');
       int deviceModel = _bindings.ykpiv_util_devicemodel(stateptr);
 
-      print(" util_devicemodel at init  ${deviceModel}");
+      print(" util_devicemodel at init  $deviceModel");
     }
   }
 

@@ -10,7 +10,7 @@ import 'dart:ffi' as ffi;
 
 /// Bindings for `yubico-piv-tool/lib/ykpiv.h`.
 ///
-/// Regenerate bindings with `flutter pub run ffigen --config ffigen.yaml`.
+/// Regenerate bindings with `flutter pub run ffigen --config ffigen-windows.yaml`.
 ///
 class YkpivDesktopBindings {
   /// Holds the symbol lookup function.
@@ -27,6 +27,12 @@ class YkpivDesktopBindings {
           lookup)
       : _lookup = lookup;
 
+  /// HAVE_PCSC_WINSCARD_H
+  ///
+  /// Pre-processor symbol indicating whether the file PCSC/winscard.h
+  /// exists on the system or not.
+  /// /
+  /// /* #undef HAVE_PCSC_WINSCARD_H
   ffi.Pointer<ffi.Char> ykpiv_check_version(
     ffi.Pointer<ffi.Char> req_version,
   ) {
@@ -2736,17 +2742,17 @@ final class ykpiv_state extends ffi.Struct {
   external int serial;
 }
 
-typedef SCARDCONTEXT = ffi.Int32;
-typedef DartSCARDCONTEXT = int;
-typedef SCARDHANDLE = ffi.Int32;
-typedef DartSCARDHANDLE = int;
+typedef SCARDCONTEXT = ULONG_PTR;
+typedef ULONG_PTR = ffi.UnsignedLongLong;
+typedef DartULONG_PTR = int;
+typedef SCARDHANDLE = ULONG_PTR;
 
 /// Typedef DWORD (defined by pcsc lib) to pcsc_word to make it clear that this
 /// is not the Windows meaning of DWORD, but the PCSC library's meaning.  This
 /// differs: Windows defines a DWORD as 32-bits, but pcsclite defines it as
 /// 'unsigned long' on x86_64 Linux, which is often 64-bits.
 typedef pcsc_word = DWORD;
-typedef DWORD = ffi.Uint32;
+typedef DWORD = ffi.UnsignedLong;
 typedef DartDWORD = int;
 
 final class ykpiv_allocator extends ffi.Struct {
@@ -3029,83 +3035,11 @@ abstract class file_mode {
   static const int OUTPUT_BIN = 3;
 }
 
-typedef FILE = __sFILE;
+typedef FILE = _iobuf;
 
-final class __sFILE extends ffi.Struct {
-  external ffi.Pointer<ffi.UnsignedChar> _p;
-
-  @ffi.Int()
-  external int _r;
-
-  @ffi.Int()
-  external int _w;
-
-  @ffi.Short()
-  external int _flags;
-
-  @ffi.Short()
-  external int _file;
-
-  external __sbuf _bf;
-
-  @ffi.Int()
-  external int _lbfsize;
-
-  external ffi.Pointer<ffi.Void> _cookie;
-
-  external ffi
-      .Pointer<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Void>)>>
-      _close;
-
-  external ffi.Pointer<
-      ffi.NativeFunction<
-          ffi.Int Function(
-              ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Char>, ffi.Int)>> _read;
-
-  external ffi.Pointer<
-      ffi.NativeFunction<
-          fpos_t Function(ffi.Pointer<ffi.Void>, fpos_t, ffi.Int)>> _seek;
-
-  external ffi.Pointer<
-      ffi.NativeFunction<
-          ffi.Int Function(
-              ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Char>, ffi.Int)>> _write;
-
-  external __sbuf _ub;
-
-  external ffi.Pointer<__sFILEX> _extra;
-
-  @ffi.Int()
-  external int _ur;
-
-  @ffi.Array.multi([3])
-  external ffi.Array<ffi.UnsignedChar> _ubuf;
-
-  @ffi.Array.multi([1])
-  external ffi.Array<ffi.UnsignedChar> _nbuf;
-
-  external __sbuf _lb;
-
-  @ffi.Int()
-  external int _blksize;
-
-  @fpos_t()
-  external int _offset;
+final class _iobuf extends ffi.Struct {
+  external ffi.Pointer<ffi.Void> _Placeholder;
 }
-
-final class __sbuf extends ffi.Struct {
-  external ffi.Pointer<ffi.UnsignedChar> _base;
-
-  @ffi.Int()
-  external int _size;
-}
-
-typedef fpos_t = __darwin_off_t;
-typedef __darwin_off_t = __int64_t;
-typedef __int64_t = ffi.LongLong;
-typedef Dart__int64_t = int;
-
-final class __sFILEX extends ffi.Opaque {}
 
 abstract class enum_format {
   static const int format__NULL = -1;
@@ -3197,7 +3131,7 @@ typedef X509 = x509_st;
 
 final class x509_st extends ffi.Opaque {}
 
-const String YKPIV_VERSION_STRING = '2.5.1';
+const String YKPIV_VERSION_STRING = '2.5.2';
 
 const int YKPIV_CARDID_SIZE = 16;
 
@@ -3596,5 +3530,3 @@ const int CB_OBJ_TAG_MIN = 2;
 const int CB_OBJ_TAG_MAX = 4;
 
 const int CB_PIN_MAX = 8;
-
-const int __STDC_WANT_LIB_EXT1__ = 1;

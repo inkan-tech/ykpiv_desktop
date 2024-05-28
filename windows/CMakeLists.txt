@@ -12,6 +12,26 @@ project(${PROJECT_NAME} LANGUAGES CXX)
 # This can be changed to accommodate different builds.
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../src" "${CMAKE_CURRENT_BINARY_DIR}/shared")
 
+# Définir le chemin complet vers le répertoire contenant les bibliothèques Windows
+set(WINDOWS_LIBS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../windows/target/lib/Debug")
+set(WINDOWS_TOOL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../windows/target/tool/Debug")
+set(WINDOWS_YKCS11_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../windows/target/ykcs11/Debug")
+
+# Chemin de destination des bibliothèques dans le projet Flutter (racine du dossier example)
+set(EXAMPLE_DIR "${CMAKE_CURRENT_BINARY_DIR}/../../../../../")
+
+# Copier les bibliothèques Windows dans le répertoire example
+file(COPY "${WINDOWS_LIBS_DIR}/libykpiv.dll"
+     DESTINATION "${EXAMPLE_DIR}")
+file(COPY "${WINDOWS_LIBS_DIR}/libcrypto-3-x64.dll"
+     DESTINATION "${EXAMPLE_DIR}")
+file(COPY "${WINDOWS_LIBS_DIR}/zlib1.dll"
+     DESTINATION "${EXAMPLE_DIR}")
+file(COPY "${WINDOWS_TOOL_DIR}/getopt.dll"
+     DESTINATION "${EXAMPLE_DIR}")
+file(COPY "${WINDOWS_YKCS11_DIR}/libykcs11.dll"
+     DESTINATION "${EXAMPLE_DIR}")
+
 # List of absolute paths to libraries that should be bundled with the plugin.
 # This list could contain prebuilt libraries, or libraries created by an
 # external build triggered from this build file.
