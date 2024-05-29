@@ -66,3 +66,77 @@ Insert code
 flutter build ios --no-codesign
 After the build finishes, your C library should be statically linked in the Flutter plugin on macOS.
 Remember to replace "plugin_name" with the actual name of your Flutter plugin, "libname.a" with the actual name of your C library, and "header.h" with the actual name of your header file.
+
+## Build on windows
+
+First download source code of Yubico Piv Tool on https://developers.yubico.com/yubico-piv-tool/Releases/
+
+Place it in the yubico-piv-tool folder
+
+Install vcpkg : https://learn.microsoft.com/fr-fr/vcpkg/get_started/get-started-msbuild?pivots=shell-cmd
+
+Install cmake : https://cmake.org/download/
+
+Install dependencies with vcpkg : 
+
+```
+./vcpkg.exe install openssl:x64-windows
+./vcpkg.exe install getopt:x64-windows
+./vcpkg.exe install zlib:x64-windows
+./vcpkg.exe install openssl:x64-windows
+```
+
+add this env : 
+
+```
+$env:OPENSSL_ROOT_DIR = "C:\Users\pvhug\vcpkg\packages\openssl_x64-windows"
+```
+
+Create build dir and execute this (with your path to dependencies) : 
+
+```
+mkdir build;
+cd build;
+
+cmake -A x64 -DGETOPT_LIB_DIR="path\to\vcpkg\packages\getopt-win32_x64-windows\lib" -DGETOPT_INCLUDE_DIR="path\to\vcpkg\packages\getopt-win32_x64-windows\include" -DZLIB="path\to\vcpkg\packages\zlib_x64-windows\lib\zlib.lib" -DZLIB_LIBRARY="path\to\vcpkg\installed\x64-windows\lib\zlib.lib" -DZLIB_INCLUDE_DIR="path\to\vcpkg\installed\x64-windows\include" -DOPENSSL_STATIC_LINK=ON ..
+
+```
+
+Next build this with : 
+
+```
+cmake --build .
+```
+
+You can try it with (with your path) : 
+
+```
+$dllPath = "path\to\the\yubico\piv\tool\directory\build\lib\Debug"
+$env:PATH += ";$dllPath"
+cd .\tool\Debug\
+.\yubico-piv-tool.exe -a status
+```
+
+After that you can move the content of build directory in the windows/target/ directory
+
+To generate the binding with ffi you have to edit the ffigen-windows.yaml and edit the compileropt with your path to openssl include :
+
+```
+compiler-opts:
+  - '-I path/to/vcpkg/packages/openssl_x64-windows/include'
+```
+
+And run : 
+
+```
+flutter pub run ffigen --config ffigen-windows.yaml
+```
+
+
+After that you can run the example with 
+
+```
+cd example
+flutter run
+```
+
