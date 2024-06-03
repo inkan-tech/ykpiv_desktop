@@ -67,7 +67,50 @@ flutter build ios --no-codesign
 After the build finishes, your C library should be statically linked in the Flutter plugin on macOS.
 Remember to replace "plugin_name" with the actual name of your Flutter plugin, "libname.a" with the actual name of your C library, and "header.h" with the actual name of your header file.
 
-## Build on windows
+## Build on windows (new version)
+
+First download source code of Yubico Piv Tool on https://developers.yubico.com/yubico-piv-tool/Releases/
+
+Place it in the yubico-piv-tool folder
+
+Install vcpkg : https://learn.microsoft.com/fr-fr/vcpkg/get_started/get-started-msbuild?pivots=shell-cmd
+
+Install cmake : https://cmake.org/download/
+
+Install dependencies with vcpkg : 
+
+```
+./vcpkg.exe install openssl:x64-windows
+./vcpkg.exe install getopt:x64-windows
+./vcpkg.exe install zlib:x64-windows
+./vcpkg.exe install openssl:x64-windows
+```
+
+add this to your env : 
+
+- VCPKG_ROOT : "path/to/vcpkg/root/directory"
+
+To generate the binding with ffi you have to edit the ffigen-windows.yaml and edit the compileropt with your path to openssl include :
+
+```
+compiler-opts:
+  - '-I path/to/vcpkg/packages/openssl_x64-windows/include'
+```
+
+And run : 
+
+```
+flutter pub run ffigen --config ffigen-windows.yaml
+```
+
+After that you can run the example with 
+
+```
+cd example
+flutter run
+```
+
+## Build on windows (old version)
 
 First download source code of Yubico Piv Tool on https://developers.yubico.com/yubico-piv-tool/Releases/
 
@@ -139,4 +182,3 @@ After that you can run the example with
 cd example
 flutter run
 ```
-

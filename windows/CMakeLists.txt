@@ -14,14 +14,21 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../src" "${CMAKE_CURRENT_BINARY_DI
 
 # Variables for external tool setup
 set(YUBICO_PIV_TOOL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../yubico-piv-tool")
-set(OPENSSL_ROOT_DIR "C:/Users/pvhug/vcpkg/packages/openssl_x64-windows")
+
+# Utilisation de la variable d'environnement VCPKG_ROOT
+if(NOT DEFINED ENV{VCPKG_ROOT})
+    message(FATAL_ERROR "VCPKG_ROOT is not defined. Please set the VCPKG_ROOT environment variable to the root directory of your vcpkg installation.")
+endif()
+
+set(VCPKG_ROOT $ENV{VCPKG_ROOT})
+set(OPENSSL_ROOT_DIR "${VCPKG_ROOT}/installed/x64-windows")
 set(OPENSSL_INCLUDE_DIR "${OPENSSL_ROOT_DIR}/include")
 set(OPENSSL_CRYPTO_LIBRARY "${OPENSSL_ROOT_DIR}/lib/libcrypto.lib")
-set(GETOPT_LIB_DIR "C:/Users/pvhug/vcpkg/packages/getopt-win32_x64-windows/lib")
-set(GETOPT_INCLUDE_DIR "C:/Users/pvhug/vcpkg/packages/getopt-win32_x64-windows/include")
-set(ZLIB_LIB_DIR "C:/Users/pvhug/vcpkg/packages/zlib_x64-windows/lib/zlib.lib")
-set(ZLIB_LIBRARY "C:/Users/pvhug/vcpkg/installed/x64-windows/lib/zlib.lib")
-set(ZLIB_INCLUDE_DIR "C:/Users/pvhug/vcpkg/installed/x64-windows/include")
+set(GETOPT_LIB_DIR "${VCPKG_ROOT}/installed/x64-windows/lib")
+set(GETOPT_INCLUDE_DIR "${VCPKG_ROOT}/installed/x64-windows/include")
+set(ZLIB_LIB_DIR "${VCPKG_ROOT}/installed/x64-windows/lib/zlib.lib")
+set(ZLIB_LIBRARY "${VCPKG_ROOT}/installed/x64-windows/lib/zlib.lib")
+set(ZLIB_INCLUDE_DIR "${VCPKG_ROOT}/installed/x64-windows/include")
 
 # Ensure the yubico-piv-tool directory is not empty
 file(GLOB YUBICO_PIV_TOOL_FILES "${YUBICO_PIV_TOOL_DIR}/*")
