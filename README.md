@@ -83,7 +83,6 @@ Install dependencies with vcpkg :
 ./vcpkg.exe install openssl:x64-windows
 ./vcpkg.exe install getopt:x64-windows
 ./vcpkg.exe install zlib:x64-windows
-./vcpkg.exe install openssl:x64-windows
 ```
 
 add this to your env : 
@@ -126,7 +125,6 @@ Install dependencies with vcpkg :
 ./vcpkg.exe install openssl:x64-windows
 ./vcpkg.exe install getopt:x64-windows
 ./vcpkg.exe install zlib:x64-windows
-./vcpkg.exe install openssl:x64-windows
 ```
 
 add this env : 
