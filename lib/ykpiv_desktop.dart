@@ -1,5 +1,7 @@
 import 'dart:ffi';
 import 'dart:io';
+import 'package:cryptography/cryptography.dart';
+import 'package:cryptography_flutter/cryptography_flutter.dart';
 
 import 'package:ffi/ffi.dart' as ffi;
 
@@ -41,6 +43,10 @@ class YkDestop {
   String connect() {
     init();
     String result = "X";
+    if (FlutterEcdh.p256().isSupportedPlatform) {
+      print("ECDH is supported");
+    }
+    var newkey = FlutterEcdh.p256();
     String arg = "Yubikey";
     final Pointer<ffi.Utf8> argUtf8 =
         arg.toNativeUtf8(); // Allocate memory for the string buffer
@@ -75,24 +81,13 @@ class YkDestop {
 
     print(" State serial  ${stateptr.ref.serial}");
 
-    Pointer<Int> numOfTriesPtr = ffi.calloc<Int>();
-    numOfTriesPtr.value = 3;
+    logWithPIN("117334");
 
-    // set the pin
-    String pin = "123456";
-    final Pointer<ffi.Utf8> pinUtf8 = pin.toNativeUtf8();
-    stateptr.ref.pin = pinUtf8.cast<Char>();
-    int statepin = stateptr.ref.pin.value;
-    print("pin after: $statepin");
-    int resultVerify =
-        _bindings.ykpiv_verify(stateptr, pinUtf8.cast(), numOfTriesPtr);
-    checkErrorCode(resultVerify);
-    ////////////////////////////////
     ////////////////////////////////////////////
 
     Pointer<ykpiv_key> dataPtr = ffi.calloc<ykpiv_key>();
 
-    int bufferOutSize = 512;
+    int bufferOutSize = 128;
     Pointer<Size> sizePointer = ffi.malloc<Size>()..value = bufferOutSize;
 
     String stringToSign = "Hello";
@@ -102,14 +97,9 @@ class YkDestop {
     Pointer<UnsignedChar> buffer_out =
         ffi.calloc<Uint8>(bufferOutSize) as Pointer<UnsignedChar>;
 
-    int resultSignData = _bindings.ykpiv_sign_data(
-        stateptr,
-        buffer_in,
-        buffer_in.value.bitLength,
-        buffer_out,
-        sizePointer,
-        YKPIV_ALGO_ECCP256,
-        0x9d);
+    int resultSignData = _bindings.ykpiv_sign_data(stateptr, buffer_in,
+        stringToSign.length, buffer_out, sizePointer, YKPIV_ALGO_ECCP256, 0x9d);
+
     print("return code string is : ${ykcodeToError(resultSignData)}");
 
     if (resultSignData == ykpiv_rc.YKPIV_OK) {
@@ -134,20 +124,15 @@ class YkDestop {
     print('');
     print('###    decipher  ####');
     ////// Try to decipher now
-    var buffer_in2 = result.toNativeUtf8().cast<UnsignedChar>();
+    logWithPIN("117334");
+
     Pointer<UnsignedChar> buffer_out2 =
         ffi.calloc<Uint8>(bufferOutSize) as Pointer<UnsignedChar>;
-    Pointer<Size> sizePointer2 = ffi.malloc<Size>()..value;
+    Pointer<Size> sizePointer2 = ffi.malloc<Size>()..value = bufferOutSize;
 
     // Allocate memory for the unsigned char buffer
-    int resultDecipher = _bindings.ykpiv_decipher_data(
-        stateptr,
-        buffer_in2,
-        buffer_in2.value.bitLength,
-        buffer_out2,
-        sizePointer2,
-        YKPIV_ALGO_ECCP256,
-        0x9d);
+    int resultDecipher = _bindings.ykpiv_decipher_data(stateptr, buffer_out,
+        512, buffer_out2, sizePointer2, YKPIV_ALGO_ECCP256, 0x9d);
 
     checkErrorCode(resultDecipher);
     ffi.malloc.free(dataPtr);
@@ -158,7 +143,8 @@ class YkDestop {
   }
 
   void checkErrorCode(int ykpiv_rc) {
-    print("Ykpic fonction return code was: ${ykcodeToError(ykpiv_rc)}");
+    print(
+        "Ykpic fonction return code $ykpiv_rc meaning: ${ykcodeToError(ykpiv_rc)}");
   }
 
   String ykcodeToError(int ykpiv_rc) {
@@ -176,9 +162,20 @@ class YkDestop {
     return result;
   }
 
+  void logWithPIN(String pin) {
+    final Pointer<ffi.Utf8> pinUtf8 = pin.toNativeUtf8();
+    stateptr.ref.pin = pinUtf8.cast<Char>();
+    int statepin = stateptr.ref.pin.value;
+    print("pin after: $statepin");
+    int resultVerify =
+        _bindings.ykpiv_verify(stateptr, pinUtf8.cast(), numOfTriesPtr);
+    checkErrorCode(resultVerify);
+  }
+
   void dispose() {
     stateptr = nullptr;
   }
 
+  Pointer<Int> numOfTriesPtr = ffi.calloc<Int>()..value = 3;
   late Pointer<ykpiv_state> stateptr = ffi.calloc<ykpiv_state>();
 }

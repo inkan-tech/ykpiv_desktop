@@ -25,8 +25,8 @@ Pod::Spec.new do |s|
   s.prepare_command = <<-CMD
                         echo $PWD
                         cd ../yubico-piv-tool/
-                        cmake  . -DOPENSSL_STATIC_LINK=ON -DCMAKE_INSTALL_PREFIX=../macos/target/ 
-                        make install
+                        cmake  . -DOPENSSL_STATIC_LINK=ON -DCMAKE_INSTALL_PREFIX=../macos/target/ -DBACKEND=macscard
+                        make install 
                    CMD
 
   #s.public_header_files = 'target/include/ykpiv/*.h'
