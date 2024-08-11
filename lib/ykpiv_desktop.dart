@@ -28,7 +28,8 @@ final YkpivDesktopBindings _bindings = YkpivDesktopBindings(_dylib);
 
 class YkDestop {
   void init() {
-    int res = _bindings.ykpiv_init(Pointer.fromAddress(stateptr.address), 12);
+    ykpiv_rc res =
+        _bindings.ykpiv_init(Pointer.fromAddress(stateptr.address), 12);
     checkErrorCode(res);
     if (res != ykpiv_rc.YKPIV_OK) {
       throw Exception('Failed to initialize ykpiv');
@@ -53,7 +54,7 @@ class YkDestop {
 
     print(argUtf8.toDartString());
 
-    int res = _bindings.ykpiv_connect(stateptr, argUtf8.cast<Char>());
+    ykpiv_rc res = _bindings.ykpiv_connect(stateptr, argUtf8.cast<Char>());
 
     if (res == ykpiv_rc.YKPIV_OK) {
       ffi.malloc.free(argUtf8);
@@ -75,7 +76,7 @@ class YkDestop {
     print("Before list devices state reader is ${reader}");
     Pointer<Uint32> serialPtr = ffi.malloc<Uint32>();
 
-    int resSerial = _bindings.ykpiv_get_serial(stateptr, serialPtr);
+    ykpiv_rc resSerial = _bindings.ykpiv_get_serial(stateptr, serialPtr);
 
     print(" Get serial  ${serialPtr.value}");
 
@@ -97,8 +98,8 @@ class YkDestop {
     Pointer<UnsignedChar> buffer_out =
         ffi.calloc<Uint8>(bufferOutSize) as Pointer<UnsignedChar>;
 
-    int resultSignData = _bindings.ykpiv_sign_data(stateptr, buffer_in,
-        stringToSign.length, buffer_out, sizePointer, YKPIV_ALGO_ECCP256, 0x9d);
+    ykpiv_rc resultSignData = _bindings.ykpiv_sign_data(stateptr, buffer_in,
+        stringToSign.length, buffer_out, sizePointer, YKPIV_ALGO_ED25519, 0x9a);
 
     print("return code string is : ${ykcodeToError(resultSignData)}");
 
@@ -131,8 +132,8 @@ class YkDestop {
     Pointer<Size> sizePointer2 = ffi.malloc<Size>()..value = bufferOutSize;
 
     // Allocate memory for the unsigned char buffer
-    int resultDecipher = _bindings.ykpiv_decipher_data(stateptr, buffer_out,
-        512, buffer_out2, sizePointer2, YKPIV_ALGO_ECCP256, 0x9d);
+    ykpiv_rc resultDecipher = _bindings.ykpiv_decipher_data(stateptr,
+        buffer_out, 512, buffer_out2, sizePointer2, YKPIV_ALGO_ED25519, 0x9a);
 
     checkErrorCode(resultDecipher);
     ffi.malloc.free(dataPtr);
@@ -142,12 +143,12 @@ class YkDestop {
     return reader;
   }
 
-  void checkErrorCode(int ykpiv_rc) {
+  void checkErrorCode(ykpiv_rc ykpiv_rc) {
     print(
-        "Ykpic fonction return code $ykpiv_rc meaning: ${ykcodeToError(ykpiv_rc)}");
+        "Ykpiv fonction return code $ykpiv_rc meaning: ${ykcodeToError(ykpiv_rc)}");
   }
 
-  String ykcodeToError(int ykpiv_rc) {
+  String ykcodeToError(ykpiv_rc ykpiv_rc) {
     Pointer<Char> resultPtr = _bindings.ykpiv_strerror(ykpiv_rc);
     String result = "";
     for (var i = 0; i < 2048; i++) {
@@ -167,7 +168,7 @@ class YkDestop {
     stateptr.ref.pin = pinUtf8.cast<Char>();
     int statepin = stateptr.ref.pin.value;
     print("pin after: $statepin");
-    int resultVerify =
+    ykpiv_rc resultVerify =
         _bindings.ykpiv_verify(stateptr, pinUtf8.cast(), numOfTriesPtr);
     checkErrorCode(resultVerify);
   }

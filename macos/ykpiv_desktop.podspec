@@ -25,7 +25,9 @@ Pod::Spec.new do |s|
   s.prepare_command = <<-CMD
                         echo $PWD
                         cd ../yubico-piv-tool/
-                        cmake  . -DOPENSSL_STATIC_LINK=ON -DCMAKE_INSTALL_PREFIX=../macos/target/ -DBACKEND=macscard
+                        rm -f CMakeCache.txt  
+                        cmake . -DOPENSSL_STATIC_LINK=ON  -DCMAKE_INSTALL_PREFIX=../macos/target/ \
+                          -DBACKEND=macscard  -DOPENSSL_ROOT_DIR=$(brew --prefix openssl) -DOPENSSL_LIBRARIES=$(brew --prefix openssl)/lib
                         make install 
                    CMD
 

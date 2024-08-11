@@ -180,3 +180,36 @@ After that you can run the example with
 cd example
 flutter run
 ```
+
+
+## Examples of using yubico-piv-tool manually for verification
+
+```
+ ./bin/yubico-piv-tool -a verify-pin -P117334 --sign -s 9d -A ECCP256 -i data.txt -o data.sig -H SHA512
+Successfully verified PIN.
+Signature successful!
+
+./bin/yubico-piv-tool -a read-cert   -s9d  -o 9d.pem 
+nicolasthomas@MBP-de-Nicolas target % openssl x509 -in 9d.pem  -pubkey -noout > 9d-pub.pem
+nicolasthomas@MBP-de-Nicolas target % openssl dgst -sha256 -verify 9d-pub.pem -signature data.sig data.txt   
+```
+
+
+## TODO
+
+ykpiv_decipher_data seems to create the ECDH we need to encrypt/decrypt the sharedkeys.. 
+sign might not work for ed25519 .. 
+
+
+## Manually working on cert slot 9a
+
+Generate private key
+
+./yubico-piv-tool -s9a -AED25519 -agenerate -o 9a.pub
+./yubico-piv-tool -s9a -AED25519 -S'/CN=test/OU=yk/O=sealf.ie/' -averify-pin -aselfsign -P117334 -i 9a.pub -o 9a.pem
+
+./yubico-piv-tool -s9a -aimport-certificate -i 9a.pem
+
+## testing 
+./yubico-piv-tool -s9a -averify-pin -P117334 -atest-decipher -i 9a.pem -AED25519
+./yubico-piv-tool -a read-certificate -a verify-pin -a test-signature -s 9a -o cert.pem -i cert.pem -AED25519 -P117334 

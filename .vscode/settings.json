@@ -3,10 +3,12 @@
     "asciidoc.antora.enableAntoraSupport": true,
     "CodeGPT.Autocomplete.provider": "CodeGPT Enterprise - Plus",
     "files.associations": {
+        ".fantomasignore": "ignore",
         "util.h": "c",
         "ykpiv.h": "c",
         "internal.h": "c",
-        "locale": "c"
+        "locale": "c",
+        "openssl-compat.h": "c"
     },
     "CodeGPT.Autocomplete.maxTokens": 640,
     "CodeGPT.Autocomplete.suggestionDelay": 2500

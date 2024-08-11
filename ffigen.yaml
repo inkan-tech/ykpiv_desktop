@@ -22,4 +22,4 @@ comments:
   style: any
   length: full
 compiler-opts: 
-  - '-I/opt/homebrew/Cellar/openssl@3/3.2.1/include/'
+  - "-I/opt/homebrew/opt/openssl@3/include/"
