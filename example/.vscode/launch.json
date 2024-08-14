@@ -5,27 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Dart: Run all Tests",
-            "type": "dart",
+            "name": "example",
             "request": "launch",
-            "program": "./test/"
-        },
-
-
-        
-        {
-            "name": "ykpiv_desktop",
-            "request": "launch",
-            "type": "dart",  "args": [ "--verbose"]
+            "type": "dart"
         },
         {
-            "name": "ykpiv_desktop (profile mode)",
+            "name": "example (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "ykpiv_desktop (release mode)",
+            "name": "example (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"

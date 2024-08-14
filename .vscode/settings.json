@@ -11,5 +11,6 @@
         "openssl-compat.h": "c"
     },
     "CodeGPT.Autocomplete.maxTokens": 640,
-    "CodeGPT.Autocomplete.suggestionDelay": 2500
+    "CodeGPT.Autocomplete.suggestionDelay": 2500,
+    "FSharp.suggestGitignore": false
 }
