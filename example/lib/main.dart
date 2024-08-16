@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:ykpiv_desktop/ykpiv_desktop.dart' as ykpiv_desktop;
+import 'ecdh.dart'; // Import the ECDH test page
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -13,18 +16,20 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
-      home: YubiKeyTestPage(),
+      home: const YubiKeyTestPage(),
     );
   }
 }
 
 class YubiKeyTestPage extends StatefulWidget {
+  const YubiKeyTestPage({super.key});
+
   @override
   _YubiKeyTestPageState createState() => _YubiKeyTestPageState();
 }
 
 class _YubiKeyTestPageState extends State<YubiKeyTestPage> {
-  final ykpiv_desktop.YkDestop _ykDesktop = ykpiv_desktop.YkDestop();
+  final ykpiv_desktop.YkDesktop _ykDesktop = ykpiv_desktop.YkDesktop();
   final TextEditingController _pinController = TextEditingController();
   final TextEditingController _dataToSignController = TextEditingController();
   String _result = '';
@@ -76,6 +81,13 @@ class _YubiKeyTestPageState extends State<YubiKeyTestPage> {
     }
   }
 
+  void _navigateToEcdhPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const EcdhTestPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,33 +101,38 @@ class _YubiKeyTestPageState extends State<YubiKeyTestPage> {
           children: [
             ElevatedButton(
               onPressed: _connect,
-              child: Text('Connect'),
+              child: const Text('Connect'),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: _pinController,
-              decoration: InputDecoration(labelText: 'Enter PIN'),
+              decoration: const InputDecoration(labelText: 'Enter PIN'),
               onSubmitted: (_) => _logWithPIN(),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             ElevatedButton(
               onPressed: _logWithPIN,
-              child: Text('Log with PIN'),
+              child: const Text('Log with PIN'),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: _dataToSignController,
-              decoration: InputDecoration(labelText: 'Enter data to sign'),
+              decoration: const InputDecoration(labelText: 'Enter data to sign'),
               onSubmitted: (_) => _signData(),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             ElevatedButton(
               onPressed: _signData,
-              child: Text('Sign Data'),
+              child: const Text('Sign Data'),
             ),
-            SizedBox(height: 16),
-            Text('Result:'),
-            Text(_result, style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _navigateToEcdhPage,
+              child: const Text('Go to ECDH Test Page'),
+            ),
+            const SizedBox(height: 16),
+            const Text('Result:'),
+            Text(_result, style: const TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
       ),

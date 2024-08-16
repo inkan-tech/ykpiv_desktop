@@ -1,7 +1,5 @@
 import 'dart:ffi';
 import 'dart:io';
-import 'package:cryptography/cryptography.dart';
-import 'package:cryptography_flutter/cryptography_flutter.dart';
 import 'dart:developer' as dev;
 
 import 'package:ffi/ffi.dart' as ffi;
@@ -29,7 +27,7 @@ final DynamicLibrary _dylib = () {
 /// The bindings to the native functions in [_dylib].
 final YkpivDesktopBindings _bindings = YkpivDesktopBindings(_dylib);
 
-class YkDestop {
+class YkDesktop {
   late Pointer<ykpiv_state> stateptr = ffi.calloc<ykpiv_state>();
 
   void init() {
@@ -46,6 +44,53 @@ class YkDestop {
 
       dev.log(" util_devicemodel at init  $deviceModel");
     }
+  }
+
+  Uint8List ecdh(Uint8List publicKey, int slot) {
+    // Allocate memory for the public key
+    Pointer<Uint8> publicKeyPointer = calloc<Uint8>(publicKey.length);
+
+    publicKeyPointer.asTypedList(publicKey.length).setAll(0, publicKey);
+
+    // Allocate memory for the shared secret
+    final sharedSecretPointer = calloc<UnsignedChar>(32);
+    final sharedSecretLengthPointer = calloc<Size>();
+    sharedSecretLengthPointer.value = 32;
+
+    // Perform the ECDH key exchange
+    ykpiv_rc result = _bindings.ykpiv_decipher_data(
+        stateptr,
+        publicKeyPointer as Pointer<UnsignedChar>,
+        publicKey.length,
+        sharedSecretPointer,
+        sharedSecretLengthPointer,
+        YKPIV_ALGO_X25519,
+        slot);
+
+    // Check if the result is OK
+    if (result != ykpiv_rc.YKPIV_OK) {
+      // Free allocated memory
+      calloc.free(publicKeyPointer);
+      calloc.free(sharedSecretPointer);
+      calloc.free(sharedSecretLengthPointer);
+      throw Exception('ECDH key exchange failed with error code: $result');
+    }
+    dev.log("computed ecdh share is $sharedSecretPointer");
+    // Copy the shared secret to a Dart Uint8List
+
+    Uint8List share = Uint8List(sharedSecretLengthPointer.value);
+    for (var i = 0; i < sharedSecretLengthPointer.value; i++) {
+      // Get the element at the current index
+      share[i] = (sharedSecretPointer[i]);
+    }
+
+    // Free allocated memory
+    calloc.free(publicKeyPointer);
+    calloc.free(sharedSecretPointer);
+    calloc.free(sharedSecretLengthPointer);
+
+    // Return the result of the operation
+    return share;
   }
 
   String connect() {
@@ -95,14 +140,14 @@ class YkDestop {
     Pointer<Size> sizePointer = ffi.malloc<Size>()..value = bufferOutSize;
 
     String stringToSign = "Hello";
-    var buffer_in = stringToSign.toNativeUtf8().cast<UnsignedChar>();
+    var bufferIn = stringToSign.toNativeUtf8().cast<UnsignedChar>();
     // Allocate memory for the unsigned char buffer
 
-    Pointer<UnsignedChar> buffer_out =
+    Pointer<UnsignedChar> bufferOut =
         ffi.calloc<Uint8>(bufferOutSize) as Pointer<UnsignedChar>;
 
-    ykpiv_rc resultSignData = _bindings.ykpiv_sign_data(stateptr, buffer_in,
-        stringToSign.length, buffer_out, sizePointer, YKPIV_ALGO_ED25519, 0x9a);
+    ykpiv_rc resultSignData = _bindings.ykpiv_sign_data(stateptr, bufferIn,
+        stringToSign.length, bufferOut, sizePointer, YKPIV_ALGO_ED25519, 0x9a);
 
     dev.log("return code string is : ${ykcodeToError(resultSignData)}");
 
@@ -110,15 +155,15 @@ class YkDestop {
       result = "";
       for (var i = 0; i < sizePointer.value; i++) {
         // Get the element at the current index
-        var char = buffer_out[i];
+        var char = bufferOut[i];
         result = result + String.fromCharCode(char);
       }
 
-      dev.log(" result is: ${result}");
+      dev.log(" result is: $result");
     } else {
       ffi.malloc.free(dataPtr);
       ffi.malloc.free(sizePointer);
-      ffi.malloc.free(buffer_in);
+      ffi.malloc.free(bufferIn);
       // must do that way to free the buffer before exiting.
       checkErrorCode(resultSignData);
 
@@ -130,18 +175,18 @@ class YkDestop {
     ////// Try to decipher now
     logWithPIN("117334");
 
-    Pointer<UnsignedChar> buffer_out2 =
+    Pointer<UnsignedChar> bufferOut2 =
         ffi.calloc<Uint8>(bufferOutSize) as Pointer<UnsignedChar>;
     Pointer<Size> sizePointer2 = ffi.malloc<Size>()..value = bufferOutSize;
 
     // Allocate memory for the unsigned char buffer
-    ykpiv_rc resultDecipher = _bindings.ykpiv_decipher_data(stateptr,
-        buffer_out, 512, buffer_out2, sizePointer2, YKPIV_ALGO_ED25519, 0x9a);
+    ykpiv_rc resultDecipher = _bindings.ykpiv_decipher_data(stateptr, bufferOut,
+        512, bufferOut2, sizePointer2, YKPIV_ALGO_ED25519, 0x9a);
 
     checkErrorCode(resultDecipher);
     ffi.malloc.free(dataPtr);
-    ffi.malloc.free(buffer_out);
-    ffi.malloc.free(buffer_in);
+    ffi.malloc.free(bufferOut);
+    ffi.malloc.free(bufferIn);
     ffi.malloc.free(sizePointer);
     return resultDecipher;
   }
