@@ -201,15 +201,56 @@ ykpiv_decipher_data seems to create the ECDH we need to encrypt/decrypt the shar
 sign might not work for ed25519 .. 
 
 
-## Manually working on cert slot 9a
+## Manually working on cert slot 8a
 
-Generate private key
+Generate signing key
 
-./yubico-piv-tool -s9a -AED25519 -agenerate -o 9a.pub
-./yubico-piv-tool -s9a -AED25519 -S'/CN=test/OU=yk/O=sealf.ie/' -averify-pin -aselfsign -P117334 -i 9a.pub -o 9a.pem
+./yubico-piv-tool -s8a -AED25519 -agenerate -o 8a.pub
+./yubico-piv-tool -s8a -AED25519 -S'/CN=test/OU=sign/O=sealf.ie/' -averify-pin -aselfsign -P117334 -i 8a.pub -o 8a.pem
 
-./yubico-piv-tool -s9a -aimport-certificate -i 9a.pem
+In one line: ./yubico-piv-tool -a generate -a verify-pin -a selfsign -a import-certificate -s8a -AED25519 -S'/CN=test/OU=sign/O=sealf.ie/' -P117334 -i 8a.pub 
+
+
+./yubico-piv-tool -s8a -aimport-certificate -i 8a.pem
+
+Generate crypting key
+
+
+
+./yubico-piv-tool -s8b -AX25519 -agenerate -o 8b.pub
+
+
+X509 default CSR mechanism won't work for X25519 must follow this:
+https://www.reddit.com/r/AskNetsec/comments/182s8pj/creating_x25519_certificate_for_use_with_nginx_or/
+especially the forced_pubkey but then it work !.
+
+work if using a csr from the 8a slot
+./yubico-piv-tool -a verify-pin -P117334 -a request-certificate -s 8a -S'/CN=test/OU=crypt/O=sealf.ie/'  -i 8a.pub -o 8a.crt
+then:
+openssl x509 -req -days 3653 \                                       
+             -extensions server_cert \
+-CA cacert.pem -CAkey cakey.pem \
+-in 8a.crt \
+             -force_pubkey 8b.pub \
+             -out my-new-x25519.crt.pem
+
+
+check https://stackoverflow.com/questions/21297139/how-do-you-sign-a-certificate-signing-request-with-your-certification-authority for cert auth.
+Then import
+
+Dummy csr from key 8a.
+./yubico-piv-tool -a verify-pin -P117334 -a request-certificate -s 8a -S'/CN=test/OU=crypt/O=sealf.ie/'  -i 8a.pub -o 8a.crt
+
+
+
+./yubico-piv-tool -s8b -aimport-certificate -i 8b.pem
+
+
 
 ## testing 
-./yubico-piv-tool -s9a -averify-pin -P117334 -atest-decipher -i 9a.pem -AED25519
-./yubico-piv-tool -a read-certificate -a verify-pin -a test-signature -s 9a -o cert.pem -i cert.pem -AED25519 -P117334 
+./yubico-piv-tool -s8a -averify-pin -P117334 -atest-signature -i 8a.pem -AED25519
+./yubico-piv-tool -a read-certificate -a verify-pin -a test-signature -s 8a -o cert.pem -i cert.pem -AED25519 -P117334 
+
+
+## Create a X25519 cert and import it 
+/opt/homebrew/bin/openssl genpkey -algorithm X25519 -out x25519_private.key
