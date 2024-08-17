@@ -103,7 +103,7 @@ class _YubiKeyTestPageState extends State<YubiKeyTestPage> {
     if (_slotController.text.isNotEmpty) {
       try {
         int slot = int.parse(_slotController.text, radix: 16);
-        X509Certificate cert = _ykDesktop.readcert(slot);
+        Map<String, dynamic> cert = _ykDesktop.readcert(slot);
         setState(() {
           _result = 'Certificate Subject: ${cert.toString()}';
         });

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:developer' as dev;
 
 import 'package:asn1lib/asn1lib.dart';
+import 'package:cryptography/cryptography.dart';
 import 'package:ffi/ffi.dart' as ffi;
 
 import 'package:flutter/foundation.dart';
@@ -182,7 +183,8 @@ class YkDesktop {
 
     // Vérifier si le résultat est OK
     if (result != ykpiv_rc.YKPIV_OK) {
-      // Libérer la mémoire allouéeoc.free(dataToSignPointer);
+      // Libérer la mémoire allouée
+      ffi.calloc.free(dataToSignPointer);
       ffi.calloc.free(signaturePointer);
       ffi.calloc.free(signatureLengthPointer);
       throw Exception('La signature a échoué avec le code d\'erreur : $result');
@@ -205,7 +207,7 @@ class YkDesktop {
     return signature;
   }
 
-  X509Certificate readcert(int slot) {
+  Map<String, dynamic> readcert(int slot) {
     // Step 1: Get the object ID for the given slot
     int objectId = _bindings.ykpiv_util_slot_object(slot);
     if (objectId == -1) {
@@ -215,7 +217,10 @@ class YkDesktop {
     final dataPtr = ffi.calloc<UnsignedChar>(CB_OBJ_MAX);
     final lenPtr = ffi.calloc<UnsignedLong>();
     lenPtr.value = CB_OBJ_MAX;
-
+    // Step 4: Use ykpiv_util_get_certdata to decompress if necessary
+    final certDataPtr = ffi.calloc<Uint8>(CB_OBJ_MAX);
+    final certDataLenPtr = ffi.calloc<Size>();
+    certDataLenPtr.value = CB_OBJ_MAX;
     try {
       // Step 3: Fetch the object (certificate) data
       ykpiv_rc result = _bindings.ykpiv_fetch_object(
@@ -229,11 +234,6 @@ class YkDesktop {
         throw Exception(
             'Failed to fetch certificate: ${ykCodeToError(result)}');
       }
-
-      // Step 4: Use ykpiv_util_get_certdata to decompress if necessary
-      final certDataPtr = ffi.calloc<Uint8>(CB_OBJ_MAX);
-      final certDataLenPtr = ffi.calloc<Size>();
-      certDataLenPtr.value = CB_OBJ_MAX;
 
       result = _bindings.ykpiv_util_get_certdata(
         dataPtr as Pointer<Uint8>,
@@ -257,18 +257,43 @@ class YkDesktop {
 
       // Parse the ASN.1 data
       ASN1Sequence asn1Seq = ASN1Sequence.fromBytes(certRead);
+      dev.log("asn1Seq to String : ${asn1Seq.toString()}");
+      // Manually parse the certificate structure as X509 does not work for (ed|x)25519
+      Map<String, dynamic> certInfo = {};
+      if (asn1Seq.elements.length == 3) {
+        ASN1Sequence tbsCertificate = asn1Seq.elements[0] as ASN1Sequence;
+        ASN1Sequence signatureAlgorithm = asn1Seq.elements[1] as ASN1Sequence;
+        ASN1BitString signatureValue = asn1Seq.elements[2] as ASN1BitString;
 
-      dev.log("ASN1Sequence is ${asn1Seq.toString()}");
-      dev.log("Number of elements in ASN1Sequence: ${asn1Seq.elements.length}");
-      for (int i = 0; i < asn1Seq.elements.length; i++) {
-        dev.log("Element $i type: ${asn1Seq.elements[i].toString()}");
+        // Extract information from tbsCertificate
+        for (var element in signatureAlgorithm.elements) {
+          if (element is ASN1Sequence) {
+            for (var subElement in element.elements) {
+              if (subElement is ASN1ObjectIdentifier) {
+                dev.log("Found OID: ${subElement.identifier}");
+                if (subElement.identifier == "1.3.101.112") {
+                  certInfo['algorithm'] = "Ed25519";
+                }
+              }
+            }
+          }
+        }
+
+        SimplePublicKey pubkey = SimplePublicKey(signatureValue.encodedBytes,
+            type: KeyPairType.ed25519);
+        dev.log("The pubkey is ${pubkey.toString()}");
+        certInfo['signatureAlgorithm'] =
+            signatureAlgorithm.elements.first.toString();
+        certInfo['signatureValue'] = signatureValue.stringValue;
       }
-      // Create the X509Certificate from the ASN1Sequence
-      return X509Certificate.fromAsn1(asn1Seq);
+
+      return certInfo;
     } finally {
       // Free allocated memory
       ffi.calloc.free(dataPtr);
       ffi.calloc.free(lenPtr);
+      ffi.calloc.free(certDataPtr);
+      ffi.calloc.free(certDataLenPtr);
     }
   }
 
