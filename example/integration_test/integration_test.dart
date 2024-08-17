@@ -15,7 +15,7 @@ void main() {
 
     setUp(() {
       ykpiv = YkDesktop();
-      ykpiv.init();
+      ykpiv.initYubikeyPIV();
       ykpiv.connect();
     });
 
@@ -24,7 +24,7 @@ void main() {
     });
 
     testWidgets('Initialize YkDesktop', (WidgetTester tester) async {
-      expect(() => ykpiv.init(), returnsNormally);
+      expect(() => ykpiv.initYubikeyPIV(), returnsNormally);
     });
 
     testWidgets('Connect to YubiKey', (WidgetTester tester) async {
@@ -59,8 +59,7 @@ void main() {
         (WidgetTester tester) async {
       final invalidPublicKey = Uint8List(31); // Should be 32 bytes for X25519
 
-      expect(() => ykpiv.ecdh(invalidPublicKey, 0x8b),
-          throwsException);
+      expect(() => ykpiv.ecdh(invalidPublicKey, 0x8b), throwsException);
     });
 
     testWidgets('ECDH key exchange with invalid slot',
@@ -72,7 +71,7 @@ void main() {
           throwsException);
     });
     testWidgets('Convert YK code to error string', (WidgetTester tester) async {
-      String errorString = ykpiv.ykcodeToError(ykpiv_rc.YKPIV_OK);
+      String errorString = ykpiv.ykCodeToError(ykpiv_rc.YKPIV_OK);
       expect(errorString, isNotEmpty);
     });
   });

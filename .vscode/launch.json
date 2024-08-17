@@ -15,7 +15,7 @@
         
         {
             "name": "ykpiv_desktop",
-            "request": "launch",
+            "request": "launch", "flutterMode": "debug",
             "type": "dart",  "args": [ "--verbose"]
         },
         {

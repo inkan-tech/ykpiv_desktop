@@ -1,10 +1,14 @@
 import 'dart:ffi';
+
 import 'dart:io';
 import 'dart:developer' as dev;
 
+import 'package:asn1lib/asn1lib.dart';
 import 'package:ffi/ffi.dart' as ffi;
-import 'package:ffi/ffi.dart';
+
 import 'package:flutter/foundation.dart';
+
+import 'package:x509/x509.dart';
 
 import 'ykpiv_desktop_bindings_generated.dart';
 
@@ -28,19 +32,82 @@ final DynamicLibrary _dylib = () {
 final YkpivDesktopBindings _bindings = YkpivDesktopBindings(_dylib);
 
 class YkDesktop {
-  late Pointer<ykpiv_state> stateptr = ffi.calloc<ykpiv_state>();
+  // Getter function for algorithm numbers
+  static int getAlgoNumber(String algoName) {
+    switch (algoName.toUpperCase()) {
+      case '3DES':
+        return YKPIV_ALGO_3DES;
+      case 'AES128':
+        return YKPIV_ALGO_AES128;
+      case 'AES192':
+        return YKPIV_ALGO_AES192;
+      case 'AES256':
+        return YKPIV_ALGO_AES256;
+      case 'RSA1024':
+        return YKPIV_ALGO_RSA1024;
+      case 'RSA2048':
+        return YKPIV_ALGO_RSA2048;
+      case 'RSA3072':
+        return YKPIV_ALGO_RSA3072;
+      case 'RSA4096':
+        return YKPIV_ALGO_RSA4096;
+      case 'ECCP256':
+        return YKPIV_ALGO_ECCP256;
+      case 'ECCP384':
+        return YKPIV_ALGO_ECCP384;
+      case 'ED25519':
+        return YKPIV_ALGO_ED25519;
+      case 'X25519':
+        return YKPIV_ALGO_X25519;
+      default:
+        throw ArgumentError('Unknown algorithm: $algoName');
+    }
+  }
 
-  void init() {
-    ykpiv_rc res = _bindings.ykpiv_init(Pointer.fromAddress(stateptr.address),
-        12); // the int second param is the verbosity
+  late Pointer<ykpiv_state> statePtr = ffi.calloc<ykpiv_state>();
+  late Pointer<ykpiv_allocator> allocator = ffi.calloc<ykpiv_allocator>();
+
+// Custom allocator functions
+
+  static Pointer<Void> alloc(Pointer<Void> allocData, int size) {
+    return ffi.calloc<Uint8>(size).cast();
+  }
+
+  static Pointer<Void> realloc(
+      Pointer<Void> allocData, Pointer<Void> ptr, int size) {
+    final newPtr = ffi.calloc<Uint8>(size);
+    final oldPtr = ptr.cast<Uint8>();
+    for (var i = 0; i < size; i++) {
+      newPtr[i] = oldPtr[i];
+    }
+    ffi.calloc.free(ptr);
+    return newPtr.cast();
+  }
+
+  static void free(Pointer<Void> allocData, Pointer<Void> ptr) {
+    ffi.calloc.free(ptr);
+  }
+
+  void initYubikeyPIV() {
+    allocator.ref.pfn_alloc =
+        Pointer.fromFunction<ykpiv_pfn_allocFunction>(alloc);
+    allocator.ref.pfn_realloc =
+        Pointer.fromFunction<ykpiv_pfn_reallocFunction>(realloc);
+    allocator.ref.pfn_free = Pointer.fromFunction<ykpiv_pfn_freeFunction>(free);
+    allocator.ref.alloc_data = nullptr;
+
+    ykpiv_rc res = _bindings.ykpiv_init_with_allocator(
+        Pointer.fromAddress(statePtr.address), 255, allocator);
+
     checkErrorCode(res);
     if (res != ykpiv_rc.YKPIV_OK) {
-      throw Exception('Failed to initialize ykpiv');
+      throw Exception(
+          'Failed to initialize YubiKey PIV: ${ykCodeToError(res)}');
     } else {
       if (kDebugMode) {
-        dev.log('Initialized ykpiv');
+        dev.log('Initialized ykpiv with allocators');
       }
-      int deviceModel = _bindings.ykpiv_util_devicemodel(stateptr);
+      int deviceModel = _bindings.ykpiv_util_devicemodel(statePtr);
 
       dev.log(" util_devicemodel at init  $deviceModel");
     }
@@ -48,18 +115,18 @@ class YkDesktop {
 
   Uint8List ecdh(Uint8List publicKey, int slot) {
     // Allocate memory for the public key
-    Pointer<Uint8> publicKeyPointer = calloc<Uint8>(publicKey.length);
+    Pointer<Uint8> publicKeyPointer = ffi.calloc<Uint8>(publicKey.length);
 
     publicKeyPointer.asTypedList(publicKey.length).setAll(0, publicKey);
 
     // Allocate memory for the shared secret
-    final sharedSecretPointer = calloc<UnsignedChar>(32);
-    final sharedSecretLengthPointer = calloc<Size>();
+    final sharedSecretPointer = ffi.calloc<UnsignedChar>(32);
+    final sharedSecretLengthPointer = ffi.calloc<Size>();
     sharedSecretLengthPointer.value = 32;
 
     // Perform the ECDH key exchange
     ykpiv_rc result = _bindings.ykpiv_decipher_data(
-        stateptr,
+        statePtr,
         publicKeyPointer as Pointer<UnsignedChar>,
         publicKey.length,
         sharedSecretPointer,
@@ -70,9 +137,9 @@ class YkDesktop {
     // Check if the result is OK
     if (result != ykpiv_rc.YKPIV_OK) {
       // Free allocated memory
-      calloc.free(publicKeyPointer);
-      calloc.free(sharedSecretPointer);
-      calloc.free(sharedSecretLengthPointer);
+      ffi.calloc.free(publicKeyPointer);
+      ffi.calloc.free(sharedSecretPointer);
+      ffi.calloc.free(sharedSecretLengthPointer);
       throw Exception('ECDH key exchange failed with error code: $result');
     }
     dev.log("computed ecdh share is $sharedSecretPointer");
@@ -85,47 +152,159 @@ class YkDesktop {
     }
 
     // Free allocated memory
-    calloc.free(publicKeyPointer);
-    calloc.free(sharedSecretPointer);
-    calloc.free(sharedSecretLengthPointer);
+    ffi.calloc.free(publicKeyPointer);
+    ffi.calloc.free(sharedSecretPointer);
+    ffi.calloc.free(sharedSecretLengthPointer);
 
     // Return the result of the operation
     return share;
   }
 
+  Uint8List sign(Uint8List dataToSign, int slot, int algorithm) {
+    // Allouer de la mémoire pour les données à signer
+    Pointer<Uint8> dataToSignPointer = ffi.calloc<Uint8>(dataToSign.length);
+    dataToSignPointer.asTypedList(dataToSign.length).setAll(0, dataToSign);
+
+    // Allouer de la mémoire pour la signature
+    final signaturePointer = ffi.calloc<UnsignedChar>(2048);
+    final signatureLengthPointer = ffi.calloc<Size>();
+    signatureLengthPointer.value = 2048;
+
+    // Effectuer la signature
+    ykpiv_rc result = _bindings.ykpiv_sign_data(
+        statePtr,
+        dataToSignPointer as Pointer<UnsignedChar>,
+        dataToSign.length,
+        signaturePointer,
+        signatureLengthPointer,
+        algorithm,
+        slot);
+
+    // Vérifier si le résultat est OK
+    if (result != ykpiv_rc.YKPIV_OK) {
+      // Libérer la mémoire allouéeoc.free(dataToSignPointer);
+      ffi.calloc.free(signaturePointer);
+      ffi.calloc.free(signatureLengthPointer);
+      throw Exception('La signature a échoué avec le code d\'erreur : $result');
+    }
+
+    dev.log("Signature calculée : $signaturePointer");
+
+    // Copier la signature dans un Uint8List Dart
+    Uint8List signature = Uint8List(signatureLengthPointer.value);
+    for (var i = 0; i < signatureLengthPointer.value; i++) {
+      signature[i] = signaturePointer[i];
+    }
+
+    // Libérer la mémoire allouée
+    ffi.calloc.free(dataToSignPointer);
+    ffi.calloc.free(signaturePointer);
+    ffi.calloc.free(signatureLengthPointer);
+
+    // Retourner le résultat de l'opération
+    return signature;
+  }
+
+  X509Certificate readcert(int slot) {
+    // Step 1: Get the object ID for the given slot
+    int objectId = _bindings.ykpiv_util_slot_object(slot);
+    if (objectId == -1) {
+      throw Exception('Invalid slot entered');
+    }
+    // Step 2: Allocate memory for the certificate data
+    final dataPtr = ffi.calloc<UnsignedChar>(CB_OBJ_MAX);
+    final lenPtr = ffi.calloc<UnsignedLong>();
+    lenPtr.value = CB_OBJ_MAX;
+
+    try {
+      // Step 3: Fetch the object (certificate) data
+      ykpiv_rc result = _bindings.ykpiv_fetch_object(
+        statePtr,
+        objectId,
+        dataPtr,
+        lenPtr,
+      );
+      dev.log("Read certificate buffer length: ${lenPtr.value}");
+      if (result != ykpiv_rc.YKPIV_OK) {
+        throw Exception(
+            'Failed to fetch certificate: ${ykCodeToError(result)}');
+      }
+
+      // Step 4: Use ykpiv_util_get_certdata to decompress if necessary
+      final certDataPtr = ffi.calloc<Uint8>(CB_OBJ_MAX);
+      final certDataLenPtr = ffi.calloc<Size>();
+      certDataLenPtr.value = CB_OBJ_MAX;
+
+      result = _bindings.ykpiv_util_get_certdata(
+        dataPtr as Pointer<Uint8>,
+        lenPtr.value,
+        certDataPtr,
+        certDataLenPtr,
+      );
+
+      if (result != ykpiv_rc.YKPIV_OK) {
+        throw Exception(
+            'Failed to get certificate data: ${ykCodeToError(result)}');
+      }
+
+      // Step 4: Convert the raw data to a Uint8List
+
+      // Copier la data dans un Uint8List Dart
+      Uint8List certRead = Uint8List(certDataLenPtr.value);
+      for (var i = 0; i < certDataLenPtr.value; i++) {
+        certRead[i] = certDataPtr[i];
+      }
+
+      // Parse the ASN.1 data
+      ASN1Sequence asn1Seq = ASN1Sequence.fromBytes(certRead);
+
+      dev.log("ASN1Sequence is ${asn1Seq.toString()}");
+      dev.log("Number of elements in ASN1Sequence: ${asn1Seq.elements.length}");
+      for (int i = 0; i < asn1Seq.elements.length; i++) {
+        dev.log("Element $i type: ${asn1Seq.elements[i].toString()}");
+      }
+      // Create the X509Certificate from the ASN1Sequence
+      return X509Certificate.fromAsn1(asn1Seq);
+    } finally {
+      // Free allocated memory
+      ffi.calloc.free(dataPtr);
+      ffi.calloc.free(lenPtr);
+    }
+  }
+
   String connect() {
-    init();
+    initYubikeyPIV();
     String arg = "Yubikey";
     final Pointer<ffi.Utf8> argUtf8 =
         arg.toNativeUtf8(); // Allocate memory for the string buffer
 
     dev.log("The argument to connect is :${argUtf8.toDartString()}");
 
-    ykpiv_rc res = _bindings.ykpiv_connect(stateptr, argUtf8.cast<Char>());
-    int deviceModel = _bindings.ykpiv_util_devicemodel(stateptr);
+    ykpiv_rc res = _bindings.ykpiv_connect(statePtr, argUtf8.cast<Char>());
+    int deviceModel = _bindings.ykpiv_util_devicemodel(statePtr);
     dev.log(" util_devicemodel after connect  $deviceModel");
     if (res != ykpiv_rc.YKPIV_OK) {
       throw Exception('Failed to Connect');
     }
     ffi.malloc.free(argUtf8);
-    String reader = arrayCharToString(stateptr.ref.reader, 2048);
+    String reader = arrayCharToString(statePtr.ref.reader, 2048);
 
     dev.log("Before list devices state reader is $reader");
     Pointer<Uint32> serialPtr = ffi.malloc<Uint32>();
 
-    ykpiv_rc resSerial = _bindings.ykpiv_get_serial(stateptr, serialPtr);
+    ykpiv_rc resSerial = _bindings.ykpiv_get_serial(statePtr, serialPtr);
 
     dev.log(" Result of get serial  ${resSerial.value}");
 
-    dev.log("serial from State :  ${stateptr.ref.serial}");
+    dev.log("serial from State :  ${statePtr.ref.serial}");
 
     dev.log('Logging stateptr parameters:');
-    dev.log('card: ${stateptr.ref.card}');
-    dev.log('context: ${stateptr.ref.context}');
-    dev.log('verbose: ${stateptr.ref.card}');
-    dev.log('model: ${stateptr.ref.model}');
+    dev.log('card: ${statePtr.ref.card}');
+    dev.log('context: ${statePtr.ref.context}');
+    dev.log('verbose: ${statePtr.ref.card}');
+    dev.log('model: ${statePtr.ref.model}');
     dev.log(
-        'pin: ${stateptr.ref.pin == nullptr ? 'null' : stateptr.ref.pin.cast<Utf8>().toDartString()}');
+        'pin: ${statePtr.ref.pin == nullptr ? 'null' : statePtr.ref.pin.toString()}');
 
     return reader;
   }
@@ -146,10 +325,10 @@ class YkDesktop {
     Pointer<UnsignedChar> bufferOut =
         ffi.calloc<Uint8>(bufferOutSize) as Pointer<UnsignedChar>;
 
-    ykpiv_rc resultSignData = _bindings.ykpiv_sign_data(stateptr, bufferIn,
+    ykpiv_rc resultSignData = _bindings.ykpiv_sign_data(statePtr, bufferIn,
         stringToSign.length, bufferOut, sizePointer, YKPIV_ALGO_ED25519, 0x9a);
 
-    dev.log("return code string is : ${ykcodeToError(resultSignData)}");
+    dev.log("return code string is : ${ykCodeToError(resultSignData)}");
 
     if (resultSignData == ykpiv_rc.YKPIV_OK) {
       result = "";
@@ -180,7 +359,7 @@ class YkDesktop {
     Pointer<Size> sizePointer2 = ffi.malloc<Size>()..value = bufferOutSize;
 
     // Allocate memory for the unsigned char buffer
-    ykpiv_rc resultDecipher = _bindings.ykpiv_decipher_data(stateptr, bufferOut,
+    ykpiv_rc resultDecipher = _bindings.ykpiv_decipher_data(statePtr, bufferOut,
         512, bufferOut2, sizePointer2, YKPIV_ALGO_ED25519, 0x9a);
 
     checkErrorCode(resultDecipher);
@@ -193,10 +372,10 @@ class YkDesktop {
 
   void checkErrorCode(ykpiv_rc ykpivRc) {
     dev.log(
-        "Ykpiv fonction return code $ykpivRc meaning: ${ykcodeToError(ykpivRc)}");
+        "Ykpiv fonction return code $ykpivRc meaning: ${ykCodeToError(ykpivRc)}");
   }
 
-  String ykcodeToError(ykpiv_rc ykpivRc) {
+  String ykCodeToError(ykpiv_rc ykpivRc) {
     Pointer<Char> resultPtr = _bindings.ykpiv_strerror(ykpivRc);
     String result = "";
     for (var i = 0; i < 2048; i++) {
@@ -213,11 +392,11 @@ class YkDesktop {
 
   void logWithPIN(String pin) {
     final Pointer<ffi.Utf8> pinUtf8 = pin.toNativeUtf8();
-    stateptr.ref.pin = pinUtf8.cast<Char>();
-    int statepin = stateptr.ref.pin.value;
+    statePtr.ref.pin = pinUtf8.cast<Char>();
+    int statepin = statePtr.ref.pin.value;
     dev.log("pin after: $statepin");
     ykpiv_rc resultVerify =
-        _bindings.ykpiv_verify(stateptr, pinUtf8.cast(), numOfTriesPtr);
+        _bindings.ykpiv_verify(statePtr, pinUtf8.cast(), numOfTriesPtr);
     checkErrorCode(resultVerify);
   }
 
@@ -234,7 +413,7 @@ class YkDesktop {
   }
 
   void dispose() {
-    ffi.malloc.free(stateptr);
+    ffi.malloc.free(statePtr);
   }
 
   Pointer<Int> numOfTriesPtr = ffi.calloc<Int>()..value = 3;
