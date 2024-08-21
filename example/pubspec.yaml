@@ -46,7 +46,8 @@ dependencies:
 
   cryptography: ^2.7.0
   cryptography_flutter: ^2.3.2 # R
-  x509: ^0.2.4+2
+  x509: ^0.2.4
+  asn1lib: ^1.5.3
 
 dev_dependencies:
   flutter_test:
@@ -59,6 +60,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^4.0.0
+  test: ^1.25.7
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

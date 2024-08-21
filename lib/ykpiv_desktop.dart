@@ -10,6 +10,7 @@ import 'package:ffi/ffi.dart' as ffi;
 import 'package:flutter/foundation.dart';
 
 import 'package:x509/x509.dart';
+import 'package:ykpiv_desktop/certificate_info.dart';
 
 import 'ykpiv_desktop_bindings_generated.dart';
 
@@ -254,10 +255,18 @@ class YkDesktop {
       for (var i = 0; i < certDataLenPtr.value; i++) {
         certRead[i] = certDataPtr[i];
       }
-
+      dev.log("asn1seq to Uint8List : $certRead");
       // Parse the ASN.1 data
       ASN1Sequence asn1Seq = ASN1Sequence.fromBytes(certRead);
-      dev.log("asn1Seq to String : ${asn1Seq.toString()}");
+      dev.log("asn1seq to String : ${asn1Seq.toString()}");
+      try {
+        var c = myCertificatefromASN1(asn1Seq);
+
+        dev.log("c parser  to String : ${c.toString()}");
+      } catch (e) {
+        dev.log("can't turn in x509");
+      }
+
       // Manually parse the certificate structure as X509 does not work for (ed|x)25519
       Map<String, dynamic> certInfo = {};
       if (asn1Seq.elements.length == 3) {
