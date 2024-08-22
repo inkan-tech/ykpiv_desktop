@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:x509/x509.dart';
+import 'package:ykpiv_desktop/certificate_info.dart';
 import 'package:ykpiv_desktop/ykpiv_desktop.dart';
 import 'ecdh.dart'; // Import the ECDH test page
 import 'dart:typed_data';
@@ -103,7 +104,7 @@ class _YubiKeyTestPageState extends State<YubiKeyTestPage> {
     if (_slotController.text.isNotEmpty) {
       try {
         int slot = int.parse(_slotController.text, radix: 16);
-        Map<String, dynamic> cert = _ykDesktop.readcert(slot);
+        YkCertificate cert = _ykDesktop.readcert(slot);
         setState(() {
           _result = 'Certificate Subject: ${cert.toString()}';
         });

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ffi';
 
 import 'dart:io';
@@ -9,7 +10,6 @@ import 'package:ffi/ffi.dart' as ffi;
 
 import 'package:flutter/foundation.dart';
 
-import 'package:x509/x509.dart';
 import 'package:ykpiv_desktop/certificate_info.dart';
 
 import 'ykpiv_desktop_bindings_generated.dart';
@@ -208,7 +208,7 @@ class YkDesktop {
     return signature;
   }
 
-  Map<String, dynamic> readcert(int slot) {
+  readcert(int slot) {
     // Step 1: Get the object ID for the given slot
     int objectId = _bindings.ykpiv_util_slot_object(slot);
     if (objectId == -1) {
@@ -255,46 +255,21 @@ class YkDesktop {
       for (var i = 0; i < certDataLenPtr.value; i++) {
         certRead[i] = certDataPtr[i];
       }
-      dev.log("asn1seq to Uint8List : $certRead");
+
+      dev.log("asn1seq to Uint8List : ${base64Encode(certRead.toList())}");
       // Parse the ASN.1 data
       ASN1Sequence asn1Seq = ASN1Sequence.fromBytes(certRead);
       dev.log("asn1seq to String : ${asn1Seq.toString()}");
+      YkCertificate? certInfo;
       try {
-        var c = myCertificatefromASN1(asn1Seq);
+        certInfo = myCertificatefromASN1(asn1Seq);
 
-        dev.log("c parser  to String : ${c.toString()}");
+        dev.log("certinfo parser  to String : ${certInfo.toString()}");
       } catch (e) {
-        dev.log("can't turn in x509");
+        dev.log("can't turn in myCertificate");
       }
 
-      // Manually parse the certificate structure as X509 does not work for (ed|x)25519
-      Map<String, dynamic> certInfo = {};
-      if (asn1Seq.elements.length == 3) {
-        ASN1Sequence tbsCertificate = asn1Seq.elements[0] as ASN1Sequence;
-        ASN1Sequence signatureAlgorithm = asn1Seq.elements[1] as ASN1Sequence;
-        ASN1BitString signatureValue = asn1Seq.elements[2] as ASN1BitString;
-
-        // Extract information from tbsCertificate
-        for (var element in signatureAlgorithm.elements) {
-          if (element is ASN1Sequence) {
-            for (var subElement in element.elements) {
-              if (subElement is ASN1ObjectIdentifier) {
-                dev.log("Found OID: ${subElement.identifier}");
-                if (subElement.identifier == "1.3.101.112") {
-                  certInfo['algorithm'] = "Ed25519";
-                }
-              }
-            }
-          }
-        }
-
-        SimplePublicKey pubkey = SimplePublicKey(signatureValue.encodedBytes,
-            type: KeyPairType.ed25519);
-        dev.log("The pubkey is ${pubkey.toString()}");
-        certInfo['signatureAlgorithm'] =
-            signatureAlgorithm.elements.first.toString();
-        certInfo['signatureValue'] = signatureValue.stringValue;
-      }
+      SimplePublicKey pubkey = certInfo!.getPublicKey();
 
       return certInfo;
     } finally {
