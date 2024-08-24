@@ -1,10 +1,14 @@
 // made by codeGPT with model GPT-4 and prompt "fais des tests unitaire en utilsant les ASN1seq fournient en commentaire. Vérifie que les champs normaux d'un x509 sont présent Signature etc.."
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:asn1lib/asn1lib.dart';
 import 'package:cryptography/cryptography.dart';
+import 'package:x509/x509.dart';
 import 'dart:developer' as dev;
 
-abstract class YkCertificate {
+import 'package:either_dart/either.dart';
+
+class YkCertificate {
   int serialNumber;
   final String issuer;
   final DateTime notBefore;
@@ -20,51 +24,10 @@ abstract class YkCertificate {
     required this.subject,
     required this.publicKey,
   });
-
-  SimplePublicKey getPublicKey();
 }
 
-class X25519Certificate extends YkCertificate {
-  X25519Certificate({
-    required super.serialNumber,
-    required super.issuer,
-    required super.notBefore,
-    required super.notAfter,
-    required super.subject,
-    required super.publicKey,
-  });
-
-  factory X25519Certificate.fromAsn1Sequence(ASN1Sequence sequence) {
-    return myCertificatefromASN1(sequence) as X25519Certificate;
-  }
-
-  @override
-  SimplePublicKey getPublicKey() {
-    return SimplePublicKey(publicKey, type: KeyPairType.x25519);
-  }
-}
-
-class Ed25519Certificate extends YkCertificate {
-  Ed25519Certificate({
-    required super.serialNumber,
-    required super.issuer,
-    required super.notBefore,
-    required super.notAfter,
-    required super.subject,
-    required super.publicKey,
-  });
-
-  factory Ed25519Certificate.fromAsn1Sequence(ASN1Sequence sequence) {
-    return myCertificatefromASN1(sequence) as Ed25519Certificate;
-  }
-
-  @override
-  SimplePublicKey getPublicKey() {
-    return SimplePublicKey(publicKey, type: KeyPairType.ed25519);
-  }
-}
-
-YkCertificate? myCertificatefromASN1(ASN1Sequence sequence) {
+Either<YkCertificate, X509Certificate> myCertificatefromASN1(
+    ASN1Sequence sequence) {
   int serialNumber = 0;
   String issuer = '';
   DateTime notBefore = DateTime.now();
@@ -198,30 +161,20 @@ YkCertificate? myCertificatefromASN1(ASN1Sequence sequence) {
     } else if (oid == "1.3.101.112") {
       issuer = "Ed25519";
     }
-    SimplePublicKey(publicKey,
-        type: oid == "1.3.101.110" ? KeyPairType.x25519 : KeyPairType.ed25519);
+
     dev.log("The pubkey is ${publicKey.toString()}");
 
-    if (oid == '1.3.101.110') {
-      return X25519Certificate(
+    if (oid == '1.3.101.110' || oid == '1.3.101.112') {
+      return Left(YkCertificate(
         serialNumber: serialNumber,
         issuer: issuer,
         notBefore: notBefore,
         notAfter: notAfter,
         subject: subject,
         publicKey: publicKey,
-      );
-    } else if (oid == '1.3.101.112') {
-      return Ed25519Certificate(
-        serialNumber: serialNumber,
-        issuer: issuer,
-        notBefore: notBefore,
-        notAfter: notAfter,
-        subject: subject,
-        publicKey: publicKey,
-      );
-    } else {
-      throw UnsupportedError('Unsupported type with OID: $oid');
+      ));
     }
-  }
+    return Right(X509Certificate.fromAsn1(sequence));
+  } // Handle the case where sequence.elements.length is not 3 or other cases
+  throw Exception('Invalid ASN1Sequence');
 }

@@ -262,14 +262,12 @@ class YkDesktop {
       dev.log("asn1seq to String : ${asn1Seq.toString()}");
       YkCertificate? certInfo;
       try {
-        certInfo = myCertificatefromASN1(asn1Seq);
+        certInfo = myCertificatefromASN1(asn1Seq) as YkCertificate?;
 
         dev.log("certinfo parser  to String : ${certInfo.toString()}");
       } catch (e) {
         dev.log("can't turn in myCertificate");
       }
-
-      SimplePublicKey pubkey = certInfo!.getPublicKey();
 
       return certInfo;
     } finally {

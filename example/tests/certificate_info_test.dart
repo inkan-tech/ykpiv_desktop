@@ -13,8 +13,10 @@ import 'dart:convert';
 import 'package:test/test.dart';
 import 'dart:typed_data';
 import 'package:asn1lib/asn1lib.dart';
-import 'dart:developer' as dev;
-import '../../lib/certificate_info.dart'; // Assurez-vous que ce fichier contient les classes et fonctions définies précédemment
+import 'package:x509/x509.dart';
+import 'package:ykpiv_desktop/certificate_info.dart'; // Assurez-vous que ce fichier contient les classes et fonctions définies précédemment
+
+import 'package:either_dart/either.dart';
 
 void main() {
   group('MyCertificate Tests', () {
@@ -25,12 +27,18 @@ void main() {
           "MIIBVjCCAQigAwIBAgIJAKklS1NNva3kMAUGAytlcDAxMQ0wCwYDVQQDDAR0ZXN0MQ0wCwYDVQQLDARzaWduMREwDwYDVQQKDAhzZWFsZi5pZTAeFw0yNDA4MTUxNDEzMDNaFw0yNTA4MTUxNDEzMDNaMDExDTALBgNVBAMMBHRlc3QxDTALBgNVBAsMBHNpZ24xETAPBgNVBAoMCHNlYWxmLmllMCowBQYDK2VwAyEAQqw4sAowuUDSNAG2G45EOaOYV+Vn3wxqln+pIdSlcDqjPTA7MB0GA1UdDgQWBBSj/+pkA3hHCef/9VU+e2MeczVNQTAJBgNVHSMEAjAAMA8GA1UdEwEB/wQFMAMBAf8wBQYDK2VwA0EAsAS4pRfRwIdbVVxbU+zfMs/kCQgS6G8+x58ro6F8dov9BCKZHG6rYaNWeSv8OVv8KkxaLEf6vWEZNW7aWuJjBg==";
       // Parse the raw sequence string into an ASN1Sequence
       ASN1Sequence sequence = ASN1Sequence();
+      YkCertificate? certificate;
       try {
         sequence = ASN1Sequence.fromBytes(base64Decode(rawSequence));
       } catch (e) {
         throwsFormatException;
       }
-      YkCertificate? certificate = myCertificatefromASN1(sequence);
+      Either<YkCertificate, X509Certificate> parsedcertificate =
+          myCertificatefromASN1(sequence);
+
+      if (parsedcertificate.isLeft) {
+        certificate = parsedcertificate.left;
+      }
 
       expect(certificate!.serialNumber, 9223372036854775807);
       expect(certificate.issuer, 'Ed25519');
@@ -84,12 +92,18 @@ void main() {
       // check this: https://oid-rep.orange-labs.fr/get/1.2.840.113549.1
       // Parse the raw sequence string into an ASN1Sequence
       ASN1Sequence sequence = ASN1Sequence();
+      YkCertificate? certificate;
       try {
         sequence = ASN1Sequence.fromBytes(base64Decode(rawSequence));
       } catch (e) {
         throwsFormatException;
       }
-      YkCertificate? certificate = myCertificatefromASN1(sequence);
+      Either<YkCertificate, X509Certificate> parsedcertificate =
+          myCertificatefromASN1(sequence);
+
+      if (parsedcertificate.isLeft) {
+        certificate = parsedcertificate.left;
+      }
 
       expect(certificate!.serialNumber, 9223372036854775807);
       expect(certificate.issuer, 'X25519');

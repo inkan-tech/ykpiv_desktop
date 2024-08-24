@@ -1,10 +1,9 @@
+import 'package:cryptography/cryptography.dart';
 import 'package:flutter/material.dart';
-import 'package:x509/x509.dart';
 import 'package:ykpiv_desktop/certificate_info.dart';
 import 'package:ykpiv_desktop/ykpiv_desktop.dart';
 import 'ecdh.dart'; // Import the ECDH test page
 import 'dart:typed_data';
-import 'package:x509/x509.dart' as x509;
 
 void main() {
   runApp(const MyApp());
@@ -126,6 +125,20 @@ class _YubiKeyTestPageState extends State<YubiKeyTestPage> {
       MaterialPageRoute(builder: (context) => const EcdhTestPage()),
     );
   }
+  
+Future<bool> verifySignature(
+    SimplePublicKey publicKey, Uint8List signature, Uint8List data) async {
+  try {
+    final verifier = Ed25519();
+    return await verifier.verify(
+      data,
+      signature: Signature(signature, publicKey: publicKey),
+    );
+  } catch (e) {
+    print('Error verifying signature: $e');
+    return false;
+  }
+}
 
   @override
   Widget build(BuildContext context) {

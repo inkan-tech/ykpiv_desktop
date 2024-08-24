@@ -1,7 +1,7 @@
 {
     "CodeGPT.apiKey": "CodeGPT Plus Beta",
     "asciidoc.antora.enableAntoraSupport": true,
-    "CodeGPT.Autocomplete.provider": "CodeGPT Enterprise - Plus",
+    "CodeGPT.Autocomplete.provider": "CodeGPT Plus - Plus",
     "files.associations": {
         ".fantomasignore": "ignore",
         "util.h": "c",
@@ -10,7 +10,7 @@
         "locale": "c",
         "openssl-compat.h": "c"
     },
-    "CodeGPT.Autocomplete.maxTokens": 640,
-    "CodeGPT.Autocomplete.suggestionDelay": 2500,
+    "CodeGPT.Autocomplete.maxTokens": 704,
+    "CodeGPT.Autocomplete.suggestionDelay": 1200,
     "FSharp.suggestGitignore": false
 }
