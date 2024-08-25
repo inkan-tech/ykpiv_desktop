@@ -1,5 +1,7 @@
-import 'package:cryptography/cryptography.dart';
+import 'package:cryptography/cryptography.dart' as cryptodart;
+import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
+import 'package:x509/x509.dart';
 import 'package:ykpiv_desktop/certificate_info.dart';
 import 'package:ykpiv_desktop/ykpiv_desktop.dart';
 import 'ecdh.dart'; // Import the ECDH test page
@@ -76,12 +78,13 @@ class _YubiKeyTestPageState extends State<YubiKeyTestPage> {
     }
   }
 
-  void _signData() {
+  Future<void> _signData() async {
     if (_dataToSignController.text.isNotEmpty) {
+      Uint8List signature = Uint8List(0);
       try {
         Uint8List dataToSign =
             Uint8List.fromList(_dataToSignController.text.codeUnits);
-        Uint8List signature = _ykDesktop.sign(
+        signature = _ykDesktop.sign(
             dataToSign, 0x8a, YkDesktop.getAlgoNumber("ED25519"));
         setState(() {
           _result =
@@ -92,6 +95,28 @@ class _YubiKeyTestPageState extends State<YubiKeyTestPage> {
           _result = 'Error signing data: ${e.toString()}';
         });
       }
+      // now verify using the slot choosed in the gui
+      int slot = int.parse(_slotController.text, radix: 16);
+      Either<YkCertificate, X509Certificate>? certRead =
+          _ykDesktop.readcert(slot) as Either<YkCertificate, X509Certificate>?;
+      var cert;
+      if (certRead!.isLeft) {
+        cert = certRead.left;
+      } else {
+        cert = certRead.right;
+      }
+      final publicKey = cryptodart.SimplePublicKey(cert.publicKey,
+          type: cryptodart.KeyPairType.ed25519);
+      final verifier = cryptodart.Ed25519();
+      final dataBytes =
+          Uint8List.fromList(_dataToSignController.text.codeUnits);
+      final signatureToVerify =
+          cryptodart.Signature(signature, publicKey: publicKey);
+      final isVerified =
+          await verifier.verify(dataBytes, signature: signatureToVerify);
+      setState(() {
+        _result += '\nSignature verification: $isVerified';
+      });
     } else {
       setState(() {
         _result = 'Please enter data to sign';
@@ -103,10 +128,21 @@ class _YubiKeyTestPageState extends State<YubiKeyTestPage> {
     if (_slotController.text.isNotEmpty) {
       try {
         int slot = int.parse(_slotController.text, radix: 16);
-        YkCertificate cert = _ykDesktop.readcert(slot);
-        setState(() {
-          _result = 'Certificate Subject: ${cert.toString()}';
-        });
+        Either<YkCertificate, X509Certificate>? certReader = _ykDesktop
+            .readcert(slot) as Either<YkCertificate, X509Certificate>?;
+        if (certReader!.isLeft) {
+          YkCertificate cert = certReader!.left;
+          setState(() {
+            _result = 'Certificate Subject: ${cert.subject}\n';
+            _result += 'Algo: ${cert.issuer}';
+          });
+        } else {
+          X509Certificate cert = certReader!.right;
+          setState(() {
+            _result = 'Certificate Subject: ${cert.tbsCertificate.subject}\n';
+            _result += 'Algo: ${cert.tbsCertificate.issuer}';
+          });
+        }
       } catch (e) {
         setState(() {
           _result = 'Error reading certificate: ${e.toString()}';
@@ -125,20 +161,20 @@ class _YubiKeyTestPageState extends State<YubiKeyTestPage> {
       MaterialPageRoute(builder: (context) => const EcdhTestPage()),
     );
   }
-  
-Future<bool> verifySignature(
-    SimplePublicKey publicKey, Uint8List signature, Uint8List data) async {
-  try {
-    final verifier = Ed25519();
-    return await verifier.verify(
-      data,
-      signature: Signature(signature, publicKey: publicKey),
-    );
-  } catch (e) {
-    print('Error verifying signature: $e');
-    return false;
+
+  Future<bool> verifySignature(cryptodart.SimplePublicKey publicKey,
+      Uint8List signature, Uint8List data) async {
+    try {
+      final verifier = cryptodart.Ed25519();
+      return await verifier.verify(
+        data,
+        signature: cryptodart.Signature(signature, publicKey: publicKey),
+      );
+    } catch (e) {
+      print('Error verifying signature: $e');
+      return false;
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {

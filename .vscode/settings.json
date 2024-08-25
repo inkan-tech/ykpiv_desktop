@@ -1,7 +1,7 @@
 {
     "CodeGPT.apiKey": "CodeGPT Plus Beta",
+    "CodeGPT.Autocomplete.enabled": true,
     "asciidoc.antora.enableAntoraSupport": true,
-    "CodeGPT.Autocomplete.provider": "CodeGPT Plus - Plus",
     "files.associations": {
         ".fantomasignore": "ignore",
         "util.h": "c",

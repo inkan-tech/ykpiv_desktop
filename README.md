@@ -254,3 +254,8 @@ Dummy csr from key 8a.
 
 ## Create a X25519 cert and import it 
 /opt/homebrew/bin/openssl genpkey -algorithm X25519 -out x25519_private.key
+
+
+## Check this for deployment
+
+https://developers.yubico.com/yubico-piv-tool/YubiKey_PIV_introduction.html

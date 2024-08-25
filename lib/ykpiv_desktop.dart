@@ -5,7 +5,8 @@ import 'dart:io';
 import 'dart:developer' as dev;
 
 import 'package:asn1lib/asn1lib.dart';
-import 'package:cryptography/cryptography.dart';
+import 'package:either_dart/either.dart';
+import 'package:x509/x509.dart';
 import 'package:ffi/ffi.dart' as ffi;
 
 import 'package:flutter/foundation.dart';
@@ -191,14 +192,12 @@ class YkDesktop {
       throw Exception('La signature a échoué avec le code d\'erreur : $result');
     }
 
-    dev.log("Signature calculée : $signaturePointer");
-
     // Copier la signature dans un Uint8List Dart
     Uint8List signature = Uint8List(signatureLengthPointer.value);
     for (var i = 0; i < signatureLengthPointer.value; i++) {
       signature[i] = signaturePointer[i];
     }
-
+    dev.log("Signature calculée : $signature");
     // Libérer la mémoire allouée
     ffi.calloc.free(dataToSignPointer);
     ffi.calloc.free(signaturePointer);
@@ -208,7 +207,7 @@ class YkDesktop {
     return signature;
   }
 
-  readcert(int slot) {
+  Either<YkCertificate, X509Certificate>? readcert(int slot) {
     // Step 1: Get the object ID for the given slot
     int objectId = _bindings.ykpiv_util_slot_object(slot);
     if (objectId == -1) {
@@ -260,10 +259,10 @@ class YkDesktop {
       // Parse the ASN.1 data
       ASN1Sequence asn1Seq = ASN1Sequence.fromBytes(certRead);
       dev.log("asn1seq to String : ${asn1Seq.toString()}");
-      YkCertificate? certInfo;
+      Either<YkCertificate, X509Certificate>? certInfo;
       try {
-        certInfo = myCertificatefromASN1(asn1Seq) as YkCertificate?;
-
+        certInfo = myCertificatefromASN1(asn1Seq)
+            as Either<YkCertificate, X509Certificate>;
         dev.log("certinfo parser  to String : ${certInfo.toString()}");
       } catch (e) {
         dev.log("can't turn in myCertificate");
