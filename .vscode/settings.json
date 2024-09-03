@@ -10,7 +10,20 @@
         "locale": "c",
         "openssl-compat.h": "c"
     },
-    "CodeGPT.Autocomplete.maxTokens": 704,
+    "CodeGPT.Autocomplete.maxTokens": 824,
     "CodeGPT.Autocomplete.suggestionDelay": 1200,
-    "FSharp.suggestGitignore": false
+    "FSharp.suggestGitignore": false,
+    "cmake.configureArgs": [
+        "-DVCPKG_APPLOCAL_DEPS=ON",
+        "-DX_VCPKG_APPLOCAL_DEPS_INSTALL=ON",
+        "-DVCPKG_TARGET_TRIPLET=-osx"
+    ],
+    "vcpkg.general.enable": true,
+    "vcpkg.target.hostTriplet": "arm64-osx",
+    "vcpkg.target.defaultTriplet": "-osx",
+    "vcpkg.target.useStaticLib": false,
+    "vcpkg.target.installDependencies": true,
+    "vcpkg.target.preferSystemLibs": false,
+    "vcpkg.target.useManifest": false,
+    "CodeGPT.Autocomplete.provider": "Ollama - codestral:latest"
 }

@@ -10,13 +10,14 @@
             "request": "launch",
             "program": "./test/"
         },
-
-
-        
         {
             "name": "ykpiv_desktop",
-            "request": "launch", "flutterMode": "debug",
-            "type": "dart",  "args": [ "--verbose"]
+            "request": "launch",
+            "flutterMode": "debug",
+            "type": "dart",
+            "args": [
+                "--verbose"
+            ]
         },
         {
             "name": "ykpiv_desktop (profile mode)",
@@ -29,6 +30,14 @@
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
+        },
+        {
+            "type": "cmake",
+            "request": "launch",
+            "name": "Debug portfile(s)",
+            "cmakeDebugType": "external",
+            "pipeName": "/tmp/vcpkg_ext_portfile_dbg",
+            "preLaunchTask": "Debug vcpkg commands"
         }
     ]
 }
