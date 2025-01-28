@@ -83,6 +83,7 @@ Install dependencies with vcpkg :
 ./vcpkg.exe install openssl:x64-windows
 ./vcpkg.exe install getopt:x64-windows
 ./vcpkg.exe install zlib:x64-windows
+./vcpkg.exe check zlib:x64-windows
 ```
 
 add this to your env : 
@@ -90,6 +91,10 @@ add this to your env :
 - VCPKG_ROOT : "path/to/vcpkg/root/directory"
 
 To generate the binding with ffi you have to edit the ffigen-windows.yaml and edit the compileropt with your path to openssl include :
+
+Installer https://www.yubico.com/support/download/smart-card-drivers-tools/ (à vérifier)
+
+Problem if using remote desktop seems to try using the guest key
 
 ```
 compiler-opts:
