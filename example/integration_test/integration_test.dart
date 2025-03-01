@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:cryptography/cryptography.dart';
-import 'package:cryptography_flutter/cryptography_flutter.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:ykpiv_desktop/ykpiv_desktop.dart';
@@ -42,7 +41,7 @@ void main() {
     });
 
     testWidgets('ECDH key exchange using slot 8b', (WidgetTester tester) async {
-      SimpleKeyPair keyPair = await FlutterX25519(X25519()).newKeyPair();
+      SimpleKeyPair keyPair = await (X25519()).newKeyPair();
       SimplePublicKey publicKey = await keyPair.extractPublicKey();
 
       expect(() {
