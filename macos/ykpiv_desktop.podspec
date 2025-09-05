@@ -5,38 +5,89 @@
 Pod::Spec.new do |s|
   s.name             = 'ykpiv_desktop'
   s.version          = '0.0.1'
-  s.summary          = 'A Flutter FFI plugin for yubico-piv-tool .'
+  s.summary          = 'A Flutter FFI plugin for yubico-piv-tool.'
   s.description      = <<-DESC
-  A Flutter FFI plugin for yubico-piv-tool on desktop macos and windows only
-  To use yubikey with flutter apps.
+  A Flutter FFI plugin for yubico-piv-tool on desktop macOS and Windows only
+  to use YubiKey with Flutter apps for PIV operations.
                        DESC
-  s.homepage         = 'http://example.com'
-  s.license          = {  :type => 'MIT', :file => '../yubico-piv-tool/COPYING' }
+  s.homepage         = 'https://github.com/inkan-tech/ykpiv_desktop'
+  s.license          = { :type => 'MIT', :file => '../LICENSE' }
   s.author           = { 'Inkan.link' => 'contact@inkan.link' }
 
-  # This will ensure the source files in Classes/ are included in the native
-  # builds of apps using this FFI plugin. Podspec does not support relative
-  # paths, so Classes contains a forwarder C file that relatively imports
-  # `../src/*` so that the C sources can be shared among all target platforms.
- 
-  s.source           = { :git => 'https://github.com/Yubico/yubico-piv-tool.git'}
-  #s.source_files  = 'Classes/lib/*.{c,h}' , 'Classes/common/*.{c,h}'
+  # This ensures the source files in Classes/ are included in the native
+  # builds of apps using this FFI plugin.
+  s.source           = { :git => 'https://github.com/inkan-tech/ykpiv_desktop.git' }
+  
   s.dependency 'FlutterMacOS'
+  
+  # Build the yubico-piv-tool from git submodule
   s.prepare_command = <<-CMD
-                        echo $PWD
-                        cd ../yubico-piv-tool/
-                        rm -f CMakeCache.txt  
-                        cmake . -DOPENSSL_STATIC_LINK=ON  -DCMAKE_INSTALL_PREFIX=../macos/target/ \
-                          -DBACKEND=macscard  -DOPENSSL_ROOT_DIR=$(brew --prefix openssl) -DOPENSSL_LIBRARIES=$(brew --prefix openssl)/lib
-                        make install 
-                   CMD
+    # Initialize git submodules if not already done
+    cd ..
+    git submodule update --init --recursive
+    cd macos
+    
+    # Create target directory structure
+    mkdir -p target/lib
+    mkdir -p target/include
+    
+    # Use the yubico-piv-tool from the submodule
+    YKPIV_DIR="../yubico-piv-tool"
+    
+    cd ${YKPIV_DIR}
+    
+    # Find OpenSSL using pkg-config or fallback to Homebrew
+    if pkg-config --exists openssl; then
+      OPENSSL_ROOT_DIR=$(pkg-config --variable=prefix openssl)
+      echo "Found OpenSSL using pkg-config at ${OPENSSL_ROOT_DIR}"
+    elif [ -x "$(command -v brew)" ]; then
+      OPENSSL_ROOT_DIR=$(brew --prefix openssl)
+      echo "Found OpenSSL using Homebrew at ${OPENSSL_ROOT_DIR}"
+    else
+      echo "Error: OpenSSL not found. Please install OpenSSL using brew or ensure it's in your pkg-config path."
+      exit 1
+    fi
+    
+    # Clean any previous build artifacts
+    rm -f CMakeCache.txt
+    
+    # Configure and build
+    cmake . -DOPENSSL_STATIC_LINK=ON \
+            -DCMAKE_INSTALL_PREFIX=../target \
+            -DBACKEND=macscard \
+            -DOPENSSL_ROOT_DIR="${OPENSSL_ROOT_DIR}" \
+            -DOPENSSL_LIBRARIES="${OPENSSL_ROOT_DIR}/lib"
+    
+    # Build and install to the target directory
+    make install
+    
+    # Copy required headers for FFI
+    mkdir -p ../Classes
+    cp -R lib/*.h ../Classes/
+    cp -R common/*.h ../Classes/
+  CMD
 
-  #s.public_header_files = 'target/include/ykpiv/*.h'
+  # Include necessary headers
+  s.public_header_files = 'Classes/*.h', 'target/include/ykpiv/*.h'
+  s.source_files = 'Classes/*.h'
+  
+  # Reference the built libraries - use wildcard pattern to handle version changes
   s.library = "ykpiv"
-  s.vendored_libraries = 'target/lib/libykpiv.a' ,'target/lib/libykpiv.dylib' , 'target/lib/libykpiv.2.dylib', 'target/lib/libykpiv.2.5.1.dylib'
+  s.vendored_libraries = 'target/lib/libykpiv.a', 'target/lib/libykpiv.dylib'
+  s.preserve_paths = 'target/lib/*', 'target/include/*'
+  
+  # Define resources
   s.resources = 'target/lib/libykpiv*.dylib'
-  s.preserve_paths = 'target/lib/libykpiv*'
-  s.platform = :osx, '13.01'
-  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
+  
+  # Target macOS 10.15 (Catalina) or later for better compatibility
+  s.platform = :osx, '10.15'
+  
+  # Additional build settings
+  s.pod_target_xcconfig = { 
+    'DEFINES_MODULE' => 'YES',
+    'OTHER_LDFLAGS' => '-ObjC',
+    'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/target/include $(PODS_TARGET_SRCROOT)/Classes'
+  }
+  
   s.swift_version = '5.0'
 end

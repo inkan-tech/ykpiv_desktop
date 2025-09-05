@@ -2,6 +2,22 @@
 
 Flutter plugin to use the yubico-piv-tool library in windows/macos
 
+## Getting Started
+
+### Clone the Repository
+
+This project uses git submodules for the yubico-piv-tool dependency. When cloning the repository, make sure to initialize submodules:
+
+```bash
+git clone --recursive https://github.com/inkan-tech/ykpiv_desktop.git
+```
+
+Or if you've already cloned the repository:
+
+```bash
+git submodule update --init --recursive
+```
+
 ## Good ref to build plugin
 
 <https://codelabs.developers.google.com/codelabs/flutter-ffigen?hl=fr#4>
@@ -67,124 +83,121 @@ flutter build ios --no-codesign
 After the build finishes, your C library should be statically linked in the Flutter plugin on macOS.
 Remember to replace "plugin_name" with the actual name of your Flutter plugin, "libname.a" with the actual name of your C library, and "header.h" with the actual name of your header file.
 
-## Build on windows (new version)
+## Build on Windows
 
-First download source code of Yubico Piv Tool on https://developers.yubico.com/yubico-piv-tool/Releases/
+### Prerequisites
 
-Place it in the yubico-piv-tool folder
+1.  **Visual Studio:** Install Visual Studio with C++ development workload.
+2.  **CMake:** Ensure CMake is installed and available in your PATH (usually included with Visual Studio).
+3.  **vcpkg:** Install vcpkg and integrate it with your shell/environment. Follow the official vcpkg [Getting Started guide](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started).
+4.  **vcpkg Dependencies:** Install the required dependencies using vcpkg:
+    ```bash
+    ./vcpkg install openssl:x64-windows zlib:x64-windows getopt:x64-windows
+    ```
+5.  **Flutter SDK:** Ensure you have the Flutter SDK installed.
 
-Install vcpkg : https://learn.microsoft.com/fr-fr/vcpkg/get_started/get-started-msbuild?pivots=shell-cmd
+### Build Steps
 
-Install cmake : https://cmake.org/download/
+The build process for the native `yubico-piv-tool` library and its dependencies is now automated using CMake and vcpkg.
 
-Install dependencies with vcpkg : 
+1.  **Configure CMake with vcpkg Toolchain:** When building the Flutter plugin (or the example app), ensure CMake uses the vcpkg toolchain file. You can set this globally or pass it during the CMake configuration step used by Flutter.
+    ```bash
+    # Example: Setting environment variable for Flutter build
+    $env:CMAKE_TOOLCHAIN_FILE="C:/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake" 
+    # Or configure your IDE (like VS Code with CMake Tools extension) to use it.
+    ```
+2.  **Build the Flutter Project:** Run the standard Flutter build command for the example application:
+    ```bash
+    cd example
+    flutter run -d windows
+    ```
+    During the build, CMake will:
+    *   Use the vcpkg toolchain to find OpenSSL, zlib, and getopt.
+    *   Use `FetchContent` to download the `yubico-piv-tool` source code (version 2.5.2).
+    *   Build `yubico-piv-tool` and link it correctly.
+    *   Ensure necessary runtime DLLs are available for the application.
 
-```
-./vcpkg.exe install openssl:x64-windows
-./vcpkg.exe install getopt:x64-windows
-./vcpkg.exe install zlib:x64-windows
-./vcpkg.exe check zlib:x64-windows
-```
+### Generating FFI Bindings (If Needed)
 
-add this to your env : 
+The FFI bindings (`lib/ykpiv_desktop_bindings_generated.dart`) are pre-generated. If you need to regenerate them (e.g., after updating `yubico-piv-tool` or its headers):
 
-- VCPKG_ROOT : "path/to/vcpkg/root/directory"
+1.  **Set Environment Variable:** Set the `FFIGEN_YKPIV_OPENSSL_INCLUDE` environment variable to point to your vcpkg OpenSSL include directory.
+    ```powershell
+    # Example using PowerShell:
+    $env:FFIGEN_YKPIV_OPENSSL_INCLUDE="C:/path/to/vcpkg/installed/x64-windows/include" 
+    ```
+    ```bash
+    # Example using bash/zsh:
+    export FFIGEN_YKPIV_OPENSSL_INCLUDE="/path/to/vcpkg/installed/x64-windows/include"
+    ```
+    *(Replace `C:/path/to/vcpkg` with your actual vcpkg installation path)*
+2.  **Run ffigen:**
+    ```bash
+    flutter pub run ffigen --config ffigen-windows.yaml
+    ```
 
-To generate the binding with ffi you have to edit the ffigen-windows.yaml and edit the compileropt with your path to openssl include :
+## Build on macOS
 
-Installer https://www.yubico.com/support/download/smart-card-drivers-tools/ (à vérifier)
+### Prerequisites
 
-Problem if using remote desktop seems to try using the guest key
+1.  **Xcode:** Install Xcode with Command Line Tools.
+2.  **OpenSSL:** Install OpenSSL using Homebrew or another package manager.
+    ```bash
+    brew install openssl
+    ```
+3.  **CMake:** Install CMake (used by the build script internally).
+    ```bash
+    brew install cmake
+    ```
+4.  **Flutter SDK:** Ensure you have the Flutter SDK installed.
 
-```
-compiler-opts:
-  - '-I path/to/vcpkg/packages/openssl_x64-windows/include'
-```
+### Build Steps
 
-And run : 
+The build process for macOS has been automated in the podspec file:
 
-```
-flutter pub run ffigen --config ffigen-windows.yaml
-```
+1.  **Set up CocoaPods (if not already set up):**
+    ```bash
+    sudo gem install cocoapods
+    ```
 
-After that you can run the example with 
+2.  **Build the Flutter Project:** Run the standard Flutter build command for the example application:
+    ```bash
+    cd example
+    flutter run -d macos
+    ```
+    
+    During the build, CocoaPods will:
+    *   Automatically download the yubico-piv-tool source code (version 2.5.2).
+    *   Detect OpenSSL installation (using pkg-config or Homebrew).
+    *   Build the yubico-piv-tool library with the correct configuration.
+    *   Copy necessary headers and libraries to the right locations.
 
-```
-cd example
-flutter run
-```
+### Generating FFI Bindings (If Needed)
 
-## Build on windows (old version)
+The FFI bindings for macOS use the same generated Dart file as Windows. If you need to regenerate them:
 
-First download source code of Yubico Piv Tool on https://developers.yubico.com/yubico-piv-tool/Releases/
+1.  **Run ffigen with the macOS configuration:**
+    ```bash
+    flutter pub run ffigen --config ffigen.yaml
+    ```
 
-Place it in the yubico-piv-tool folder
+### Troubleshooting macOS Build
 
-Install vcpkg : https://learn.microsoft.com/fr-fr/vcpkg/get_started/get-started-msbuild?pivots=shell-cmd
+If you encounter build issues on macOS:
 
-Install cmake : https://cmake.org/download/
+1.  **OpenSSL Path Issues:**
+    - Ensure OpenSSL is properly installed and accessible via pkg-config or Homebrew.
+    - You can check the OpenSSL installation path with: `brew --prefix openssl`
 
-Install dependencies with vcpkg : 
+2.  **Pod Install Errors:**
+    - Try running the pod install manually to see detailed error messages:
+      ```bash
+      cd example/macos
+      pod install
+      ```
 
-```
-./vcpkg.exe install openssl:x64-windows
-./vcpkg.exe install getopt:x64-windows
-./vcpkg.exe install zlib:x64-windows
-```
-
-add this env : 
-
-```
-$env:OPENSSL_ROOT_DIR = "C:\Users\pvhug\vcpkg\packages\openssl_x64-windows"
-```
-
-Create build dir and execute this (with your path to dependencies) : 
-
-```
-mkdir build;
-cd build;
-
-cmake -A x64 -DGETOPT_LIB_DIR="path\to\vcpkg\packages\getopt-win32_x64-windows\lib" -DGETOPT_INCLUDE_DIR="path\to\vcpkg\packages\getopt-win32_x64-windows\include" -DZLIB="path\to\vcpkg\packages\zlib_x64-windows\lib\zlib.lib" -DZLIB_LIBRARY="path\to\vcpkg\installed\x64-windows\lib\zlib.lib" -DZLIB_INCLUDE_DIR="path\to\vcpkg\installed\x64-windows\include" -DOPENSSL_STATIC_LINK=ON ..
-
-```
-
-Next build this with : 
-
-```
-cmake --build .
-```
-
-You can try it with (with your path) : 
-
-```
-$dllPath = "path\to\the\yubico\piv\tool\directory\build\lib\Debug"
-$env:PATH += ";$dllPath"
-cd .\tool\Debug\
-.\yubico-piv-tool.exe -a status
-```
-
-After that you can move the content of build directory in the windows/target/ directory
-
-To generate the binding with ffi you have to edit the ffigen-windows.yaml and edit the compileropt with your path to openssl include :
-
-```
-compiler-opts:
-  - '-I path/to/vcpkg/packages/openssl_x64-windows/include'
-```
-
-And run : 
-
-```
-flutter pub run ffigen --config ffigen-windows.yaml
-```
-
-
-After that you can run the example with 
-
-```
-cd example
-flutter run
-```
+3.  **Permission Issues:**
+    - The build process might need write access to various directories. If you see permission errors, you might need to adjust directory permissions.
 
 
 ## Examples of using yubico-piv-tool manually for verification

@@ -25,4 +25,4 @@ doc/api/
 
 .flutter-plugins
 .flutter-plugins-dependencies
-yubico-piv-tool
+# yubico-piv-tool is now a git submodule, not ignored

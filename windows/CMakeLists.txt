@@ -6,105 +6,90 @@ cmake_minimum_required(VERSION 3.14)
 
 # Project-level configuration.
 set(PROJECT_NAME "ykpiv_desktop")
-project(${PROJECT_NAME} LANGUAGES CXX)
+project(${PROJECT_NAME} LANGUAGES CXX C) # Added C language
 
-# Invoke the build for native code shared with the other target platforms.
-# This can be changed to accommodate different builds.
+# Ensure vcpkg toolchain is used if specified
+if(DEFINED CMAKE_TOOLCHAIN_FILE AND EXISTS "${CMAKE_TOOLCHAIN_FILE}")
+  include("${CMAKE_TOOLCHAIN_FILE}")
+  message(STATUS "Using vcpkg toolchain: ${CMAKE_TOOLCHAIN_FILE}")
+else()
+  message(WARNING "CMAKE_TOOLCHAIN_FILE is not defined or does not exist. Vcpkg dependencies might not be found correctly.")
+endif()
+
+# Find required dependencies using vcpkg
+find_package(OpenSSL REQUIRED)
+find_package(ZLIB REQUIRED)
+# Note: getopt is often header-only or part of libc on non-Windows,
+# but vcpkg provides getopt-win32 for Windows.
+# We might need specific handling if find_package doesn't work directly.
+# For now, assume find_package works or handle it later if needed.
+find_package(getopt CONFIG) # Try finding config first
+if(NOT getopt_FOUND)
+  find_package(Getopt) # Fallback to standard find module if config fails
+endif()
+if(NOT getopt_FOUND)
+  message(WARNING "Could not find getopt using find_package. Manual configuration might be needed if yubico-piv-tool requires it.")
+  # Add manual hints if necessary, e.g., based on VCPKG_ROOT
+  # set(GETOPT_INCLUDE_DIR "${VCPKG_ROOT}/packages/getopt-win32_x64-windows/include")
+  # set(GETOPT_LIBRARY "${VCPKG_ROOT}/packages/getopt-win32_x64-windows/lib/getopt.lib")
+endif()
+
+# Use the git submodule instead of FetchContent
+# Initialize submodules if not already done
+execute_process(
+  COMMAND git submodule update --init --recursive
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
+  RESULT_VARIABLE GIT_SUBMOD_RESULT
+)
+if(NOT GIT_SUBMOD_RESULT EQUAL "0")
+  message(WARNING "git submodule update --init --recursive failed with ${GIT_SUBMOD_RESULT}")
+endif()
+
+# Add the yubico-piv-tool subdirectory from the submodule
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../yubico-piv-tool" "${CMAKE_CURRENT_BINARY_DIR}/yubico-piv-tool")
+
+# The yubico-piv-tool build should now provide targets like 'ykpiv'
+# Check the yubico-piv-tool CMakeLists.txt for exact target names if needed.
+
+# Invoke the build for the (currently unused) native code shared with other platforms.
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../src" "${CMAKE_CURRENT_BINARY_DIR}/shared")
 
-# Variables for external tool setup
-set(YUBICO_PIV_TOOL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../yubico-piv-tool")
-
-# Utilisation de la variable d'environnement VCPKG_ROOT
-if(NOT DEFINED ENV{VCPKG_ROOT})
-    message(FATAL_ERROR "VCPKG_ROOT is not defined. Please set the VCPKG_ROOT environment variable to the root directory of your vcpkg installation.")
-endif()
-
-set(VCPKG_ROOT $ENV{VCPKG_ROOT})
-set(OPENSSL_ROOT_DIR "${VCPKG_ROOT}/packages/openssl_x64-windows")
-set(OPENSSL_INCLUDE_DIR "${OPENSSL_ROOT_DIR}/include")
-set(OPENSSL_CRYPTO_LIBRARY "${OPENSSL_ROOT_DIR}/lib/libcrypto.lib")
-set(GETOPT_LIB_DIR "${VCPKG_ROOT}/packages/getopt-win32_x64-windows/lib")
-set(GETOPT_INCLUDE_DIR "${VCPKG_ROOT}/packages/getopt-win32_x64-windows/include")
-set(ZLIB_LIB_DIR "${VCPKG_ROOT}/packages/zlib_x64-windows/lib/zlib.lib")
-set(ZLIB_LIBRARY "${VCPKG_ROOT}/packages/zlib_x64-windows/lib/zlib.lib")
-set(ZLIB_INCLUDE_DIR "${VCPKG_ROOT}/packages/zlib_x64-windows/include")
-
-# Ensure the yubico-piv-tool directory is not empty
-file(GLOB YUBICO_PIV_TOOL_FILES "${YUBICO_PIV_TOOL_DIR}/*")
-if(YUBICO_PIV_TOOL_FILES STREQUAL "")
-    message(FATAL_ERROR "Yubico PIV tool directory is empty. Please download and extract the files manually.")
-else()
-    message(STATUS "Yubico PIV tool directory is not empty. Proceeding with the build.")
-endif()
-
-# Set environment variable for OpenSSL
-set(ENV{OPENSSL_ROOT_DIR} "${OPENSSL_ROOT_DIR}")
-
-# Build the yubico-piv-tool
-execute_process(
-    COMMAND ${CMAKE_COMMAND} -E make_directory build
-    WORKING_DIRECTORY ${YUBICO_PIV_TOOL_DIR}
+# Define the plugin library target (even if it's just a placeholder)
+# This target is referenced by the Flutter build process.
+add_library(${PROJECT_NAME}_plugin SHARED IMPORTED)
+set_target_properties(${PROJECT_NAME}_plugin PROPERTIES
+  IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/lib/libykpiv.dll" # Point to the actual DLL location
+  IMPORTED_IMPLIB "${CMAKE_BINARY_DIR}/lib/libykpiv.lib" # Point to the import library
 )
+# Ensure ykpiv target is built before trying to use its output
+add_dependencies(${PROJECT_NAME}_plugin ykpiv)
 
-execute_process(
-    COMMAND ${CMAKE_COMMAND} -A x64 
-        -DGETOPT_LIB_DIR=${GETOPT_LIB_DIR} 
-        -DGETOPT_INCLUDE_DIR=${GETOPT_INCLUDE_DIR} 
-        -DZLIB=${ZLIB_LIB_DIR} 
-        -DZLIB_LIBRARY=${ZLIB_LIBRARY} 
-        -DZLIB_INCLUDE_DIR=${ZLIB_INCLUDE_DIR} 
-        -DOPENSSL_INCLUDE_DIR=${OPENSSL_INCLUDE_DIR} 
-        -DOPENSSL_CRYPTO_LIBRARY=${OPENSSL_CRYPTO_LIBRARY} 
-        -DOPENSSL_STATIC_LINK=ON ..
-    WORKING_DIRECTORY ${YUBICO_PIV_TOOL_DIR}/build
-)
+# Ensure dependent DLLs (OpenSSL, ZLIB, getopt) are copied to the output directory
+# where the Flutter runner executable will be.
+# CMake install rules or custom commands can achieve this.
+# A simpler approach for development is to ensure they are in the PATH or copied manually/by script.
+# For a more robust solution, use install rules.
 
-execute_process(
-    COMMAND ${CMAKE_COMMAND} --build .
-    WORKING_DIRECTORY ${YUBICO_PIV_TOOL_DIR}/build
-)
+# Example of copying DLLs to the runner directory (adjust paths as needed)
+# This assumes a standard Flutter build output structure.
+# Note: This might run every configure, consider adding checks or using install rules.
+# get_property(FLUTTER_RUNNER_OUTPUT_DIRECTORY TARGET ${PROJECT_NAME}_plugin PROPERTY ?) # Need a way to get runner output dir
 
-# Define target directories
-set(WINDOWS_TARGET_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../windows/target")
-set(WINDOWS_LIBS_DIR "${WINDOWS_TARGET_DIR}/lib/Debug")
-set(WINDOWS_TOOL_DIR "${WINDOWS_TARGET_DIR}/tool/Debug")
-set(WINDOWS_YKCS11_DIR "${WINDOWS_TARGET_DIR}/ykcs11/Debug")
+# A simpler, less robust way for local runs: add build dir to PATH (often handled by IDEs)
+# Or copy manually for now. Let's rely on CMake/vcpkg placing them correctly for find_package first.
 
-# Copy the contents of the build directory to the target directory
-file(GLOB BUILD_CONTENTS "${YUBICO_PIV_TOOL_DIR}/build/*")
-foreach(file ${BUILD_CONTENTS})
-    file(COPY ${file} DESTINATION ${WINDOWS_TARGET_DIR})
-endforeach()
-
-# Check if the build output exists in the target directory before proceeding
-if(EXISTS "${WINDOWS_LIBS_DIR}/libykpiv.dll" AND EXISTS "${WINDOWS_LIBS_DIR}/libcrypto-3-x64.dll" AND EXISTS "${WINDOWS_LIBS_DIR}/zlib1.dll" AND EXISTS "${WINDOWS_TOOL_DIR}/getopt.dll" AND EXISTS "${WINDOWS_YKCS11_DIR}/libykcs11.dll")
-    message(STATUS "All required build files have been successfully copied to the target directory.")
-else()
-    message(FATAL_ERROR "Required build files not found in the target directory. Build might have failed.")
-endif()
-
-# Chemin de destination des bibliothèques dans le projet Flutter (racine du dossier example)
-set(EXAMPLE_DIR "${CMAKE_CURRENT_BINARY_DIR}/../../../../../")
-
-# Copier les bibliothèques Windows dans le répertoire example
-file(COPY "${WINDOWS_LIBS_DIR}/libykpiv.dll"
-     DESTINATION "${EXAMPLE_DIR}")
-file(COPY "${WINDOWS_LIBS_DIR}/libcrypto-3-x64.dll"
-     DESTINATION "${EXAMPLE_DIR}")
-file(COPY "${WINDOWS_LIBS_DIR}/zlib1.dll"
-     DESTINATION "${EXAMPLE_DIR}")
-file(COPY "${WINDOWS_TOOL_DIR}/getopt.dll"
-     DESTINATION "${EXAMPLE_DIR}")
-file(COPY "${WINDOWS_YKCS11_DIR}/libykcs11.dll"
-     DESTINATION "${EXAMPLE_DIR}")
-
-# List of absolute paths to libraries that should be bundled with the plugin.
-# This list could contain prebuilt libraries, or libraries created by an
-# external build triggered from this build file.
+# List of libraries to bundle (placeholder, actual bundling handled by Flutter build)
 set(ykpiv_desktop_bundled_libraries
-  # Defined in ../src/CMakeLists.txt.
-  # This can be changed to accommodate different builds.
-  $<TARGET_FILE:ykpiv_desktop>
+  # The actual library needed at runtime is libykpiv.dll and its dependencies.
+  # The target defined in src/CMakeLists.txt (ykpiv_desktop) is currently not used.
+  # We reference the IMPORTED target we created for the Flutter tooling.
+  ${PROJECT_NAME}_plugin
   PARENT_SCOPE
 )
+
+# Set environment variable for ffigen (can be used in ffigen-windows.yaml)
+# Requires CMake 3.14+ for generator expressions in environment variables,
+# but setting it directly might work for immediate use.
+# A better approach is to pass it via the build command or a wrapper script.
+# For now, let's assume the user sets VCPKG_INSTALLED_DIR manually or we update ffigen config later.
+# set(ENV{FFIGEN_OPENSSL_INCLUDE} "${OpenSSL_INCLUDE_DIRS}") # Example
