@@ -1,5 +1,6 @@
+import 'package:cryptography_flutter_plus/cryptography_flutter_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:cryptography/cryptography.dart';
+import 'package:cryptography_plus/cryptography_plus.dart';
 import 'dart:typed_data';
 import 'package:ykpiv_desktop/ykpiv_desktop.dart';
 
@@ -42,7 +43,7 @@ class _EcdhTestPageState extends State<EcdhTestPage> {
   }
 
   Future<void> _generateX25519KeyPair() async {
-    final algorithm = X25519();
+    final algorithm = FlutterX25519(X25519());
     final keyPair = await algorithm.newKeyPair();
     publicKey = Uint8List.fromList((await keyPair.extractPublicKey()).bytes);
     setState(() {});

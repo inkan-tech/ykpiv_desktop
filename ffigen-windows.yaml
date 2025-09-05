@@ -17,7 +17,11 @@ headers:
     - 'yubico-piv-tool/lib/*.h'
     - 'yubico-piv-tool/common/*.h'
 compiler-opts:
-  - '-I C:/Users/pvhug/vcpkg/packages/openssl_x64-windows/include'
+  # Use an environment variable for the OpenSSL include path.
+  # Set FFIGEN_YKPIV_OPENSSL_INCLUDE before running ffigen.
+  # Example (Powershell): $env:FFIGEN_YKPIV_OPENSSL_INCLUDE="C:/path/to/vcpkg/installed/x64-windows/include"
+  # Example (bash/zsh): export FFIGEN_YKPIV_OPENSSL_INCLUDE="/path/to/vcpkg/installed/x64-windows/include"
+  - '-I ${FFIGEN_YKPIV_OPENSSL_INCLUDE}'
 preamble: |
   // ignore_for_file: always_specify_types
   // ignore_for_file: camel_case_types

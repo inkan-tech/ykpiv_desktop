@@ -1,4 +1,4 @@
-import 'package:cryptography/cryptography.dart' as cryptodart;
+import 'package:cryptography_plus/cryptography_plus.dart' as cryptodart;
 import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:x509/x509.dart';

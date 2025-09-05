@@ -16,11 +16,11 @@
     "cmake.configureArgs": [
         "-DVCPKG_APPLOCAL_DEPS=ON",
         "-DX_VCPKG_APPLOCAL_DEPS_INSTALL=ON",
-        "-DVCPKG_TARGET_TRIPLET=-osx"
+        "-DVCPKG_TARGET_TRIPLET=arm64-osx"
     ],
     "vcpkg.general.enable": true,
     "vcpkg.target.hostTriplet": "arm64-osx",
-    "vcpkg.target.defaultTriplet": "-osx",
+    "vcpkg.target.defaultTriplet": "arm64-osx",
     "vcpkg.target.useStaticLib": false,
     "vcpkg.target.installDependencies": true,
     "vcpkg.target.preferSystemLibs": false,

@@ -44,7 +44,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   ffi: ^2.1.2
 
-  cryptography: ^2.7.0
+  cryptography_plus: ^2.7.1
+  cryptography_flutter_plus: ^2.3.4
   x509: ^0.2.4
   asn1lib: ^1.5.3
   either_dart: ^1.0.0

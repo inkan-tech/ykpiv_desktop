@@ -1,8 +1,6 @@
 // made by codeGPT with model GPT-4 and prompt "fais des tests unitaire en utilsant les ASN1seq fournient en commentaire. Vérifie que les champs normaux d'un x509 sont présent Signature etc.."
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:asn1lib/asn1lib.dart';
-import 'package:cryptography/cryptography.dart';
 import 'package:x509/x509.dart';
 import 'dart:developer' as dev;
 
