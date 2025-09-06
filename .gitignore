@@ -30,3 +30,13 @@ doc/api/
 # Build artifacts
 target/
 Classes/
+
+# Downloaded yubico-piv-tool release packages
+yubico-piv-tool-*.tar.gz
+
+# CMake build files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.cmake
