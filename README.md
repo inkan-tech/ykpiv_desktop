@@ -124,21 +124,25 @@ Remember to replace "plugin_name" with the actual name of your Flutter plugin, "
 
 ### Prerequisites
 
-1.  **Visual Studio:** Install Visual Studio with C++ development workload.
-2.  **CMake:** Ensure CMake is installed and available in your PATH (usually included with Visual Studio).
-3.  **vcpkg:** Install vcpkg and integrate it with your shell/environment. Follow the official vcpkg [Getting Started guide](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started).
+1.  **Visual Studio:** Install Visual Studio 2019 or later with C++ development workload.
+2.  **CMake:** Ensure CMake 3.14 or later is installed and available in your PATH (usually included with Visual Studio).
+3.  **vcpkg:** Install vcpkg package manager and integrate it with your shell/environment. Follow the official vcpkg [Getting Started guide](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started).
 4.  **vcpkg Dependencies:** Install the required dependencies using vcpkg:
     ```bash
-    ./vcpkg install openssl:x64-windows zlib:x64-windows getopt:x64-windows
+    vcpkg install openssl:x64-windows zlib:x64-windows getopt-win32:x64-windows
     ```
 5.  **Flutter SDK:** Ensure you have the Flutter SDK installed.
+6.  **Environment Setup:** Set the VCPKG_ROOT environment variable:
+    ```powershell
+    $env:VCPKG_ROOT="C:/path/to/vcpkg"
+    ```
 
 ### Build Steps
 
 The build process for the native `yubico-piv-tool` library and its dependencies is now automated using CMake and vcpkg.
 
 1.  **Configure CMake with vcpkg Toolchain:** When building the Flutter plugin (or the example app), ensure CMake uses the vcpkg toolchain file. You can set this globally or pass it during the CMake configuration step used by Flutter.
-    ```bash
+    ```powershell
     # Example: Setting environment variable for Flutter build
     $env:CMAKE_TOOLCHAIN_FILE="C:/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake" 
     # Or configure your IDE (like VS Code with CMake Tools extension) to use it.
@@ -149,10 +153,16 @@ The build process for the native `yubico-piv-tool` library and its dependencies 
     flutter run -d windows
     ```
     During the build, CMake will:
+    *   Automatically download the official Yubico PIV tool release package if cmdline.c/cmdline.h files are missing.
     *   Use the vcpkg toolchain to find OpenSSL, zlib, and getopt.
-    *   Use `FetchContent` to download the `yubico-piv-tool` source code (version 2.5.2).
     *   Build `yubico-piv-tool` and link it correctly.
     *   Ensure necessary runtime DLLs are available for the application.
+
+### Windows Build Notes
+
+- **Automatic Download:** The plugin automatically downloads the official Yubico PIV tool release package (version 2.7.2) during the build process if the required pre-generated files (cmdline.c/cmdline.h) are not present.
+- **No Manual Intervention:** This ensures Windows compatibility without requiring developers to manually install gengetopt or download release packages.
+- **Version Management:** The Yubico PIV tool version is controlled by the `YUBICO_VERSION` file in the plugin root directory.
 
 ### Generating FFI Bindings (If Needed)
 
