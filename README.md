@@ -32,6 +32,29 @@ Or if you've already cloned the repository:
 git submodule update --init --recursive
 ```
 
+## Windows Build Requirements
+
+### Prerequisites
+- Visual Studio 2019 or later with C++ development tools
+- CMake 3.14 or later
+- vcpkg package manager
+- VCPKG_ROOT environment variable set
+
+### Required vcpkg packages
+```bash
+vcpkg install openssl:x64-windows zlib:x64-windows getopt-win32:x64-windows
+```
+
+### Environment Setup
+```powershell
+$env:CMAKE_TOOLCHAIN_FILE="C:/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake"
+```
+
+### Notes
+- The plugin automatically downloads the official Yubico PIV tool release package during build
+- This ensures Windows compatibility by using pre-generated cmdline files
+- No manual gengetopt installation required
+
 ## Good ref to build plugin
 
 <https://codelabs.developers.google.com/codelabs/flutter-ffigen?hl=fr#4>
