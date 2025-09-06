@@ -46,17 +46,25 @@ post_install do |installer|
       phase.shell_script = <<-SCRIPT
         # Create symlink for libykpiv.2.dylib if needed
         FRAMEWORKS_PATH="${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+        echo "Creating libykpiv symlinks in: $FRAMEWORKS_PATH"
         if [ -d "$FRAMEWORKS_PATH" ]; then
           cd "$FRAMEWORKS_PATH"
           # Remove old versions if present
-          rm -f libykpiv.2.5.2.dylib
+          rm -f libykpiv.2.5.2.dylib libykpiv.2.dylib libykpiv.dylib
           # Create symlinks for the current version
           if [ -f "libykpiv.2.7.2.dylib" ]; then
+            echo "Creating symlinks for libykpiv.2.7.2.dylib"
             ln -sf libykpiv.2.7.2.dylib libykpiv.2.dylib
             ln -sf libykpiv.2.7.2.dylib libykpiv.dylib
+            echo "Symlinks created successfully"
+          else
+            echo "Warning: libykpiv.2.7.2.dylib not found in $FRAMEWORKS_PATH"
           fi
+        else
+          echo "Warning: Frameworks path does not exist: $FRAMEWORKS_PATH"
         fi
       SCRIPT
+      phase.output_paths = ["${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libykpiv.2.dylib"]
     end
   end
 end

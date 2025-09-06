@@ -124,4 +124,24 @@ Pod::Spec.new do |s|
   }
   
   s.swift_version = '5.0'
+  
+  # Script phase to create symlinks for libykpiv
+  s.script_phase = {
+    :name => 'Create libykpiv symlinks',
+    :script => <<-SCRIPT,
+      # Create symlinks for libykpiv in app frameworks directory
+      FRAMEWORKS_PATH="${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+      echo "Creating libykpiv symlinks in: $FRAMEWORKS_PATH"
+      if [ -d "$FRAMEWORKS_PATH" ]; then
+        cd "$FRAMEWORKS_PATH"
+        # Create symlinks for version compatibility
+        if [ -f "libykpiv.2.7.2.dylib" ]; then
+          ln -sf libykpiv.2.7.2.dylib libykpiv.2.dylib
+          ln -sf libykpiv.2.7.2.dylib libykpiv.dylib
+          echo "Symlinks created: libykpiv.2.dylib and libykpiv.dylib"
+        fi
+      fi
+SCRIPT
+    :execution_position => :after_compile
+  }
 end
