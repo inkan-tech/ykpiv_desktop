@@ -34,19 +34,41 @@ if(NOT getopt_FOUND)
   # set(GETOPT_LIBRARY "${VCPKG_ROOT}/packages/getopt-win32_x64-windows/lib/getopt.lib")
 endif()
 
-# Use the git submodule instead of FetchContent
-# Initialize submodules if not already done
-execute_process(
-  COMMAND git submodule update --init --recursive
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
-  RESULT_VARIABLE GIT_SUBMOD_RESULT
-)
-if(NOT GIT_SUBMOD_RESULT EQUAL "0")
-  message(WARNING "git submodule update --init --recursive failed with ${GIT_SUBMOD_RESULT}")
-endif()
+# Try to use git submodule first, fallback to FetchContent
+set(YKPIV_SUBMODULE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../yubico-piv-tool")
 
-# Add the yubico-piv-tool subdirectory from the submodule
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../yubico-piv-tool" "${CMAKE_CURRENT_BINARY_DIR}/yubico-piv-tool")
+# Check if we have a proper git submodule
+if(EXISTS "${YKPIV_SUBMODULE_DIR}/.git" OR EXISTS "${YKPIV_SUBMODULE_DIR}/.git/")
+  message(STATUS "Using yubico-piv-tool from git submodule...")
+  # Initialize submodules if not already done
+  execute_process(
+    COMMAND git submodule update --init --recursive
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
+    RESULT_VARIABLE GIT_SUBMOD_RESULT
+  )
+  if(NOT GIT_SUBMOD_RESULT EQUAL "0")
+    message(WARNING "git submodule update --init --recursive failed with ${GIT_SUBMOD_RESULT}")
+  endif()
+  
+  # Add the yubico-piv-tool subdirectory from the submodule
+  add_subdirectory("${YKPIV_SUBMODULE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/yubico-piv-tool")
+  
+elseif(EXISTS "${YKPIV_SUBMODULE_DIR}/CMakeLists.txt")
+  message(STATUS "Using existing yubico-piv-tool directory...")
+  add_subdirectory("${YKPIV_SUBMODULE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/yubico-piv-tool")
+  
+else()
+  message(STATUS "Git submodule not available, using FetchContent to download yubico-piv-tool...")
+  # Fallback to FetchContent for dependency scenario
+  include(FetchContent)
+  FetchContent_Declare(
+    yubico-piv-tool
+    GIT_REPOSITORY https://github.com/Yubico/yubico-piv-tool.git
+    GIT_TAG yubico-piv-tool-2.5.2 # Use the same version as submodule
+    # Consider adding GIT_SHALLOW TRUE for faster downloads
+  )
+  FetchContent_MakeAvailable(yubico-piv-tool)
+endif()
 
 # The yubico-piv-tool build should now provide targets like 'ykpiv'
 # Check the yubico-piv-tool CMakeLists.txt for exact target names if needed.

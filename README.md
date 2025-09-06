@@ -4,9 +4,23 @@ Flutter plugin to use the yubico-piv-tool library in windows/macos
 
 ## Getting Started
 
-### Clone the Repository
+### Using as a Dependency
 
-This project uses git submodules for the yubico-piv-tool dependency. When cloning the repository, make sure to initialize submodules:
+When using this package as a dependency in your Flutter project, no additional setup is required. The package automatically handles the yubico-piv-tool dependency through:
+
+- **Automatic fallback**: If git submodules aren't available (typical in pub.dev installations), the build system automatically downloads the required version of yubico-piv-tool
+- **Cross-platform support**: Works on both macOS (via CocoaPods) and Windows (via CMake)
+
+Simply add to your `pubspec.yaml`:
+
+```yaml
+dependencies:
+  ykpiv_desktop: ^0.0.1
+```
+
+### Development Setup
+
+For development or when cloning this repository directly, git submodules are used for the yubico-piv-tool dependency:
 
 ```bash
 git clone --recursive https://github.com/inkan-tech/ykpiv_desktop.git

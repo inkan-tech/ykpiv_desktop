@@ -20,19 +20,35 @@ Pod::Spec.new do |s|
   
   s.dependency 'FlutterMacOS'
   
-  # Build the yubico-piv-tool from git submodule
+  # Build the yubico-piv-tool from git submodule or download if not available
   s.prepare_command = <<-CMD
-    # Initialize git submodules if not already done
-    cd ..
-    git submodule update --init --recursive
-    cd macos
+    YKPIV_VERSION="2.5.2"
+    YKPIV_DIR="../yubico-piv-tool"
+    YKPIV_TARBALL="yubico-piv-tool-${YKPIV_VERSION}.tar.gz"
+    YKPIV_URL="https://github.com/Yubico/yubico-piv-tool/archive/refs/tags/yubico-piv-tool-${YKPIV_VERSION}.tar.gz"
     
     # Create target directory structure
     mkdir -p target/lib
     mkdir -p target/include
     
-    # Use the yubico-piv-tool from the submodule
-    YKPIV_DIR="../yubico-piv-tool"
+    # Try to use git submodule first, fallback to download
+    if [ -d "${YKPIV_DIR}/.git" ]; then
+      echo "Using yubico-piv-tool from git submodule..."
+      cd ..
+      git submodule update --init --recursive
+      cd macos
+    elif [ -d "${YKPIV_DIR}" ] && [ -f "${YKPIV_DIR}/CMakeLists.txt" ]; then
+      echo "Using existing yubico-piv-tool directory..."
+    else
+      echo "Git submodule not available, downloading yubico-piv-tool version ${YKPIV_VERSION}..."
+      # Remove any incomplete directory
+      rm -rf "${YKPIV_DIR}"
+      curl -L ${YKPIV_URL} -o ${YKPIV_TARBALL}
+      tar -xzf ${YKPIV_TARBALL}
+      # The tarball extracts to yubico-piv-tool-yubico-piv-tool-VERSION
+      mv "yubico-piv-tool-yubico-piv-tool-${YKPIV_VERSION}" "${YKPIV_DIR}"
+      rm ${YKPIV_TARBALL}
+    fi
     
     cd ${YKPIV_DIR}
     
