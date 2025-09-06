@@ -2,7 +2,7 @@ PODS:
   - cryptography_flutter_plus (0.2.0):
     - FlutterMacOS
   - FlutterMacOS (1.0.0)
-  - ykpiv_desktop (0.0.5):
+  - ykpiv_desktop (0.0.6):
     - FlutterMacOS
 
 DEPENDENCIES:
@@ -21,7 +21,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   cryptography_flutter_plus: 7c6e0d0f08664499a2c5402aa7cbcca07f2a7130
   FlutterMacOS: d0db08ddef1a9af05a5ec4b724367152bb0500b1
-  ykpiv_desktop: 636b63a77a06048512d371e7e9d12cc550606a2e
+  ykpiv_desktop: 87ae46c706ea1c9e280e5bc19ae340d2a97f3540
 
 PODFILE CHECKSUM: 69d5d9cbc98db4589c94c55f212d9a22087db96e
 

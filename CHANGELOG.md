@@ -1,3 +1,10 @@
+## 0.0.7
+
+* Documented expected Xcode duplicate file reference warning
+* Reverted to working vendored_libraries wildcard pattern
+* Fixed build issues with overly specific dylib patterns
+* Ensured plugin works correctly despite cosmetic warnings
+
 ## 0.0.6
 
 * Fixed macOS libykpiv symlink creation script in podspec

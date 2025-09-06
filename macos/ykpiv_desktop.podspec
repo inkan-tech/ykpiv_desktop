@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'ykpiv_desktop'
-  s.version          = '0.0.6'
+  s.version          = '0.0.7'
   s.summary          = 'A Flutter FFI plugin for yubico-piv-tool.'
   s.description      = <<-DESC
   A Flutter FFI plugin for yubico-piv-tool on desktop macOS and Windows only
@@ -119,6 +119,7 @@ Pod::Spec.new do |s|
   s.public_header_files = 'Classes/**/*.h'
   
   # Reference both static and dynamic libraries including symlinks
+  # Note: This may generate Xcode warnings about duplicate file references, which is expected
   s.vendored_libraries = 'target/lib/libykpiv.a', 'target/lib/libykpiv*.dylib'
   
   # Preserve paths for the build artifacts
