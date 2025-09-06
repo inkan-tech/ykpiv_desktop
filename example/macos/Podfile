@@ -39,5 +39,18 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_macos_build_settings(target)
+    
+    # Add script phase to create symlink for libykpiv.2.dylib
+    if target.name == 'Pods-Runner'
+      phase = target.new_shell_script_build_phase('Create libykpiv symlink')
+      phase.shell_script = <<-SCRIPT
+        # Create symlink for libykpiv.2.dylib if needed
+        if [ -f "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libykpiv.2.7.2.dylib" ]; then
+          cd "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+          ln -sf libykpiv.2.7.2.dylib libykpiv.2.dylib
+          ln -sf libykpiv.2.7.2.dylib libykpiv.dylib
+        fi
+      SCRIPT
+    end
   end
 end

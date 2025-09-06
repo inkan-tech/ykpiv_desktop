@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'ykpiv_desktop'
-  s.version          = '0.0.2'
+  s.version          = '0.0.3'
   s.summary          = 'A Flutter FFI plugin for yubico-piv-tool.'
   s.description      = <<-DESC
   A Flutter FFI plugin for yubico-piv-tool on desktop macOS and Windows only
@@ -105,16 +105,11 @@ Pod::Spec.new do |s|
   s.source_files = 'Classes/**/*.h'
   s.public_header_files = 'Classes/**/*.h'
   
-  # Reference the built static library only
-  s.vendored_libraries = 'target/lib/libykpiv.a'
+  # Reference both static and dynamic libraries
+  s.vendored_libraries = 'target/lib/libykpiv.a', 'target/lib/libykpiv.*.dylib'
   
   # Preserve paths for the build artifacts
   s.preserve_paths = 'target/**/*', 'Classes/**/*'
-  
-  # Bundle dynamic libraries as resources
-  s.resource_bundles = {
-    'ykpiv_desktop' => ['target/lib/*.dylib']
-  }
   
   # Target macOS 10.15 (Catalina) or later for better compatibility
   s.platform = :osx, '10.15'
@@ -122,8 +117,10 @@ Pod::Spec.new do |s|
   # Additional build settings
   s.pod_target_xcconfig = { 
     'DEFINES_MODULE' => 'YES',
-    'OTHER_LDFLAGS' => '-ObjC',
-    'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/target/include $(PODS_TARGET_SRCROOT)/Classes'
+    'OTHER_LDFLAGS' => '-ObjC -Wl,-rpath,@loader_path/../Frameworks',
+    'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/target/include $(PODS_TARGET_SRCROOT)/Classes',
+    'LIBRARY_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/target/lib',
+    'LD_RUNPATH_SEARCH_PATHS' => '@loader_path/../Frameworks'
   }
   
   s.swift_version = '5.0'
