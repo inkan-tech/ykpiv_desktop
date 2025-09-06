@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'ykpiv_desktop'
-  s.version          = '0.0.3'
+  s.version          = '0.0.5'
   s.summary          = 'A Flutter FFI plugin for yubico-piv-tool.'
   s.description      = <<-DESC
   A Flutter FFI plugin for yubico-piv-tool on desktop macOS and Windows only
