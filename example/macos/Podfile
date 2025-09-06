@@ -45,10 +45,16 @@ post_install do |installer|
       phase = target.new_shell_script_build_phase('Create libykpiv symlink')
       phase.shell_script = <<-SCRIPT
         # Create symlink for libykpiv.2.dylib if needed
-        if [ -f "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libykpiv.2.7.2.dylib" ]; then
-          cd "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-          ln -sf libykpiv.2.7.2.dylib libykpiv.2.dylib
-          ln -sf libykpiv.2.7.2.dylib libykpiv.dylib
+        FRAMEWORKS_PATH="${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+        if [ -d "$FRAMEWORKS_PATH" ]; then
+          cd "$FRAMEWORKS_PATH"
+          # Remove old versions if present
+          rm -f libykpiv.2.5.2.dylib
+          # Create symlinks for the current version
+          if [ -f "libykpiv.2.7.2.dylib" ]; then
+            ln -sf libykpiv.2.7.2.dylib libykpiv.2.dylib
+            ln -sf libykpiv.2.7.2.dylib libykpiv.dylib
+          fi
         fi
       SCRIPT
     end
