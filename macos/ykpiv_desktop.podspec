@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'ykpiv_desktop'
-  s.version          = '0.0.5'
+  s.version          = '0.0.6'
   s.summary          = 'A Flutter FFI plugin for yubico-piv-tool.'
   s.description      = <<-DESC
   A Flutter FFI plugin for yubico-piv-tool on desktop macOS and Windows only
@@ -95,6 +95,19 @@ Pod::Spec.new do |s|
       cd macos
     fi
     
+    # Create symlinks for the dylib files in target/lib
+    cd target/lib
+    if [ -f "libykpiv.2.7.2.dylib" ]; then
+      ln -sf libykpiv.2.7.2.dylib libykpiv.2.dylib
+      ln -sf libykpiv.2.7.2.dylib libykpiv.dylib
+      echo "Created symlinks in target/lib: libykpiv.2.dylib and libykpiv.dylib"
+    elif [ -f "libykpiv.2.5.2.dylib" ]; then
+      ln -sf libykpiv.2.5.2.dylib libykpiv.2.dylib
+      ln -sf libykpiv.2.5.2.dylib libykpiv.dylib
+      echo "Created symlinks in target/lib: libykpiv.2.dylib and libykpiv.dylib"
+    fi
+    cd ../..
+    
     # Copy required headers for FFI
     mkdir -p Classes
     cp -R ${YKPIV_DIR}/lib/*.h Classes/ 2>/dev/null || true
@@ -105,8 +118,8 @@ Pod::Spec.new do |s|
   s.source_files = 'Classes/**/*.h'
   s.public_header_files = 'Classes/**/*.h'
   
-  # Reference both static and dynamic libraries
-  s.vendored_libraries = 'target/lib/libykpiv.a', 'target/lib/libykpiv.*.dylib'
+  # Reference both static and dynamic libraries including symlinks
+  s.vendored_libraries = 'target/lib/libykpiv.a', 'target/lib/libykpiv*.dylib'
   
   # Preserve paths for the build artifacts
   s.preserve_paths = 'target/**/*', 'Classes/**/*'
@@ -125,23 +138,40 @@ Pod::Spec.new do |s|
   
   s.swift_version = '5.0'
   
-  # Script phase to create symlinks for libykpiv
-  s.script_phase = {
-    :name => 'Create libykpiv symlinks',
-    :script => <<-SCRIPT,
-      # Create symlinks for libykpiv in app frameworks directory
-      FRAMEWORKS_PATH="${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-      echo "Creating libykpiv symlinks in: $FRAMEWORKS_PATH"
-      if [ -d "$FRAMEWORKS_PATH" ]; then
-        cd "$FRAMEWORKS_PATH"
-        # Create symlinks for version compatibility
-        if [ -f "libykpiv.2.7.2.dylib" ]; then
-          ln -sf libykpiv.2.7.2.dylib libykpiv.2.dylib
-          ln -sf libykpiv.2.7.2.dylib libykpiv.dylib
-          echo "Symlinks created: libykpiv.2.dylib and libykpiv.dylib"
-        fi
-      fi
+  # Add a script phase to create symlinks after the frameworks are copied
+  s.script_phases = [
+    {
+      :name => 'Create libykpiv symlinks',
+      :script => <<-SCRIPT,
+# Create symlinks for libykpiv in app frameworks directory
+FRAMEWORKS_PATH="${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+echo "[ykpiv_desktop] Creating libykpiv symlinks in: $FRAMEWORKS_PATH"
+if [ -d "$FRAMEWORKS_PATH" ]; then
+  cd "$FRAMEWORKS_PATH"
+  # Find the versioned dylib and create symlinks
+  for dylib in libykpiv.*.*.*.dylib; do
+    if [ -f "$dylib" ]; then
+      echo "[ykpiv_desktop] Found $dylib, creating symlinks..."
+      # Extract version numbers
+      VERSION_FULL=$(echo $dylib | sed 's/libykpiv\\.\\(.*\\)\\.dylib/\\1/')
+      VERSION_MAJOR=$(echo $VERSION_FULL | cut -d. -f1)
+      
+      # Create symlinks
+      ln -sf "$dylib" "libykpiv.${VERSION_MAJOR}.dylib"
+      ln -sf "$dylib" "libykpiv.dylib"
+      
+      echo "[ykpiv_desktop] Created symlinks:"
+      echo "  libykpiv.${VERSION_MAJOR}.dylib -> $dylib"
+      echo "  libykpiv.dylib -> $dylib"
+      break
+    fi
+  done
+else
+  echo "[ykpiv_desktop] Warning: Frameworks directory not found: $FRAMEWORKS_PATH"
+fi
 SCRIPT
-    :execution_position => :after_compile
-  }
+      :execution_position => :after_compile,
+      :shell_path => '/bin/sh'
+    }
+  ]
 end
