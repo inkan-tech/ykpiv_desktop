@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
   # Build the yubico-piv-tool from git submodule or download if not available
   s.prepare_command = <<-CMD
     set -e
-    YKPIV_VERSION="2.5.2"
+    YKPIV_VERSION="2.7.2"
     YKPIV_DIR="../yubico-piv-tool"
     YKPIV_TARBALL="yubico-piv-tool-${YKPIV_VERSION}.tar.gz"
     YKPIV_URL="https://github.com/Yubico/yubico-piv-tool/archive/refs/tags/yubico-piv-tool-${YKPIV_VERSION}.tar.gz"
@@ -81,7 +81,7 @@ Pod::Spec.new do |s|
     
     # Configure and build
     cmake . -DOPENSSL_STATIC_LINK=ON \
-            -DCMAKE_INSTALL_PREFIX=../target \
+            -DCMAKE_INSTALL_PREFIX=../macos/target \
             -DBACKEND=macscard \
             -DOPENSSL_ROOT_DIR="${OPENSSL_ROOT_DIR}" \
             -DOPENSSL_LIBRARIES="${OPENSSL_ROOT_DIR}/lib"
@@ -89,23 +89,32 @@ Pod::Spec.new do |s|
     # Build and install to the target directory
     make install
     
+    # Go back to macos directory
+    cd ..
+    if [ "$PWD" != *"/macos" ]; then
+      cd macos
+    fi
+    
     # Copy required headers for FFI
-    mkdir -p ../Classes
-    cp -R lib/*.h ../Classes/
-    cp -R common/*.h ../Classes/
+    mkdir -p Classes
+    cp -R ${YKPIV_DIR}/lib/*.h Classes/ 2>/dev/null || true
+    cp -R ${YKPIV_DIR}/common/*.h Classes/ 2>/dev/null || true
   CMD
 
   # Include necessary headers
-  s.public_header_files = 'Classes/*.h', 'target/include/ykpiv/*.h'
-  s.source_files = 'Classes/*.h'
+  s.source_files = 'Classes/**/*.h'
+  s.public_header_files = 'Classes/**/*.h'
   
-  # Reference the built libraries - use wildcard pattern to handle version changes
-  s.library = "ykpiv"
-  s.vendored_libraries = 'target/lib/libykpiv.a', 'target/lib/libykpiv.dylib'
-  s.preserve_paths = 'target/lib/*', 'target/include/*'
+  # Reference the built static library only
+  s.vendored_libraries = 'target/lib/libykpiv.a'
   
-  # Define resources
-  s.resources = 'target/lib/libykpiv*.dylib'
+  # Preserve paths for the build artifacts
+  s.preserve_paths = 'target/**/*', 'Classes/**/*'
+  
+  # Bundle dynamic libraries as resources
+  s.resource_bundles = {
+    'ykpiv_desktop' => ['target/lib/*.dylib']
+  }
   
   # Target macOS 10.15 (Catalina) or later for better compatibility
   s.platform = :osx, '10.15'

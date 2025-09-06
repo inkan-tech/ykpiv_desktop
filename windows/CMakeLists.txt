@@ -64,7 +64,7 @@ else()
   FetchContent_Declare(
     yubico-piv-tool
     GIT_REPOSITORY https://github.com/Yubico/yubico-piv-tool.git
-    GIT_TAG yubico-piv-tool-2.5.2 # Use the same version as submodule
+    GIT_TAG yubico-piv-tool-2.7.2 # Use the same version as submodule
     # Consider adding GIT_SHALLOW TRUE for faster downloads
   )
   FetchContent_MakeAvailable(yubico-piv-tool)
