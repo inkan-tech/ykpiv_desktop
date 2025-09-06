@@ -8,83 +8,29 @@ cmake_minimum_required(VERSION 3.14)
 set(PROJECT_NAME "ykpiv_desktop")
 project(${PROJECT_NAME} LANGUAGES CXX C) # Added C language
 
-# Ensure vcpkg toolchain is used if specified
-if(DEFINED CMAKE_TOOLCHAIN_FILE AND EXISTS "${CMAKE_TOOLCHAIN_FILE}")
-  include("${CMAKE_TOOLCHAIN_FILE}")
-  message(STATUS "Using vcpkg toolchain: ${CMAKE_TOOLCHAIN_FILE}")
-else()
-  message(WARNING "CMAKE_TOOLCHAIN_FILE is not defined or does not exist. Vcpkg dependencies might not be found correctly.")
-endif()
+# Skip vcpkg dependency search - use pre-built libraries from example directory
+message(STATUS "Using pre-built libraries - skipping vcpkg dependencies")
 
-# Find required dependencies using vcpkg
-find_package(OpenSSL REQUIRED)
-find_package(ZLIB REQUIRED)
-# Note: getopt is often header-only or part of libc on non-Windows,
-# but vcpkg provides getopt-win32 for Windows.
-# We might need specific handling if find_package doesn't work directly.
-# For now, assume find_package works or handle it later if needed.
-find_package(getopt CONFIG) # Try finding config first
-if(NOT getopt_FOUND)
-  find_package(Getopt) # Fallback to standard find module if config fails
-endif()
-if(NOT getopt_FOUND)
-  message(WARNING "Could not find getopt using find_package. Manual configuration might be needed if yubico-piv-tool requires it.")
-  # Add manual hints if necessary, e.g., based on VCPKG_ROOT
-  # set(GETOPT_INCLUDE_DIR "${VCPKG_ROOT}/packages/getopt-win32_x64-windows/include")
-  # set(GETOPT_LIBRARY "${VCPKG_ROOT}/packages/getopt-win32_x64-windows/lib/getopt.lib")
-endif()
+# Use pre-built libraries from example directory
+set(EXAMPLE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../example")
+message(STATUS "Using pre-built libraries from: ${EXAMPLE_DIR}")
 
-# Try to use git submodule first, fallback to FetchContent
-set(YKPIV_SUBMODULE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../yubico-piv-tool")
-
-# Check if we have a proper git submodule
-if(EXISTS "${YKPIV_SUBMODULE_DIR}/.git" OR EXISTS "${YKPIV_SUBMODULE_DIR}/.git/")
-  message(STATUS "Using yubico-piv-tool from git submodule...")
-  # Initialize submodules if not already done
-  execute_process(
-    COMMAND git submodule update --init --recursive
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
-    RESULT_VARIABLE GIT_SUBMOD_RESULT
-  )
-  if(NOT GIT_SUBMOD_RESULT EQUAL "0")
-    message(WARNING "git submodule update --init --recursive failed with ${GIT_SUBMOD_RESULT}")
-  endif()
-  
-  # Add the yubico-piv-tool subdirectory from the submodule
-  add_subdirectory("${YKPIV_SUBMODULE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/yubico-piv-tool")
-  
-elseif(EXISTS "${YKPIV_SUBMODULE_DIR}/CMakeLists.txt")
-  message(STATUS "Using existing yubico-piv-tool directory...")
-  add_subdirectory("${YKPIV_SUBMODULE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/yubico-piv-tool")
-  
-else()
-  message(STATUS "Git submodule not available, using FetchContent to download yubico-piv-tool...")
-  # Fallback to FetchContent for dependency scenario
-  include(FetchContent)
-  FetchContent_Declare(
-    yubico-piv-tool
-    GIT_REPOSITORY https://github.com/Yubico/yubico-piv-tool.git
-    GIT_TAG yubico-piv-tool-2.7.2 # Use the same version as submodule
-    # Consider adding GIT_SHALLOW TRUE for faster downloads
-  )
-  FetchContent_MakeAvailable(yubico-piv-tool)
-endif()
-
-# The yubico-piv-tool build should now provide targets like 'ykpiv'
-# Check the yubico-piv-tool CMakeLists.txt for exact target names if needed.
+# Create imported library target for libykpiv
+add_library(ykpiv SHARED IMPORTED)
+set_target_properties(ykpiv PROPERTIES
+  IMPORTED_LOCATION "${EXAMPLE_DIR}/libykpiv.dll"
+  IMPORTED_IMPLIB "${EXAMPLE_DIR}/libykpiv.dll" # Fallback if no .lib file
+)
 
 # Invoke the build for the (currently unused) native code shared with other platforms.
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../src" "${CMAKE_CURRENT_BINARY_DIR}/shared")
 
-# Define the plugin library target (even if it's just a placeholder)
-# This target is referenced by the Flutter build process.
+# Define the plugin library target for Flutter
 add_library(${PROJECT_NAME}_plugin SHARED IMPORTED)
 set_target_properties(${PROJECT_NAME}_plugin PROPERTIES
-  IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/lib/libykpiv.dll" # Point to the actual DLL location
-  IMPORTED_IMPLIB "${CMAKE_BINARY_DIR}/lib/libykpiv.lib" # Point to the import library
+  IMPORTED_LOCATION "${EXAMPLE_DIR}/libykpiv.dll"
+  IMPORTED_IMPLIB "${EXAMPLE_DIR}/libykpiv.dll"
 )
-# Ensure ykpiv target is built before trying to use its output
-add_dependencies(${PROJECT_NAME}_plugin ykpiv)
 
 # Ensure dependent DLLs (OpenSSL, ZLIB, getopt) are copied to the output directory
 # where the Flutter runner executable will be.
@@ -100,12 +46,13 @@ add_dependencies(${PROJECT_NAME}_plugin ykpiv)
 # A simpler, less robust way for local runs: add build dir to PATH (often handled by IDEs)
 # Or copy manually for now. Let's rely on CMake/vcpkg placing them correctly for find_package first.
 
-# List of libraries to bundle (placeholder, actual bundling handled by Flutter build)
+# List of libraries to bundle - copy the DLLs from example directory
 set(ykpiv_desktop_bundled_libraries
-  # The actual library needed at runtime is libykpiv.dll and its dependencies.
-  # The target defined in src/CMakeLists.txt (ykpiv_desktop) is currently not used.
-  # We reference the IMPORTED target we created for the Flutter tooling.
-  ${PROJECT_NAME}_plugin
+  "${EXAMPLE_DIR}/libykpiv.dll"
+  "${EXAMPLE_DIR}/libcrypto-3-x64.dll"
+  "${EXAMPLE_DIR}/getopt.dll"
+  "${EXAMPLE_DIR}/zlib1.dll"
+  "${EXAMPLE_DIR}/libykcs11.dll"
   PARENT_SCOPE
 )
 
