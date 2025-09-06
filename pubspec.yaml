@@ -1,6 +1,6 @@
 name: ykpiv_desktop
 description: "A plugin for desktop to use Yubikeys PIV."
-version: 0.0.4
+version: 0.0.5
 homepage: https://github.com/inkan-tech/ykpiv_desktop
 
 environment:
