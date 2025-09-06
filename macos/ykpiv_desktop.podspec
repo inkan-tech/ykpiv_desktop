@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'ykpiv_desktop'
-  s.version          = '0.0.1'
+  s.version          = '0.0.2'
   s.summary          = 'A Flutter FFI plugin for yubico-piv-tool.'
   s.description      = <<-DESC
   A Flutter FFI plugin for yubico-piv-tool on desktop macOS and Windows only
@@ -22,6 +22,7 @@ Pod::Spec.new do |s|
   
   # Build the yubico-piv-tool from git submodule or download if not available
   s.prepare_command = <<-CMD
+    set -e
     YKPIV_VERSION="2.5.2"
     YKPIV_DIR="../yubico-piv-tool"
     YKPIV_TARBALL="yubico-piv-tool-${YKPIV_VERSION}.tar.gz"
@@ -30,6 +31,9 @@ Pod::Spec.new do |s|
     # Create target directory structure
     mkdir -p target/lib
     mkdir -p target/include
+    
+    # Check current directory
+    echo "Current directory: $PWD"
     
     # Try to use git submodule first, fallback to download
     if [ -d "${YKPIV_DIR}/.git" ]; then
@@ -41,13 +45,21 @@ Pod::Spec.new do |s|
       echo "Using existing yubico-piv-tool directory..."
     else
       echo "Git submodule not available, downloading yubico-piv-tool version ${YKPIV_VERSION}..."
+      cd ..
       # Remove any incomplete directory
-      rm -rf "${YKPIV_DIR}"
+      rm -rf "yubico-piv-tool"
       curl -L ${YKPIV_URL} -o ${YKPIV_TARBALL}
       tar -xzf ${YKPIV_TARBALL}
       # The tarball extracts to yubico-piv-tool-yubico-piv-tool-VERSION
-      mv "yubico-piv-tool-yubico-piv-tool-${YKPIV_VERSION}" "${YKPIV_DIR}"
+      mv "yubico-piv-tool-yubico-piv-tool-${YKPIV_VERSION}" "yubico-piv-tool"
       rm ${YKPIV_TARBALL}
+      cd macos
+    fi
+    
+    # Now we should have yubico-piv-tool directory available
+    if [ ! -d "${YKPIV_DIR}" ]; then
+      echo "Error: yubico-piv-tool directory not found at ${YKPIV_DIR}"
+      exit 1
     fi
     
     cd ${YKPIV_DIR}
