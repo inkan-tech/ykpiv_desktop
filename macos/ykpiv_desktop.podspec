@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'ykpiv_desktop'
-  s.version          = '0.0.7'
+  s.version          = '0.0.8'
   s.summary          = 'A Flutter FFI plugin for yubico-piv-tool.'
   s.description      = <<-DESC
   A Flutter FFI plugin for yubico-piv-tool on desktop macOS and Windows only
@@ -139,39 +139,48 @@ Pod::Spec.new do |s|
   
   s.swift_version = '5.0'
   
-  # Add a script phase to create symlinks after the frameworks are copied
+  # Add a script phase to ensure the library is embedded and symlinks are created
   s.script_phases = [
     {
-      :name => 'Create libykpiv symlinks',
+      :name => 'Embed libykpiv library',
       :script => <<-SCRIPT,
-# Create symlinks for libykpiv in app frameworks directory
+# Ensure libykpiv is properly embedded in the app
 FRAMEWORKS_PATH="${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-echo "[ykpiv_desktop] Creating libykpiv symlinks in: $FRAMEWORKS_PATH"
-if [ -d "$FRAMEWORKS_PATH" ]; then
+SOURCE_LIB="${PODS_TARGET_SRCROOT}/target/lib/libykpiv.2.7.2.dylib"
+
+echo "[ykpiv_desktop] Embedding libykpiv library"
+echo "[ykpiv_desktop] Source: $SOURCE_LIB"
+echo "[ykpiv_desktop] Target: $FRAMEWORKS_PATH"
+
+if [ -f "$SOURCE_LIB" ]; then
+  mkdir -p "$FRAMEWORKS_PATH"
+  cp -f "$SOURCE_LIB" "$FRAMEWORKS_PATH/"
   cd "$FRAMEWORKS_PATH"
-  # Find the versioned dylib and create symlinks
-  for dylib in libykpiv.*.*.*.dylib; do
+  ln -sf "libykpiv.2.7.2.dylib" "libykpiv.2.dylib"
+  ln -sf "libykpiv.2.7.2.dylib" "libykpiv.dylib"
+  echo "[ykpiv_desktop] Library embedded successfully"
+  echo "[ykpiv_desktop] Created symlinks:"
+  echo "  libykpiv.2.dylib -> libykpiv.2.7.2.dylib"
+  echo "  libykpiv.dylib -> libykpiv.2.7.2.dylib"
+else
+  echo "[ykpiv_desktop] Warning: Source library not found at $SOURCE_LIB"
+  # Fallback: try to find any versioned dylib
+  for dylib in "${PODS_TARGET_SRCROOT}"/target/lib/libykpiv.*.*.*.dylib; do
     if [ -f "$dylib" ]; then
-      echo "[ykpiv_desktop] Found $dylib, creating symlinks..."
-      # Extract version numbers
-      VERSION_FULL=$(echo $dylib | sed 's/libykpiv\\.\\(.*\\)\\.dylib/\\1/')
-      VERSION_MAJOR=$(echo $VERSION_FULL | cut -d. -f1)
-      
-      # Create symlinks
-      ln -sf "$dylib" "libykpiv.${VERSION_MAJOR}.dylib"
-      ln -sf "$dylib" "libykpiv.dylib"
-      
-      echo "[ykpiv_desktop] Created symlinks:"
-      echo "  libykpiv.${VERSION_MAJOR}.dylib -> $dylib"
-      echo "  libykpiv.dylib -> $dylib"
+      echo "[ykpiv_desktop] Found alternative: $dylib"
+      cp -f "$dylib" "$FRAMEWORKS_PATH/"
+      DYLIB_NAME=$(basename "$dylib")
+      cd "$FRAMEWORKS_PATH"
+      VERSION_MAJOR=$(echo $DYLIB_NAME | sed 's/libykpiv\.\([0-9]*\)\..*/\1/')
+      ln -sf "$DYLIB_NAME" "libykpiv.${VERSION_MAJOR}.dylib"
+      ln -sf "$DYLIB_NAME" "libykpiv.dylib"
+      echo "[ykpiv_desktop] Library embedded with fallback"
       break
     fi
   done
-else
-  echo "[ykpiv_desktop] Warning: Frameworks directory not found: $FRAMEWORKS_PATH"
 fi
 SCRIPT
-      :execution_position => :after_compile,
+      :execution_position => :before_compile,
       :shell_path => '/bin/sh'
     }
   ]
