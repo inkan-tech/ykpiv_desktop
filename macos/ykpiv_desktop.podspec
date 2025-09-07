@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'ykpiv_desktop'
-  s.version          = '0.0.8'
+  s.version          = '0.0.9'
   s.summary          = 'A Flutter FFI plugin for yubico-piv-tool.'
   s.description      = <<-DESC
   A Flutter FFI plugin for yubico-piv-tool on desktop macOS and Windows only
@@ -146,39 +146,78 @@ Pod::Spec.new do |s|
       :script => <<-SCRIPT,
 # Ensure libykpiv is properly embedded in the app
 FRAMEWORKS_PATH="${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-SOURCE_LIB="${PODS_TARGET_SRCROOT}/target/lib/libykpiv.2.7.2.dylib"
 
 echo "[ykpiv_desktop] Embedding libykpiv library"
-echo "[ykpiv_desktop] Source: $SOURCE_LIB"
+echo "[ykpiv_desktop] PODS_TARGET_SRCROOT: ${PODS_TARGET_SRCROOT}"
 echo "[ykpiv_desktop] Target: $FRAMEWORKS_PATH"
 
-if [ -f "$SOURCE_LIB" ]; then
-  mkdir -p "$FRAMEWORKS_PATH"
-  cp -f "$SOURCE_LIB" "$FRAMEWORKS_PATH/"
-  cd "$FRAMEWORKS_PATH"
-  ln -sf "libykpiv.2.7.2.dylib" "libykpiv.2.dylib"
-  ln -sf "libykpiv.2.7.2.dylib" "libykpiv.dylib"
-  echo "[ykpiv_desktop] Library embedded successfully"
-  echo "[ykpiv_desktop] Created symlinks:"
-  echo "  libykpiv.2.dylib -> libykpiv.2.7.2.dylib"
-  echo "  libykpiv.dylib -> libykpiv.2.7.2.dylib"
-else
-  echo "[ykpiv_desktop] Warning: Source library not found at $SOURCE_LIB"
-  # Fallback: try to find any versioned dylib
-  for dylib in "${PODS_TARGET_SRCROOT}"/target/lib/libykpiv.*.*.*.dylib; do
-    if [ -f "$dylib" ]; then
-      echo "[ykpiv_desktop] Found alternative: $dylib"
-      cp -f "$dylib" "$FRAMEWORKS_PATH/"
-      DYLIB_NAME=$(basename "$dylib")
-      cd "$FRAMEWORKS_PATH"
-      VERSION_MAJOR=$(echo $DYLIB_NAME | sed 's/libykpiv\.\([0-9]*\)\..*/\1/')
-      ln -sf "$DYLIB_NAME" "libykpiv.${VERSION_MAJOR}.dylib"
-      ln -sf "$DYLIB_NAME" "libykpiv.dylib"
-      echo "[ykpiv_desktop] Library embedded with fallback"
-      break
+# Function to find and embed library
+embed_library() {
+  local lib_path="$1"
+  local lib_name=$(basename "$lib_path")
+  
+  if [ -f "$lib_path" ]; then
+    echo "[ykpiv_desktop] Found library at: $lib_path"
+    mkdir -p "$FRAMEWORKS_PATH"
+    cp -f "$lib_path" "$FRAMEWORKS_PATH/"
+    cd "$FRAMEWORKS_PATH"
+    
+    # Extract version for symlinks using sed (compatible with macOS default shell)
+    MAJOR_VERSION=$(echo "$lib_name" | sed -n 's/libykpiv\.\([0-9]*\)\..*/\1/p')
+    if [ -n "$MAJOR_VERSION" ]; then
+      ln -sf "$lib_name" "libykpiv.${MAJOR_VERSION}.dylib"
+      ln -sf "$lib_name" "libykpiv.dylib"
+      echo "[ykpiv_desktop] Library embedded successfully"
+      echo "[ykpiv_desktop] Created symlinks:"
+      echo "  libykpiv.${MAJOR_VERSION}.dylib -> $lib_name"
+      echo "  libykpiv.dylib -> $lib_name"
+      return 0
+    else
+      echo "[ykpiv_desktop] Warning: Could not extract version from $lib_name"
+      return 1
     fi
-  done
+  fi
+  return 1
+}
+
+# Strategy 1: Try the expected location (works for external projects)
+SOURCE_LIB="${PODS_TARGET_SRCROOT}/target/lib/libykpiv.2.7.2.dylib"
+if embed_library "$SOURCE_LIB"; then
+  exit 0
 fi
+
+echo "[ykpiv_desktop] Primary location not found, trying alternatives..."
+
+# Strategy 2: Resolve symlinks to find the real plugin directory (works for example app)
+REAL_PATH=$(readlink -f "${PODS_TARGET_SRCROOT}" 2>/dev/null || echo "${PODS_TARGET_SRCROOT}")
+echo "[ykpiv_desktop] Resolved path: $REAL_PATH"
+
+# Try the resolved path
+SOURCE_LIB="${REAL_PATH}/target/lib/libykpiv.2.7.2.dylib"
+if embed_library "$SOURCE_LIB"; then
+  exit 0
+fi
+
+# Strategy 3: Search for any versioned dylib in PODS_TARGET_SRCROOT
+echo "[ykpiv_desktop] Searching for any libykpiv dylib..."
+for dylib in "${PODS_TARGET_SRCROOT}"/target/lib/libykpiv.*.*.*.dylib; do
+  if embed_library "$dylib"; then
+    exit 0
+  fi
+done
+
+# Strategy 4: Search in resolved path
+for dylib in "${REAL_PATH}"/target/lib/libykpiv.*.*.*.dylib; do
+  if embed_library "$dylib"; then
+    exit 0
+  fi
+done
+
+echo "[ykpiv_desktop] ERROR: No libykpiv library found in any expected location"
+echo "[ykpiv_desktop] Searched paths:"
+echo "  ${PODS_TARGET_SRCROOT}/target/lib/"
+echo "  ${REAL_PATH}/target/lib/"
+exit 1
 SCRIPT
       :execution_position => :before_compile,
       :shell_path => '/bin/sh'
