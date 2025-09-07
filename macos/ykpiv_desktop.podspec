@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'ykpiv_desktop'
-  s.version          = '0.0.9'
+  s.version          = '0.0.10'
   s.summary          = 'A Flutter FFI plugin for yubico-piv-tool.'
   s.description      = <<-DESC
   A Flutter FFI plugin for yubico-piv-tool on desktop macOS and Windows only
@@ -162,19 +162,27 @@ embed_library() {
     cp -f "$lib_path" "$FRAMEWORKS_PATH/"
     cd "$FRAMEWORKS_PATH"
     
-    # Extract version for symlinks using sed (compatible with macOS default shell)
-    MAJOR_VERSION=$(echo "$lib_name" | sed -n 's/libykpiv\.\([0-9]*\)\..*/\1/p')
-    if [ -n "$MAJOR_VERSION" ]; then
+    # Extract version for symlinks - handle libykpiv.X.Y.Z.dylib format
+    # The filename format is libykpiv.2.7.2.dylib
+    FULL_VERSION=$(echo "$lib_name" | sed -n 's/^libykpiv\.\([0-9]*\.[0-9]*\.[0-9]*\)\.dylib$/\1/p')
+    MAJOR_VERSION=$(echo "$lib_name" | sed -n 's/^libykpiv\.\([0-9]*\)\.[0-9]*\.[0-9]*\.dylib$/\1/p')
+    
+    if [ -n "$FULL_VERSION" ] && [ -n "$MAJOR_VERSION" ]; then
       ln -sf "$lib_name" "libykpiv.${MAJOR_VERSION}.dylib"
       ln -sf "$lib_name" "libykpiv.dylib"
-      echo "[ykpiv_desktop] Library embedded successfully"
+      echo "[ykpiv_desktop] Library embedded successfully (version $FULL_VERSION)"
       echo "[ykpiv_desktop] Created symlinks:"
       echo "  libykpiv.${MAJOR_VERSION}.dylib -> $lib_name"
       echo "  libykpiv.dylib -> $lib_name"
       return 0
     else
-      echo "[ykpiv_desktop] Warning: Could not extract version from $lib_name"
-      return 1
+      # If version extraction fails, still copy the library and create basic symlink
+      echo "[ykpiv_desktop] Warning: Could not extract version from $lib_name, using fallback"
+      ln -sf "$lib_name" "libykpiv.dylib"
+      echo "[ykpiv_desktop] Library embedded with basic symlink"
+      echo "[ykpiv_desktop] Created symlink:"
+      echo "  libykpiv.dylib -> $lib_name"
+      return 0
     fi
   fi
   return 1
