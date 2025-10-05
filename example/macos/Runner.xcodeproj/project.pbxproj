@@ -240,6 +240,7 @@
 				33CC110E2044A8840003C045 /* Bundle Framework */,
 				3399D490228B24CF009A79C7 /* ShellScript */,
 				294FDE6F455AB1E29AABF752 /* [CP] Embed Pods Frameworks */,
+				C44E43D2D5666337CB14B416 /* Create libykpiv symlinks */,
 			);
 			buildRules = (
 			);
@@ -398,6 +399,25 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		C44E43D2D5666337CB14B416 /* Create libykpiv symlinks */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Create libykpiv symlinks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "        # Create symlinks for libykpiv in the app bundle\n        # This runs after CocoaPods copies vendored libraries to the app bundle\n        FRAMEWORKS_PATH=\"${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}\"\n\n        if [ -d \"$FRAMEWORKS_PATH\" ]; then\n          cd \"$FRAMEWORKS_PATH\"\n\n          # Find the versioned libykpiv library\n          LIBYKPIV=$(find . -maxdepth 1 -name \"libykpiv.*.*.*.dylib\" -type f 2>/dev/null | head -n 1)\n\n          if [ -n \"$LIBYKPIV\" ]; then\n            LIB_NAME=$(basename \"$LIBYKPIV\")\n            TEMP=\"${LIB_NAME#libykpiv.}\"\n            FULL_VERSION=\"${TEMP%.dylib}\"\n            MAJOR_VERSION=\"${FULL_VERSION%%.*}\"\n\n            echo \"[ykpiv_desktop] Creating symlinks for $LIB_NAME (version $FULL_VERSION)\"\n\n            # Create symlinks\n            ln -sf \"$LIB_NAME\" \"libykpiv.${MAJOR_VERSION}.dylib\"\n            ln -sf \"$LIB_NAME\" \"libykpiv.dylib\"\n\n            echo \"[ykpiv_desktop] Symlinks created successfully\"\n          else\n            echo \"[ykpiv_desktop] Warning: libykpiv library not found in $FRAMEWORKS_PATH\"\n          fi\n        fi\n";
 		};
 		E195803F55E488ED2F3BE977 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
