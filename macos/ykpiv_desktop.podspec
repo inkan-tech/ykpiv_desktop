@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'ykpiv_desktop'
-  s.version          = '0.0.12'
+  s.version          = '0.0.13'
   s.summary          = 'A Flutter FFI plugin for yubico-piv-tool.'
   s.description      = <<-DESC
   A Flutter FFI plugin for yubico-piv-tool on desktop macOS and Windows only
@@ -129,13 +129,43 @@ Pod::Spec.new do |s|
   s.platform = :osx, '10.15'
   
   # Additional build settings
-  s.pod_target_xcconfig = { 
+  s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
     'OTHER_LDFLAGS' => '-ObjC -Wl,-rpath,@loader_path/../Frameworks',
     'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/target/include $(PODS_TARGET_SRCROOT)/Classes',
     'LIBRARY_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/target/lib',
     'LD_RUNPATH_SEARCH_PATHS' => '@loader_path/../Frameworks'
   }
-  
+
   s.swift_version = '5.0'
+
+  # Script phase to create symlinks in the app bundle after CocoaPods copies vendored libraries
+  s.script_phases = [
+    {
+      :name => 'Create libykpiv symlinks',
+      :script => '
+FRAMEWORKS_PATH="${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+echo "[ykpiv_desktop] Checking for libykpiv library in: $FRAMEWORKS_PATH"
+if [ -d "$FRAMEWORKS_PATH" ]; then
+  cd "$FRAMEWORKS_PATH"
+  LIBYKPIV=$(find . -maxdepth 1 -name "libykpiv.*.*.*.dylib" -type f 2>/dev/null | head -n 1)
+  if [ -n "$LIBYKPIV" ]; then
+    LIB_NAME=$(basename "$LIBYKPIV")
+    TEMP="${LIB_NAME#libykpiv.}"
+    FULL_VERSION="${TEMP%.dylib}"
+    MAJOR_VERSION="${FULL_VERSION%%.*}"
+    echo "[ykpiv_desktop] Found: $LIB_NAME (version: $FULL_VERSION)"
+    ln -sf "$LIB_NAME" "libykpiv.${MAJOR_VERSION}.dylib"
+    ln -sf "$LIB_NAME" "libykpiv.dylib"
+    echo "[ykpiv_desktop] Created symlinks: libykpiv.${MAJOR_VERSION}.dylib and libykpiv.dylib"
+  else
+    echo "[ykpiv_desktop] Warning: libykpiv library not found in $FRAMEWORKS_PATH"
+  fi
+else
+  echo "[ykpiv_desktop] Warning: Frameworks path does not exist: $FRAMEWORKS_PATH"
+fi
+',
+      :execution_position => :after_compile
+    }
+  ]
 end

@@ -10,12 +10,13 @@ When using this package as a dependency in your Flutter project, no additional s
 
 - **Automatic fallback**: If git submodules aren't available (typical in pub.dev installations), the build system automatically downloads the required version of yubico-piv-tool
 - **Cross-platform support**: Works on both macOS (via CocoaPods) and Windows (via CMake)
+- **Automatic symlink creation**: On macOS, the plugin automatically creates necessary library symlinks via CocoaPods script phases
 
 Simply add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  ykpiv_desktop: ^0.0.1
+  ykpiv_desktop: ^0.0.13
 ```
 
 ### Development Setup
@@ -207,59 +208,7 @@ The build process for macOS has been automated in the podspec file:
     sudo gem install cocoapods
     ```
 
-2.  **Add Post-Install Hook to Podfile:** Add the following to your `macos/Podfile` to create necessary symlinks for the libykpiv library:
-
-    ```ruby
-    post_install do |installer|
-      installer.pods_project.targets.each do |target|
-        flutter_additional_macos_build_settings(target)
-      end
-
-      # Add script phase to Runner app target to create libykpiv symlinks
-      app_project = Xcodeproj::Project.open(File.join(File.dirname(__FILE__), 'Runner.xcodeproj'))
-      app_project.targets.each do |target|
-        if target.name == 'Runner'
-          # Remove existing script phase with same name if it exists
-          target.shell_script_build_phases.each do |phase|
-            if phase.name == 'Create libykpiv symlinks'
-              target.build_phases.delete(phase)
-            end
-          end
-
-          # Add new script phase
-          phase = target.new_shell_script_build_phase('Create libykpiv symlinks')
-          phase.shell_script = <<-SCRIPT
-            # Create symlinks for libykpiv in the app bundle
-            FRAMEWORKS_PATH="${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-
-            if [ -d "$FRAMEWORKS_PATH" ]; then
-              cd "$FRAMEWORKS_PATH"
-
-              # Find the versioned libykpiv library
-              LIBYKPIV=$(find . -maxdepth 1 -name "libykpiv.*.*.*.dylib" -type f 2>/dev/null | head -n 1)
-
-              if [ -n "$LIBYKPIV" ]; then
-                LIB_NAME=$(basename "$LIBYKPIV")
-                TEMP="${LIB_NAME#libykpiv.}"
-                FULL_VERSION="${TEMP%.dylib}"
-                MAJOR_VERSION="${FULL_VERSION%%.*}"
-
-                # Create symlinks
-                ln -sf "$LIB_NAME" "libykpiv.${MAJOR_VERSION}.dylib"
-                ln -sf "$LIB_NAME" "libykpiv.dylib"
-              fi
-            fi
-          SCRIPT
-          phase.always_out_of_date = "1"
-        end
-      end
-      app_project.save
-    end
-    ```
-
-    **Note:** This post-install hook is required because CocoaPods copies the vendored libykpiv library to your app bundle but doesn't preserve symbolic links. The hook creates the necessary symlinks (`libykpiv.2.dylib` and `libykpiv.dylib`) that point to the versioned library file (`libykpiv.2.7.2.dylib`), ensuring proper dynamic library loading at runtime.
-
-3.  **Build the Flutter Project:** Run the standard Flutter build command for the example application:
+2.  **Build the Flutter Project:** Run the standard Flutter build command for the example application:
     ```bash
     cd example
     flutter run -d macos
@@ -270,7 +219,7 @@ The build process for macOS has been automated in the podspec file:
     *   Detect OpenSSL installation (using pkg-config or Homebrew).
     *   Build the yubico-piv-tool library with the correct configuration.
     *   Copy necessary headers and libraries to the right locations.
-    *   Create symlinks for the dynamic library (via the post_install hook).
+    *   Create symlinks for the dynamic library (via podspec script_phases).
 
 ### Generating FFI Bindings (If Needed)
 
